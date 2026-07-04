@@ -1,0 +1,218 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  BANNED
+}
+
+enum TagType {
+  STYLE
+  COLOR
+  VIEW
+  TIME
+  FEATURE
+}
+
+model User {
+  id           Int        @id @default(autoincrement())
+  fullName     String     @db.VarChar(150)
+  email        String     @unique @db.VarChar(150)
+  password     String     @db.VarChar(255)
+  phone        String?    @db.VarChar(20)
+  avatarUrl    String?    @db.VarChar(255)
+  role         UserRole   @default(USER)
+  status       UserStatus @default(ACTIVE)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  reviews      Review[]
+  favorites    Favorite[]
+  visitHistory VisitHistory[]
+
+  @@map("users")
+}
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique @db.VarChar(100)
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  cafes       Cafe[]
+
+  @@map("categories")
+}
+
+model District {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique @db.VarChar(100)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cafes     Cafe[]
+
+  @@map("districts")
+}
+
+model Cafe {
+  id              Int      @id @default(autoincrement())
+  name            String   @db.VarChar(150)
+  slug            String   @unique @db.VarChar(180)
+  description     String?  @db.Text
+  address         String   @db.Text
+  latitude        Float
+  longitude       Float
+  openTime        String   @db.VarChar(20)
+  closeTime       String   @db.VarChar(20)
+  phone           String?  @db.VarChar(20)
+  facebookUrl     String?  @db.VarChar(255)
+  instagramUrl    String?  @db.VarChar(255)
+  websiteUrl      String?  @db.VarChar(255)
+  coverImageUrl   String?  @db.VarChar(255)
+  priceMin        Int?
+  priceMax        Int?
+  averageRating   Float    @default(0)
+  totalReviews    Int      @default(0)
+  totalViews      Int      @default(0)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  categoryId      Int
+  districtId      Int
+
+  category        Category @relation(fields: [categoryId], references: [id])
+  district        District @relation(fields: [districtId], references: [id])
+
+  images          CafeImage[]
+  photoSpots      PhotoSpot[]
+  reviews         Review[]
+  favorites       Favorite[]
+  cafeTags        CafeTag[]
+  visitHistory    VisitHistory[]
+
+  @@index([categoryId])
+  @@index([districtId])
+  @@index([latitude, longitude])
+  @@map("cafes")
+}
+
+model CafeImage {
+  id          Int      @id @default(autoincrement())
+  cafeId      Int
+  imageUrl    String   @db.VarChar(255)
+  caption     String?  @db.VarChar(255)
+  isCover     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  cafe        Cafe     @relation(fields: [cafeId], references: [id], onDelete: Cascade)
+
+  @@index([cafeId])
+  @@map("cafe_images")
+}
+
+model PhotoSpot {
+  id          Int      @id @default(autoincrement())
+  cafeId      Int
+  name        String   @db.VarChar(150)
+  description String?  @db.Text
+  imageUrl    String?  @db.VarChar(255)
+  bestTime    String?  @db.VarChar(100)
+  cameraAngle String?  @db.VarChar(150)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  cafe        Cafe     @relation(fields: [cafeId], references: [id], onDelete: Cascade)
+
+  @@index([cafeId])
+  @@map("photo_spots")
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  cafeId    Int
+  rating    Int
+  title     String?  @db.VarChar(150)
+  comment   String?  @db.Text
+  imageUrl  String?  @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cafe      Cafe     @relation(fields: [cafeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, cafeId])
+  @@index([cafeId])
+  @@map("reviews")
+}
+
+model Favorite {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  cafeId    Int
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cafe      Cafe     @relation(fields: [cafeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, cafeId])
+  @@index([cafeId])
+  @@map("favorites")
+}
+
+model Tag {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(100)
+  type      TagType
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cafeTags  CafeTag[]
+
+  @@unique([name, type])
+  @@map("tags")
+}
+
+model CafeTag {
+  id        Int      @id @default(autoincrement())
+  cafeId    Int
+  tagId     Int
+
+  cafe      Cafe     @relation(fields: [cafeId], references: [id], onDelete: Cascade)
+  tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([cafeId, tagId])
+  @@index([tagId])
+  @@map("cafe_tags")
+}
+
+model VisitHistory {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  cafeId    Int
+  ipAddress String?  @db.VarChar(100)
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  cafe      Cafe     @relation(fields: [cafeId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([cafeId])
+  @@map("visit_history")
+}
