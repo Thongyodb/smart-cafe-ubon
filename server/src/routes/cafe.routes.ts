@@ -7,6 +7,7 @@ router.get("/", cafeController.getCafes);
 router.get("/top-rated", cafeController.getTopRatedCafes);
 router.get("/popular", cafeController.getPopularCafes);
 router.get("/random", cafeController.getRandomCafe);
+router.get("/nearby", cafeController.getNearbyCafes);
 router.get("/:id", cafeController.getCafeById);
 
 export default router;

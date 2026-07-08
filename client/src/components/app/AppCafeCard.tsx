@@ -79,6 +79,9 @@ function AppCafeCard({ cafe, compact = false, showFavorite = true }: Props) {
 
         <small>
           ฿{cafe.priceMin ?? "-"} - ฿{cafe.priceMax ?? "-"}
+          {cafe.distanceKm !== undefined && (
+            <span className="distance-text"> · {cafe.distanceKm} km</span>
+         )}
         </small>
       </div>
     </Link>

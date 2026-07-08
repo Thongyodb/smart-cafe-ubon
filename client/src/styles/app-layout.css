@@ -913,3 +913,22 @@
   color: var(--app-muted);
   font-weight: 700;
 }
+
+.distance-text {
+  color: var(--app-sage);
+  font-weight: 950;
+}
+.nearby-status {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--app-coffee);
+  font-weight: 900;
+  box-shadow: 0 12px 30px rgba(44, 34, 28, 0.08);
+}
+
+.quick-actions button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}

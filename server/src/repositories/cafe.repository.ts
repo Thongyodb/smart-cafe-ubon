@@ -96,6 +96,13 @@ export const cafeRepository = {
       include: {
         category: true,
         district: true,
+        images: true,
+        photoSpots: true,
+        cafeTags: {
+          include: {
+            tag: true,
+          },
+        },
       },
       orderBy: [
         {
@@ -117,11 +124,37 @@ export const cafeRepository = {
       include: {
         category: true,
         district: true,
+        images: true,
+        photoSpots: true,
+        cafeTags: {
+          include: {
+            tag: true,
+          },
+        },
       },
       orderBy: {
         totalViews: "desc",
       },
       take: 10,
+    });
+  },
+
+  findActiveForNearby: async () => {
+    return prisma.cafe.findMany({
+      where: {
+        isActive: true,
+      },
+      include: {
+        category: true,
+        district: true,
+        images: true,
+        photoSpots: true,
+        cafeTags: {
+          include: {
+            tag: true,
+          },
+        },
+      },
     });
   },
 
@@ -133,6 +166,13 @@ export const cafeRepository = {
       include: {
         category: true,
         district: true,
+        images: true,
+        photoSpots: true,
+        cafeTags: {
+          include: {
+            tag: true,
+          },
+        },
       },
     });
 

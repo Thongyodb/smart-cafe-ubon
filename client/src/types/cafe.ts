@@ -70,6 +70,8 @@ export type Cafe = {
   photoSpots?: PhotoSpot[];
   cafeTags?: CafeTag[];
   reviews?: Review[];
+
+  distanceKm?: number;
 };
 
 export type CafeListResponse = {

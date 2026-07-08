@@ -99,6 +99,34 @@ export const cafeController = {
     }
   },
 
+  getNearbyCafes: async (req: Request, res: Response) => {
+    try {
+      const lat = Number(req.query.lat);
+      const lng = Number(req.query.lng);
+      const radiusKm = req.query.radiusKm ? Number(req.query.radiusKm) : 20;
+
+      if (Number.isNaN(lat) || Number.isNaN(lng)) {
+        return res.status(400).json({
+          success: false,
+          message: "Latitude and longitude are required",
+        });
+      }
+
+      const cafes = await cafeService.getNearbyCafes(lat, lng, radiusKm);
+
+      res.json({
+        success: true,
+        count: cafes.length,
+        data: cafes,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: "Failed to get nearby cafes",
+      });
+    }
+  },
+
   getRandomCafe: async (_req: Request, res: Response) => {
     try {
       const cafe = await cafeService.getRandomCafe();

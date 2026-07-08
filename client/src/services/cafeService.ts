@@ -22,23 +22,35 @@ export const cafeService = {
     return response.data;
   },
 
+  getNearbyCafes: async (lat: number, lng: number, radiusKm = 20) => {
+    const response = await axiosClient.get<CafeListResponse>("/cafes/nearby", {
+      params: {
+        lat,
+        lng,
+        radiusKm,
+      },
+    });
+
+    return response.data;
+  },
+
   getCafeById: async (id: number) => {
     const response = await axiosClient.get<CafeDetailResponse>(`/cafes/${id}`);
     return response.data;
   },
 
   getTopRated: async () => {
-    const response = await axiosClient.get("/cafes/top-rated");
+    const response = await axiosClient.get<CafeListResponse>("/cafes/top-rated");
     return response.data;
   },
 
   getPopular: async () => {
-    const response = await axiosClient.get("/cafes/popular");
+    const response = await axiosClient.get<CafeListResponse>("/cafes/popular");
     return response.data;
   },
 
   getRandom: async () => {
-    const response = await axiosClient.get("/cafes/random");
+    const response = await axiosClient.get<CafeDetailResponse>("/cafes/random");
     return response.data;
   },
 };
