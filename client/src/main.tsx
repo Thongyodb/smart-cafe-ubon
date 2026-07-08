@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "leaflet/dist/leaflet.css";
 import "./styles/global.css";
 import "./styles/app-layout.css";
 import App from "./App";

@@ -9,7 +9,7 @@ import {
   FaStore,
 } from "react-icons/fa";
 import AppCafeCard from "../components/app/AppCafeCard";
-import MapPreview from "../components/app/MapPreview";
+import LeafletMapView from "../components/app/LeafletMapView";
 import { cafeService } from "../services/cafeService";
 import type { Cafe } from "../types/cafe";
 
@@ -21,12 +21,18 @@ function HomePage() {
   const [isNearbyMode, setIsNearbyMode] = useState(false);
   const [nearbyMessage, setNearbyMessage] = useState("");
   const [loadingNearby, setLoadingNearby] = useState(false);
+  const [userLocation, setUserLocation] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
 
   const loadCafes = async () => {
     const result = await cafeService.getCafes({ search });
+
     setCafes(result.data);
     setIsNearbyMode(false);
     setNearbyMessage("");
+    setUserLocation(null);
   };
 
   const handleNearby = () => {
@@ -43,6 +49,8 @@ function HomePage() {
         try {
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
+
+          setUserLocation({ lat, lng });
 
           const result = await cafeService.getNearbyCafes(lat, lng, 20);
 
@@ -98,11 +106,13 @@ function HomePage() {
             }}
           >
             <FaSearch />
+
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="ค้นหาคาเฟ่ หรือโทนสีที่ชอบ..."
             />
+
             <button type="submit">ค้นหา</button>
           </form>
 
@@ -144,18 +154,17 @@ function HomePage() {
           </div>
 
           {nearbyMessage && (
-            <div className="nearby-status">
-              {nearbyMessage}
-            </div>
+            <div className="nearby-status">{nearbyMessage}</div>
           )}
         </div>
 
         <div className="home-map-feature">
-          <MapPreview />
+          <LeafletMapView cafes={cafes} userLocation={userLocation} />
 
           <div className="map-hero-text">
             <h2>Find your perfect shot in Ubon</h2>
             <p>สำรวจคาเฟ่ใกล้ตัวและจุดถ่ายรูปยอดนิยม</p>
+
             <button type="button" onClick={handleNearby}>
               <FaLocationArrow /> สำรวจใกล้ฉัน
             </button>
