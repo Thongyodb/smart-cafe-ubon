@@ -161,14 +161,15 @@ function HomePage() {
         <div className="home-map-feature">
           <LeafletMapView cafes={cafes} userLocation={userLocation} />
 
-          <div className="map-hero-text">
-            <h2>Find your perfect shot in Ubon</h2>
-            <p>สำรวจคาเฟ่ใกล้ตัวและจุดถ่ายรูปยอดนิยม</p>
-
-            <button type="button" onClick={handleNearby}>
-              <FaLocationArrow /> สำรวจใกล้ฉัน
-            </button>
-          </div>
+          <button
+          className="map-nearby-floating-btn"
+          type="button"
+          onClick={handleNearby}
+          disabled={loadingNearby}
+        >
+          <FaLocationArrow />
+          {loadingNearby ? "กำลังค้นหา..." : "สำรวจใกล้ฉัน"}
+        </button>
         </div>
       </section>
 
