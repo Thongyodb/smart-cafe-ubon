@@ -9,15 +9,22 @@ import {
   FaStore,
 } from "react-icons/fa";
 import AppCafeCard from "../components/app/AppCafeCard";
+import CafeFilterBar from "../components/app/CafeFilterBar";
+import type { CafeFilterState } from "../components/app/CafeFilterBar";
 import LeafletMapView from "../components/app/LeafletMapView";
 import { cafeService } from "../services/cafeService";
 import type { Cafe } from "../types/cafe";
+
+const defaultFilters: CafeFilterState = {
+  tagIds: [],
+};
 
 function HomePage() {
   const navigate = useNavigate();
 
   const [cafes, setCafes] = useState<Cafe[]>([]);
   const [search, setSearch] = useState("");
+  const [filters, setFilters] = useState<CafeFilterState>(defaultFilters);
   const [isNearbyMode, setIsNearbyMode] = useState(false);
   const [nearbyMessage, setNearbyMessage] = useState("");
   const [loadingNearby, setLoadingNearby] = useState(false);
@@ -26,8 +33,32 @@ function HomePage() {
     lng: number;
   } | null>(null);
 
-  const loadCafes = async () => {
-    const result = await cafeService.getCafes({ search });
+  const loadCafes = async (nextFilters = filters) => {
+    const result = await cafeService.getCafes({
+      search,
+      categoryId: nextFilters.categoryId,
+      districtId: nextFilters.districtId,
+      tagIds: nextFilters.tagIds,
+    });
+
+    setCafes(result.data);
+    setIsNearbyMode(false);
+    setNearbyMessage("");
+    setUserLocation(null);
+  };
+
+  const handleFilterChange = async (nextFilters: CafeFilterState) => {
+    setFilters(nextFilters);
+    await loadCafes(nextFilters);
+  };
+
+  const handleClearFilters = async () => {
+    setSearch("");
+    setFilters(defaultFilters);
+
+    const result = await cafeService.getCafes({
+      tagIds: [],
+    });
 
     setCafes(result.data);
     setIsNearbyMode(false);
@@ -78,7 +109,7 @@ function HomePage() {
   };
 
   useEffect(() => {
-    loadCafes();
+    loadCafes(defaultFilters);
   }, []);
 
   return (
@@ -116,11 +147,11 @@ function HomePage() {
             <button type="submit">ค้นหา</button>
           </form>
 
-          <div className="filter-chips">
-            <span>Ubon</span>
-            <span>Color Tone: Pastel/Minimal</span>
-            <span>Photo Spot</span>
-          </div>
+          <CafeFilterBar
+            filters={filters}
+            onChange={handleFilterChange}
+            onClear={handleClearFilters}
+          />
 
           <div className="quick-actions">
             <button type="button" onClick={() => navigate("/explore")}>
@@ -162,26 +193,26 @@ function HomePage() {
           <LeafletMapView cafes={cafes} userLocation={userLocation} />
 
           <button
-          className="map-nearby-floating-btn"
-          type="button"
-          onClick={handleNearby}
-          disabled={loadingNearby}
-        >
-          <FaLocationArrow />
-          {loadingNearby ? "กำลังค้นหา..." : "สำรวจใกล้ฉัน"}
-        </button>
+            className="map-nearby-floating-btn"
+            type="button"
+            onClick={handleNearby}
+            disabled={loadingNearby}
+          >
+            <FaLocationArrow />
+            {loadingNearby ? "กำลังค้นหา..." : "สำรวจใกล้ฉัน"}
+          </button>
         </div>
       </section>
 
       <section className="app-section">
         <div className="section-heading">
           <div>
-            <span>{isNearbyMode ? "Nearby Cafes" : "Popular Cafes"}</span>
-            <h2>{isNearbyMode ? "คาเฟ่ใกล้คุณ" : "คาเฟ่ยอดนิยม"}</h2>
+            <span>{isNearbyMode ? "Nearby Cafes" : "Recommended Cafes"}</span>
+            <h2>{isNearbyMode ? "คาเฟ่ใกล้คุณ" : "คาเฟ่ที่แนะนำ"}</h2>
           </div>
 
-          <button type="button" onClick={loadCafes}>
-            {isNearbyMode ? "กลับไปดูทั้งหมด" : "ดูทั้งหมด"}
+          <button type="button" onClick={() => loadCafes()}>
+            {isNearbyMode ? "กลับไปดูทั้งหมด" : "รีเฟรช"}
           </button>
         </div>
 
