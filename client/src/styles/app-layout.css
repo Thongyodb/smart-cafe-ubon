@@ -1076,3 +1076,57 @@
     font-size: 0.86rem;
   }
 }
+.explore-nearby-btn {
+  z-index: 650;
+}
+
+.explore-map-background .leaflet-map-shell {
+  height: 100%;
+  min-height: 700px;
+  border-radius: 0;
+}
+
+.explore-panel {
+  max-height: calc(100vh - 130px);
+  overflow-y: auto;
+}
+
+.explore-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.explore-panel::-webkit-scrollbar-thumb {
+  background: rgba(111, 78, 55, 0.25);
+  border-radius: 999px;
+}
+
+@media (max-width: 768px) {
+  .explore-page {
+    min-height: calc(100vh - 92px);
+  }
+
+  .explore-map-background .leaflet-map-shell {
+    min-height: calc(100vh - 92px);
+  }
+
+  .explore-panel {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 82px;
+    width: auto;
+    min-height: auto;
+    max-height: 48vh;
+    padding: 16px;
+    border-radius: 24px;
+  }
+
+  .explore-header h1 {
+    font-size: 1.45rem;
+  }
+
+  .explore-nearby-btn {
+    right: 18px;
+    bottom: calc(48vh + 104px);
+  }
+}
