@@ -32,14 +32,10 @@ function AdminCafeListPage() {
           <p>ดูรายการคาเฟ่ทั้งหมดในระบบ และเตรียมสำหรับเพิ่ม/แก้ไขข้อมูล</p>
         </div>
 
-        <button
-          className="admin-primary-btn"
-          type="button"
-          onClick={() => alert("เดี๋ยวเราจะทำหน้าเพิ่มคาเฟ่ในขั้นตอนถัดไป")}
-        >
+        <Link className="admin-primary-btn" to="/admin/cafes/create">
           <FaPlus />
-          เพิ่มคาเฟ่
-        </button>
+          เพิ่มคาเฟ่ใหม่
+        </Link>
       </div>
 
       <section className="admin-section-card">

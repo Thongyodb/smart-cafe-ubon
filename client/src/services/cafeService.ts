@@ -8,6 +8,26 @@ export type CafeQueryParams = {
   tagIds?: number[];
 };
 
+export type CreateCafePayload = {
+  name: string;
+  description?: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  openTime: string;
+  closeTime: string;
+  phone?: string;
+  facebookUrl?: string;
+  instagramUrl?: string;
+  websiteUrl?: string;
+  coverImageUrl?: string;
+  priceMin?: number | null;
+  priceMax?: number | null;
+  categoryId: number;
+  districtId: number;
+  tagIds: number[];
+};
+
 export const cafeService = {
   getCafes: async (params?: CafeQueryParams) => {
     const response = await axiosClient.get<CafeListResponse>("/cafes", {
@@ -19,6 +39,11 @@ export const cafeService = {
       },
     });
 
+    return response.data;
+  },
+
+  createCafe: async (data: CreateCafePayload) => {
+    const response = await axiosClient.post<CafeDetailResponse>("/cafes", data);
     return response.data;
   },
 

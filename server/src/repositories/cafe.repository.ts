@@ -8,6 +8,27 @@ type CafeFilters = {
   limit?: number;
 };
 
+type CreateCafeData = {
+  name: string;
+  slug: string;
+  description?: string | null;
+  address: string;
+  latitude: number;
+  longitude: number;
+  openTime: string;
+  closeTime: string;
+  phone?: string | null;
+  facebookUrl?: string | null;
+  instagramUrl?: string | null;
+  websiteUrl?: string | null;
+  coverImageUrl?: string | null;
+  priceMin?: number | null;
+  priceMax?: number | null;
+  categoryId: number;
+  districtId: number;
+  tagIds?: number[];
+};
+
 export const cafeRepository = {
   findAll: async (filters: CafeFilters) => {
     const where = {
@@ -143,6 +164,56 @@ export const cafeRepository = {
     return prisma.cafe.findMany({
       where: {
         isActive: true,
+      },
+      include: {
+        category: true,
+        district: true,
+        images: true,
+        photoSpots: true,
+        cafeTags: {
+          include: {
+            tag: true,
+          },
+        },
+      },
+    });
+  },
+
+  create: async (data: CreateCafeData) => {
+    const cafe = await prisma.cafe.create({
+      data: {
+        name: data.name,
+        slug: data.slug,
+        description: data.description,
+        address: data.address,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        openTime: data.openTime,
+        closeTime: data.closeTime,
+        phone: data.phone,
+        facebookUrl: data.facebookUrl,
+        instagramUrl: data.instagramUrl,
+        websiteUrl: data.websiteUrl,
+        coverImageUrl: data.coverImageUrl,
+        priceMin: data.priceMin,
+        priceMax: data.priceMax,
+        categoryId: data.categoryId,
+        districtId: data.districtId,
+      },
+    });
+
+    if (data.tagIds && data.tagIds.length > 0) {
+      await prisma.cafeTag.createMany({
+        data: data.tagIds.map((tagId) => ({
+          cafeId: cafe.id,
+          tagId,
+        })),
+      });
+    }
+
+    return prisma.cafe.findUnique({
+      where: {
+        id: cafe.id,
       },
       include: {
         category: true,

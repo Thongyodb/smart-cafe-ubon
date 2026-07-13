@@ -42,6 +42,81 @@ export const cafeController = {
     }
   },
 
+  createCafe: async (req: Request, res: Response) => {
+    try {
+      const {
+        name,
+        description,
+        address,
+        latitude,
+        longitude,
+        openTime,
+        closeTime,
+        phone,
+        facebookUrl,
+        instagramUrl,
+        websiteUrl,
+        coverImageUrl,
+        priceMin,
+        priceMax,
+        categoryId,
+        districtId,
+        tagIds,
+      } = req.body;
+
+      if (!name || !address || !openTime || !closeTime || !categoryId || !districtId) {
+        return res.status(400).json({
+          success: false,
+          message: "Required fields are missing",
+        });
+      }
+
+      const parsedLatitude = Number(latitude);
+      const parsedLongitude = Number(longitude);
+
+      if (Number.isNaN(parsedLatitude) || Number.isNaN(parsedLongitude)) {
+        return res.status(400).json({
+          success: false,
+          message: "Latitude and longitude must be valid numbers",
+        });
+      }
+
+      const cafe = await cafeService.createCafe({
+        name,
+        description,
+        address,
+        latitude: parsedLatitude,
+        longitude: parsedLongitude,
+        openTime,
+        closeTime,
+        phone,
+        facebookUrl,
+        instagramUrl,
+        websiteUrl,
+        coverImageUrl,
+        priceMin: priceMin ? Number(priceMin) : null,
+        priceMax: priceMax ? Number(priceMax) : null,
+        categoryId: Number(categoryId),
+        districtId: Number(districtId),
+        tagIds: Array.isArray(tagIds) ? tagIds.map((id) => Number(id)) : [],
+      });
+
+      res.status(201).json({
+        success: true,
+        message: "Cafe created successfully",
+        data: cafe,
+      });
+    } catch (error) {
+      console.error("CREATE CAFE ERROR:", error);
+
+      res.status(500).json({
+        success: false,
+        message: "Failed to create cafe",
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  },
+
   getCafeById: async (req: Request, res: Response) => {
     try {
       const id = Number(req.params.id);

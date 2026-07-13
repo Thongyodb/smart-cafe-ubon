@@ -8,6 +8,7 @@ import ProfilePage from "./pages/ProfilePage";
 import CafeDetailPage from "./pages/CafeDetailPage";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import AdminCafeListPage from "./pages/admin/AdminCafeListPage";
+import AdminCafeFormPage from "./pages/admin/AdminCafeFormPage";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboardPage />} />
           <Route path="cafes" element={<AdminCafeListPage />} />
+          <Route path="cafes/create" element={<AdminCafeFormPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

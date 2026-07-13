@@ -8,6 +8,26 @@ type GetCafesParams = {
   limit?: number;
 };
 
+type CreateCafeParams = {
+  name: string;
+  description?: string | null;
+  address: string;
+  latitude: number;
+  longitude: number;
+  openTime: string;
+  closeTime: string;
+  phone?: string | null;
+  facebookUrl?: string | null;
+  instagramUrl?: string | null;
+  websiteUrl?: string | null;
+  coverImageUrl?: string | null;
+  priceMin?: number | null;
+  priceMax?: number | null;
+  categoryId: number;
+  districtId: number;
+  tagIds?: number[];
+};
+
 const calculateDistanceKm = (
   userLat: number,
   userLng: number,
@@ -32,6 +52,14 @@ const calculateDistanceKm = (
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
   return earthRadiusKm * c;
+};
+
+const createSlug = (name: string) => {
+  return `${name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9ก-๙\s-]/gi, "")
+    .replace(/\s+/g, "-")}-${Date.now()}`;
 };
 
 export const cafeService = {
@@ -76,6 +104,15 @@ export const cafeService = {
       })
       .filter((cafe) => cafe.distanceKm <= radiusKm)
       .sort((a, b) => a.distanceKm - b.distanceKm);
+  },
+
+  createCafe: async (params: CreateCafeParams) => {
+    const slug = createSlug(params.name);
+
+    return cafeRepository.create({
+      ...params,
+      slug,
+    });
   },
 
   getRandomCafe: async () => {
