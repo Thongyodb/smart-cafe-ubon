@@ -1453,3 +1453,9 @@
     grid-template-columns: 1fr;
   }
 }
+.admin-empty-row {
+  padding: 28px;
+  text-align: center;
+  color: var(--app-muted);
+  font-weight: 900;
+}

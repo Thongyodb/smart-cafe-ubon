@@ -64,7 +64,14 @@ export const cafeController = {
         tagIds,
       } = req.body;
 
-      if (!name || !address || !openTime || !closeTime || !categoryId || !districtId) {
+      if (
+        !name ||
+        !address ||
+        !openTime ||
+        !closeTime ||
+        !categoryId ||
+        !districtId
+      ) {
         return res.status(400).json({
           success: false,
           message: "Required fields are missing",
@@ -112,6 +119,125 @@ export const cafeController = {
       res.status(500).json({
         success: false,
         message: "Failed to create cafe",
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  },
+
+  updateCafe: async (req: Request, res: Response) => {
+    try {
+      const id = Number(req.params.id);
+
+      if (Number.isNaN(id)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid cafe id",
+        });
+      }
+
+      const {
+        name,
+        description,
+        address,
+        latitude,
+        longitude,
+        openTime,
+        closeTime,
+        phone,
+        facebookUrl,
+        instagramUrl,
+        websiteUrl,
+        coverImageUrl,
+        priceMin,
+        priceMax,
+        categoryId,
+        districtId,
+        tagIds,
+      } = req.body;
+
+      if (
+        !name ||
+        !address ||
+        !openTime ||
+        !closeTime ||
+        !categoryId ||
+        !districtId
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "Required fields are missing",
+        });
+      }
+
+      const parsedLatitude = Number(latitude);
+      const parsedLongitude = Number(longitude);
+
+      if (Number.isNaN(parsedLatitude) || Number.isNaN(parsedLongitude)) {
+        return res.status(400).json({
+          success: false,
+          message: "Latitude and longitude must be valid numbers",
+        });
+      }
+
+      const cafe = await cafeService.updateCafe(id, {
+        name,
+        description,
+        address,
+        latitude: parsedLatitude,
+        longitude: parsedLongitude,
+        openTime,
+        closeTime,
+        phone,
+        facebookUrl,
+        instagramUrl,
+        websiteUrl,
+        coverImageUrl,
+        priceMin: priceMin ? Number(priceMin) : null,
+        priceMax: priceMax ? Number(priceMax) : null,
+        categoryId: Number(categoryId),
+        districtId: Number(districtId),
+        tagIds: Array.isArray(tagIds) ? tagIds.map((tagId) => Number(tagId)) : [],
+      });
+
+      res.json({
+        success: true,
+        message: "Cafe updated successfully",
+        data: cafe,
+      });
+    } catch (error) {
+      console.error("UPDATE CAFE ERROR:", error);
+
+      res.status(500).json({
+        success: false,
+        message: "Failed to update cafe",
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  },
+
+  deactivateCafe: async (req: Request, res: Response) => {
+    try {
+      const id = Number(req.params.id);
+
+      if (Number.isNaN(id)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid cafe id",
+        });
+      }
+
+      await cafeService.deactivateCafe(id);
+
+      res.json({
+        success: true,
+        message: "Cafe deactivated successfully",
+      });
+    } catch (error) {
+      console.error("DEACTIVATE CAFE ERROR:", error);
+
+      res.status(500).json({
+        success: false,
+        message: "Failed to deactivate cafe",
         error: error instanceof Error ? error.message : String(error),
       });
     }

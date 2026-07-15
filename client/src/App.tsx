@@ -27,6 +27,7 @@ function App() {
           <Route index element={<AdminDashboardPage />} />
           <Route path="cafes" element={<AdminCafeListPage />} />
           <Route path="cafes/create" element={<AdminCafeFormPage />} />
+          <Route path="cafes/:id/edit" element={<AdminCafeFormPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

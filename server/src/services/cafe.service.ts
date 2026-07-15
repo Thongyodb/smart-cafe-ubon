@@ -115,6 +115,26 @@ export const cafeService = {
     });
   },
 
+  updateCafe: async (id: number, params: CreateCafeParams) => {
+    const cafe = await cafeRepository.findById(id);
+
+    if (!cafe) {
+      throw new Error("Cafe not found");
+    }
+
+    return cafeRepository.update(id, params);
+  },
+
+  deactivateCafe: async (id: number) => {
+    const cafe = await cafeRepository.findById(id);
+
+    if (!cafe) {
+      throw new Error("Cafe not found");
+    }
+
+    return cafeRepository.deactivate(id);
+  },
+
   getRandomCafe: async () => {
     const cafe = await cafeRepository.findRandom();
 

@@ -5,6 +5,8 @@ const router = Router();
 
 router.get("/", cafeController.getCafes);
 router.post("/", cafeController.createCafe);
+router.put("/:id", cafeController.updateCafe);
+router.delete("/:id", cafeController.deactivateCafe);
 
 router.get("/top-rated", cafeController.getTopRatedCafes);
 router.get("/popular", cafeController.getPopularCafes);

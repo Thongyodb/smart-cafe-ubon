@@ -9,12 +9,24 @@ function AdminCafeListPage() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    const loadCafes = async () => {
-      const result = await cafeService.getCafes({});
-      setCafes(result.data);
-    };
+    let isMounted = true;
 
-    loadCafes();
+    cafeService
+      .getCafes({})
+      .then((result) => {
+        if (isMounted) {
+          setCafes(result.data);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          alert("โหลดข้อมูลคาเฟ่ไม่สำเร็จ");
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const filteredCafes = useMemo(() => {
@@ -23,13 +35,31 @@ function AdminCafeListPage() {
     );
   }, [cafes, search]);
 
+  const handleDeleteCafe = async (cafe: Cafe) => {
+    const confirmed = confirm(
+      `ต้องการปิดใช้งานร้าน "${cafe.name}" ใช่ไหม?\nร้านนี้จะไม่แสดงบนหน้าเว็บ แต่ข้อมูลยังอยู่ในฐานข้อมูล`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await cafeService.deleteCafe(cafe.id);
+      setCafes((current) => current.filter((item) => item.id !== cafe.id));
+      alert("ปิดใช้งานคาเฟ่สำเร็จ");
+    } catch {
+      alert("ปิดใช้งานคาเฟ่ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
+    }
+  };
+
   return (
     <div className="admin-page">
       <div className="admin-page-header admin-page-header-row">
         <div>
           <span className="admin-eyebrow">Cafe Management</span>
           <h1>จัดการคาเฟ่</h1>
-          <p>ดูรายการคาเฟ่ทั้งหมดในระบบ และเตรียมสำหรับเพิ่ม/แก้ไขข้อมูล</p>
+          <p>ดูรายการคาเฟ่ทั้งหมดในระบบ เพิ่ม แก้ไข หรือปิดใช้งานคาเฟ่</p>
         </div>
 
         <Link className="admin-primary-btn" to="/admin/cafes/create">
@@ -90,22 +120,17 @@ function AdminCafeListPage() {
                         <FaEye />
                       </Link>
 
-                      <button
+                      <Link
+                        to={`/admin/cafes/${cafe.id}/edit`}
                         className="admin-icon-btn"
-                        type="button"
-                        onClick={() =>
-                          alert("เดี๋ยวเราจะทำหน้าแก้ไขคาเฟ่ต่อไป")
-                        }
                       >
                         <FaEdit />
-                      </button>
+                      </Link>
 
                       <button
                         className="admin-icon-btn danger"
                         type="button"
-                        onClick={() =>
-                          alert("เดี๋ยวเราจะทำระบบลบ/ปิดใช้งานต่อไป")
-                        }
+                        onClick={() => handleDeleteCafe(cafe)}
                       >
                         <FaTrash />
                       </button>
@@ -113,6 +138,16 @@ function AdminCafeListPage() {
                   </td>
                 </tr>
               ))}
+
+              {filteredCafes.length === 0 && (
+                <tr>
+                  <td colSpan={6}>
+                    <div className="admin-empty-row">
+                      ไม่พบข้อมูลคาเฟ่ที่ตรงกับการค้นหา
+                    </div>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

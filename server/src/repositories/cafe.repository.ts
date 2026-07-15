@@ -29,6 +29,8 @@ type CreateCafeData = {
   tagIds?: number[];
 };
 
+type UpdateCafeData = Omit<CreateCafeData, "slug">;
+
 export const cafeRepository = {
   findAll: async (filters: CafeFilters) => {
     const where = {
@@ -225,6 +227,75 @@ export const cafeRepository = {
             tag: true,
           },
         },
+      },
+    });
+  },
+
+  update: async (id: number, data: UpdateCafeData) => {
+    await prisma.cafe.update({
+      where: {
+        id,
+      },
+      data: {
+        name: data.name,
+        description: data.description,
+        address: data.address,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        openTime: data.openTime,
+        closeTime: data.closeTime,
+        phone: data.phone,
+        facebookUrl: data.facebookUrl,
+        instagramUrl: data.instagramUrl,
+        websiteUrl: data.websiteUrl,
+        coverImageUrl: data.coverImageUrl,
+        priceMin: data.priceMin,
+        priceMax: data.priceMax,
+        categoryId: data.categoryId,
+        districtId: data.districtId,
+      },
+    });
+
+    await prisma.cafeTag.deleteMany({
+      where: {
+        cafeId: id,
+      },
+    });
+
+    if (data.tagIds && data.tagIds.length > 0) {
+      await prisma.cafeTag.createMany({
+        data: data.tagIds.map((tagId) => ({
+          cafeId: id,
+          tagId,
+        })),
+      });
+    }
+
+    return prisma.cafe.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        category: true,
+        district: true,
+        images: true,
+        photoSpots: true,
+        cafeTags: {
+          include: {
+            tag: true,
+          },
+        },
+      },
+    });
+  },
+
+  deactivate: async (id: number) => {
+    return prisma.cafe.update({
+      where: {
+        id,
+      },
+      data: {
+        isActive: false,
       },
     });
   },

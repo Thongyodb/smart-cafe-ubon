@@ -70,6 +70,9 @@ export type Cafe = {
   photoSpots?: PhotoSpot[];
   cafeTags?: CafeTag[];
   reviews?: Review[];
+  facebookUrl?: string | null;
+  instagramUrl?: string | null;
+  websiteUrl?: string | null;
 
   distanceKm?: number;
 };

@@ -47,6 +47,20 @@ export const cafeService = {
     return response.data;
   },
 
+  updateCafe: async (id: number, data: CreateCafePayload) => {
+    const response = await axiosClient.put<CafeDetailResponse>(
+      `/cafes/${id}`,
+      data
+    );
+
+    return response.data;
+  },
+
+  deleteCafe: async (id: number) => {
+    const response = await axiosClient.delete(`/cafes/${id}`);
+    return response.data;
+  },
+
   getNearbyCafes: async (lat: number, lng: number, radiusKm = 20) => {
     const response = await axiosClient.get<CafeListResponse>("/cafes/nearby", {
       params: {

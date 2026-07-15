@@ -1,19 +1,24 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { FaSave, FaTimes } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { cafeService } from "../../services/cafeService";
 import { metaService } from "../../services/metaService";
 import type { Category, District, Tag } from "../../types/cafe";
 
 function AdminCafeFormPage() {
   const navigate = useNavigate();
+  const { id } = useParams();
+
+  const editCafeId = id ? Number(id) : null;
+  const isEditMode = Boolean(editCafeId);
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [districts, setDistricts] = useState<District[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [selectedTagIds, setSelectedTagIds] = useState<number[]>([]);
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(isEditMode);
 
   const [form, setForm] = useState({
     name: "",
@@ -35,16 +40,51 @@ function AdminCafeFormPage() {
   });
 
   useEffect(() => {
-    const loadFilters = async () => {
-      const result = await metaService.getFilters();
+    const loadData = async () => {
+      try {
+        const filterResult = await metaService.getFilters();
 
-      setCategories(result.data.categories);
-      setDistricts(result.data.districts);
-      setTags(result.data.tags);
+        setCategories(filterResult.data.categories);
+        setDistricts(filterResult.data.districts);
+        setTags(filterResult.data.tags);
+
+        if (isEditMode && editCafeId) {
+          const cafeResult = await cafeService.getCafeById(editCafeId);
+          const cafe = cafeResult.data;
+
+          setForm({
+            name: cafe.name ?? "",
+            description: cafe.description ?? "",
+            address: cafe.address ?? "",
+            latitude: String(cafe.latitude ?? "15.2287"),
+            longitude: String(cafe.longitude ?? "104.8564"),
+            openTime: cafe.openTime ?? "09:00",
+            closeTime: cafe.closeTime ?? "18:00",
+            phone: cafe.phone ?? "",
+            facebookUrl: cafe.facebookUrl ?? "",
+            instagramUrl: cafe.instagramUrl ?? "",
+            websiteUrl: cafe.websiteUrl ?? "",
+            coverImageUrl: cafe.coverImageUrl ?? "",
+            priceMin: cafe.priceMin ? String(cafe.priceMin) : "",
+            priceMax: cafe.priceMax ? String(cafe.priceMax) : "",
+            categoryId: cafe.category?.id ? String(cafe.category.id) : "",
+            districtId: cafe.district?.id ? String(cafe.district.id) : "",
+          });
+
+          setSelectedTagIds(
+            cafe.cafeTags?.map((cafeTag) => cafeTag.tag.id) ?? []
+          );
+        }
+      } catch {
+        alert("โหลดข้อมูลไม่สำเร็จ");
+        navigate("/admin/cafes");
+      } finally {
+        setLoading(false);
+      }
     };
 
-    loadFilters();
-  }, []);
+    loadData();
+  }, [editCafeId, isEditMode, navigate]);
 
   const updateField = (field: keyof typeof form, value: string) => {
     setForm((current) => ({
@@ -56,7 +96,7 @@ function AdminCafeFormPage() {
   const toggleTag = (tagId: number) => {
     setSelectedTagIds((current) =>
       current.includes(tagId)
-        ? current.filter((id) => id !== tagId)
+        ? current.filter((selectedId) => selectedId !== tagId)
         : [...current, tagId]
     );
   };
@@ -74,45 +114,74 @@ function AdminCafeFormPage() {
       return;
     }
 
+    const payload = {
+      name: form.name,
+      description: form.description,
+      address: form.address,
+      latitude: Number(form.latitude),
+      longitude: Number(form.longitude),
+      openTime: form.openTime,
+      closeTime: form.closeTime,
+      phone: form.phone,
+      facebookUrl: form.facebookUrl,
+      instagramUrl: form.instagramUrl,
+      websiteUrl: form.websiteUrl,
+      coverImageUrl: form.coverImageUrl,
+      priceMin: form.priceMin ? Number(form.priceMin) : null,
+      priceMax: form.priceMax ? Number(form.priceMax) : null,
+      categoryId: Number(form.categoryId),
+      districtId: Number(form.districtId),
+      tagIds: selectedTagIds,
+    };
+
     setSaving(true);
 
     try {
-      await cafeService.createCafe({
-        name: form.name,
-        description: form.description,
-        address: form.address,
-        latitude: Number(form.latitude),
-        longitude: Number(form.longitude),
-        openTime: form.openTime,
-        closeTime: form.closeTime,
-        phone: form.phone,
-        facebookUrl: form.facebookUrl,
-        instagramUrl: form.instagramUrl,
-        websiteUrl: form.websiteUrl,
-        coverImageUrl: form.coverImageUrl,
-        priceMin: form.priceMin ? Number(form.priceMin) : null,
-        priceMax: form.priceMax ? Number(form.priceMax) : null,
-        categoryId: Number(form.categoryId),
-        districtId: Number(form.districtId),
-        tagIds: selectedTagIds,
-      });
+      if (isEditMode && editCafeId) {
+        await cafeService.updateCafe(editCafeId, payload);
+        alert("แก้ไขคาเฟ่สำเร็จ");
+      } else {
+        await cafeService.createCafe(payload);
+        alert("เพิ่มคาเฟ่สำเร็จ");
+      }
 
-      alert("เพิ่มคาเฟ่สำเร็จ");
       navigate("/admin/cafes");
     } catch {
-      alert("เพิ่มคาเฟ่ไม่สำเร็จ กรุณาตรวจสอบข้อมูลอีกครั้ง");
+      alert(
+        isEditMode
+          ? "แก้ไขคาเฟ่ไม่สำเร็จ กรุณาตรวจสอบข้อมูลอีกครั้ง"
+          : "เพิ่มคาเฟ่ไม่สำเร็จ กรุณาตรวจสอบข้อมูลอีกครั้ง"
+      );
     } finally {
       setSaving(false);
     }
   };
 
+  if (loading) {
+    return (
+      <div className="admin-page">
+        <div className="admin-section-card">
+          <p>กำลังโหลดข้อมูลคาเฟ่...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="admin-page">
       <div className="admin-page-header admin-page-header-row">
         <div>
-          <span className="admin-eyebrow">Create Cafe</span>
-          <h1>เพิ่มคาเฟ่ใหม่</h1>
-          <p>กรอกข้อมูลร้าน พิกัด เวลาเปิดปิด รูปภาพ และแท็กสำหรับแสดงบนหน้าเว็บ</p>
+          <span className="admin-eyebrow">
+            {isEditMode ? "Edit Cafe" : "Create Cafe"}
+          </span>
+
+          <h1>{isEditMode ? "แก้ไขข้อมูลคาเฟ่" : "เพิ่มคาเฟ่ใหม่"}</h1>
+
+          <p>
+            {isEditMode
+              ? "แก้ไขข้อมูลร้าน พิกัด เวลาเปิดปิด รูปภาพ และแท็กของคาเฟ่"
+              : "กรอกข้อมูลร้าน พิกัด เวลาเปิดปิด รูปภาพ และแท็กสำหรับแสดงบนหน้าเว็บ"}
+          </p>
         </div>
 
         <button
@@ -149,7 +218,9 @@ function AdminCafeFormPage() {
             รายละเอียดร้าน
             <textarea
               value={form.description}
-              onChange={(event) => updateField("description", event.target.value)}
+              onChange={(event) =>
+                updateField("description", event.target.value)
+              }
               placeholder="คำอธิบายบรรยากาศร้าน จุดเด่น หรือสไตล์ร้าน"
             />
           </label>
@@ -221,7 +292,9 @@ function AdminCafeFormPage() {
             ประเภท
             <select
               value={form.categoryId}
-              onChange={(event) => updateField("categoryId", event.target.value)}
+              onChange={(event) =>
+                updateField("categoryId", event.target.value)
+              }
             >
               <option value="">เลือกประเภท</option>
               {categories.map((category) => (
@@ -236,7 +309,9 @@ function AdminCafeFormPage() {
             อำเภอ
             <select
               value={form.districtId}
-              onChange={(event) => updateField("districtId", event.target.value)}
+              onChange={(event) =>
+                updateField("districtId", event.target.value)
+              }
             >
               <option value="">เลือกอำเภอ</option>
               {districts.map((district) => (
@@ -251,7 +326,9 @@ function AdminCafeFormPage() {
             รูปหน้าปก URL
             <input
               value={form.coverImageUrl}
-              onChange={(event) => updateField("coverImageUrl", event.target.value)}
+              onChange={(event) =>
+                updateField("coverImageUrl", event.target.value)
+              }
               placeholder="https://images.unsplash.com/..."
             />
           </label>
@@ -260,7 +337,9 @@ function AdminCafeFormPage() {
             Facebook URL
             <input
               value={form.facebookUrl}
-              onChange={(event) => updateField("facebookUrl", event.target.value)}
+              onChange={(event) =>
+                updateField("facebookUrl", event.target.value)
+              }
               placeholder="https://facebook.com/..."
             />
           </label>
@@ -269,7 +348,9 @@ function AdminCafeFormPage() {
             Instagram URL
             <input
               value={form.instagramUrl}
-              onChange={(event) => updateField("instagramUrl", event.target.value)}
+              onChange={(event) =>
+                updateField("instagramUrl", event.target.value)
+              }
               placeholder="https://instagram.com/..."
             />
           </label>
@@ -308,7 +389,11 @@ function AdminCafeFormPage() {
         <div className="admin-form-actions">
           <button className="admin-primary-btn" type="submit" disabled={saving}>
             <FaSave />
-            {saving ? "กำลังบันทึก..." : "บันทึกคาเฟ่"}
+            {saving
+              ? "กำลังบันทึก..."
+              : isEditMode
+                ? "บันทึกการแก้ไข"
+                : "บันทึกคาเฟ่"}
           </button>
         </div>
       </form>
