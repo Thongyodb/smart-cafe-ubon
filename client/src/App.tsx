@@ -9,6 +9,9 @@ import CafeDetailPage from "./pages/CafeDetailPage";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import AdminCafeListPage from "./pages/admin/AdminCafeListPage";
 import AdminCafeFormPage from "./pages/admin/AdminCafeFormPage";
+import AuthPage from "./pages/AuthPage";
+import ProtectedUserRoute from "./routes/ProtectedUserRoute";
+import ProtectedAdminRoute from "./routes/ProtectedAdminRoute";
 
 function App() {
   return (
@@ -16,18 +19,26 @@ function App() {
       <Routes>
         <Route element={<AppLayout />}>
           <Route path="/" element={<HomePage />} />
-          <Route path="/explore" element={<ExplorePage />} />
-          <Route path="/favorites" element={<FavoritesPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/login" element={<AuthPage />} />
+
+          <Route element={<ProtectedUserRoute />}>
+            <Route path="/explore" element={<ExplorePage />} />
+            <Route path="/favorites" element={<FavoritesPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+          </Route>
         </Route>
 
-        <Route path="/cafes/:id" element={<CafeDetailPage />} />
+        <Route element={<ProtectedUserRoute />}>
+          <Route path="/cafes/:id" element={<CafeDetailPage />} />
+        </Route>
 
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminDashboardPage />} />
-          <Route path="cafes" element={<AdminCafeListPage />} />
-          <Route path="cafes/create" element={<AdminCafeFormPage />} />
-          <Route path="cafes/:id/edit" element={<AdminCafeFormPage />} />
+        <Route element={<ProtectedAdminRoute />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboardPage />} />
+            <Route path="cafes" element={<AdminCafeListPage />} />
+            <Route path="cafes/create" element={<AdminCafeFormPage />} />
+            <Route path="cafes/:id/edit" element={<AdminCafeFormPage />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

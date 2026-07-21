@@ -1,56 +1,70 @@
-import { NavLink, Outlet, Link } from "react-router-dom";
-import {
-  FaChartPie,
-  FaCoffee,
-  FaHome,
-  FaMapMarkerAlt,
-  FaTags,
-} from "react-icons/fa";
+import { FaChartLine, FaMapMarkedAlt, FaSignOutAlt, FaStore, FaTags } from "react-icons/fa";
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { authService } from "../services/authService";
+import { authStorage } from "../utils/authStorage";
 
 function AdminLayout() {
+  const navigate = useNavigate();
+  const adminUser = authStorage.getUser();
+
+  const handleLogout = () => {
+    authService.logout();
+    navigate("/login");
+  };
+
   return (
     <div className="admin-layout">
       <aside className="admin-sidebar">
         <Link to="/admin" className="admin-brand">
-          <div className="admin-brand-icon">
-            <FaCoffee />
-          </div>
-
+          <span className="admin-brand-icon">
+            <FaStore />
+          </span>
           <div>
             <strong>Smart Cafe</strong>
             <small>Admin Panel</small>
           </div>
         </Link>
 
-        <nav className="admin-menu">
+        <nav className="admin-nav">
           <NavLink to="/admin" end>
-            <FaChartPie />
+            <FaChartLine />
             Dashboard
           </NavLink>
 
           <NavLink to="/admin/cafes">
-            <FaCoffee />
+            <FaStore />
             จัดการคาเฟ่
           </NavLink>
 
           <NavLink to="/admin/spots">
-            <FaMapMarkerAlt />
+            <FaMapMarkedAlt />
             จุดถ่ายรูป
           </NavLink>
 
           <NavLink to="/admin/tags">
             <FaTags />
-            หมวดหมู่ / Tags
+            หมวดหมู่/แท็ก
           </NavLink>
         </nav>
 
-        <Link to="/" className="back-to-site">
-          <FaHome />
-          กลับหน้าเว็บ
-        </Link>
+        <div className="admin-sidebar-footer">
+          <div className="admin-user-box">
+            <strong>{adminUser?.fullName ?? "Admin"}</strong>
+            <span>{adminUser?.email ?? "admin@smartcafeubon.com"}</span>
+          </div>
+
+          <button className="admin-logout-btn" type="button" onClick={handleLogout}>
+            <FaSignOutAlt />
+            ออกจากระบบ
+          </button>
+
+          <Link to="/" className="admin-back-link">
+            กลับหน้าเว็บไซต์
+          </Link>
+        </div>
       </aside>
 
-      <main className="admin-content">
+      <main className="admin-main">
         <Outlet />
       </main>
     </div>

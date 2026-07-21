@@ -26,23 +26,33 @@ enum TagType {
   TIME
   FEATURE
 }
+enum AuthProvider {
+  LOCAL
+  GOOGLE
+  FACEBOOK
+  INSTAGRAM
+}
 
 model User {
-  id           Int        @id @default(autoincrement())
-  fullName     String     @db.VarChar(150)
-  email        String     @unique @db.VarChar(150)
-  password     String     @db.VarChar(255)
-  phone        String?    @db.VarChar(20)
-  avatarUrl    String?    @db.VarChar(255)
-  role         UserRole   @default(USER)
-  status       UserStatus @default(ACTIVE)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  id           Int          @id @default(autoincrement())
+  username     String?      @unique @db.VarChar(100)
+  fullName     String       @db.VarChar(150)
+  email        String?      @unique @db.VarChar(150)
+  password     String?      @db.VarChar(255)
+  phone        String?      @db.VarChar(20)
+  avatarUrl    String?      @db.VarChar(255)
+  provider     AuthProvider @default(LOCAL)
+  providerId   String?      @db.VarChar(255)
+  role         UserRole     @default(USER)
+  status       UserStatus   @default(ACTIVE)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
   reviews      Review[]
   favorites    Favorite[]
   visitHistory VisitHistory[]
 
+  @@unique([provider, providerId])
   @@map("users")
 }
 

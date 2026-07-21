@@ -17,8 +17,8 @@
 
 import * as runtime from "@prisma/client/runtime/index-browser"
 
-export type * from '../models.js'
-export type * from './prismaNamespace.js'
+export type * from '../models'
+export type * from './prismaNamespace'
 
 export const Decimal = runtime.Decimal
 
@@ -82,11 +82,14 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 
 export const UserScalarFieldEnum = {
   id: 'id',
+  username: 'username',
   fullName: 'fullName',
   email: 'email',
   password: 'password',
   phone: 'phone',
   avatarUrl: 'avatarUrl',
+  provider: 'provider',
+  providerId: 'providerId',
   role: 'role',
   status: 'status',
   createdAt: 'createdAt',
@@ -247,11 +250,13 @@ export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
 export const UserOrderByRelevanceFieldEnum = {
+  username: 'username',
   fullName: 'fullName',
   email: 'email',
   password: 'password',
   phone: 'phone',
-  avatarUrl: 'avatarUrl'
+  avatarUrl: 'avatarUrl',
+  providerId: 'providerId'
 } as const
 
 export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]

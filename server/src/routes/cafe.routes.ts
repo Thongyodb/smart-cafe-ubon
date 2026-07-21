@@ -1,12 +1,13 @@
 import { Router } from "express";
 import { cafeController } from "../controllers/cafe.controller";
+import { requireAdmin } from "../middleware/auth.middleware";
 
 const router = Router();
 
 router.get("/", cafeController.getCafes);
-router.post("/", cafeController.createCafe);
-router.put("/:id", cafeController.updateCafe);
-router.delete("/:id", cafeController.deactivateCafe);
+router.post("/", requireAdmin, cafeController.createCafe);
+router.put("/:id", requireAdmin, cafeController.updateCafe);
+router.delete("/:id", requireAdmin, cafeController.deactivateCafe);
 
 router.get("/top-rated", cafeController.getTopRatedCafes);
 router.get("/popular", cafeController.getPopularCafes);

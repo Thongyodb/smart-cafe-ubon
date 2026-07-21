@@ -36,3 +36,13 @@ export const TagType = {
 } as const
 
 export type TagType = (typeof TagType)[keyof typeof TagType]
+
+
+export const AuthProvider = {
+  LOCAL: 'LOCAL',
+  GOOGLE: 'GOOGLE',
+  FACEBOOK: 'FACEBOOK',
+  INSTAGRAM: 'INSTAGRAM'
+} as const
+
+export type AuthProvider = (typeof AuthProvider)[keyof typeof AuthProvider]
