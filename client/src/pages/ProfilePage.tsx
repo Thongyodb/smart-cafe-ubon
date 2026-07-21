@@ -1,84 +1,120 @@
 import {
-  FaChartPie,
-  FaChevronRight,
-  FaCog,
-  FaEdit,
+  FaCompass,
   FaHeart,
-  FaHistory,
+  FaIdBadge,
+  FaShieldAlt,
   FaSignOutAlt,
+  FaTachometerAlt,
+  FaUserCircle,
 } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import { authService } from "../services/authService";
+import { authStorage } from "../utils/authStorage";
 
 function ProfilePage() {
+  const navigate = useNavigate();
+  const user = authStorage.getUser();
+
+  const handleLogout = () => {
+    authService.logout();
+    navigate("/login");
+  };
+
+  if (!user) {
+    return (
+      <main className="profile-page">
+        <section className="profile-empty-card">
+          <h1>ยังไม่ได้เข้าสู่ระบบ</h1>
+          <p>กรุณาเข้าสู่ระบบก่อนใช้งานหน้าโปรไฟล์</p>
+          <Link to="/login" className="admin-primary-btn">
+            เข้าสู่ระบบ
+          </Link>
+        </section>
+      </main>
+    );
+  }
+
+  const displayName = user.fullName || user.username || "User";
+  const firstLetter = displayName.charAt(0).toUpperCase();
+
   return (
-    <main className="app-page profile-page">
+    <main className="profile-page">
       <section className="profile-hero-card">
-        <img
-          src="https://api.dicebear.com/7.x/adventurer/svg?seed=cafe-user"
-          alt="profile"
-        />
-
-        <h1>Cafe Ubon Ratchathani</h1>
-        <p>ผู้ใช้ระบบแนะนำคาเฟ่และจุดถ่ายรูป</p>
-      </section>
-
-      <section className="profile-layout">
-        <div className="profile-menu-card">
-          <button type="button">
-            <FaEdit />
-            <span>แก้ไขโปรไฟล์</span>
-            <FaChevronRight />
-          </button>
-
-          <button type="button">
-            <FaHistory />
-            <span>ประวัติการเข้าชม</span>
-            <FaChevronRight />
-          </button>
-
-          <button type="button">
-            <FaHeart />
-            <span>รายการโปรด</span>
-            <FaChevronRight />
-          </button>
-
-          <button type="button">
-            <FaCog />
-            <span>การตั้งค่า</span>
-            <FaChevronRight />
-          </button>
-
-          <button type="button">
-            <FaSignOutAlt />
-            <span>ออกจากระบบ</span>
-            <FaChevronRight />
-          </button>
+        <div className="profile-avatar-large">
+          {user.avatarUrl ? (
+            <img src={user.avatarUrl} alt={displayName} />
+          ) : (
+            <span>{firstLetter}</span>
+          )}
         </div>
 
-        <div className="profile-stats-card">
-          <h2>
-            <FaChartPie /> สถิติการเยี่ยมชม
-          </h2>
+        <div>
+          <span className="admin-eyebrow">My Profile</span>
+          <h1>{displayName}</h1>
+          <p>
+            {user.role === "ADMIN"
+              ? "ผู้ดูแลระบบ สามารถจัดการข้อมูลคาเฟ่และดูแดชบอร์ดได้"
+              : "สมาชิกทั่วไป สามารถสำรวจคาเฟ่ บันทึกรายการโปรด และใช้งานโปรไฟล์ได้"}
+          </p>
+        </div>
+      </section>
 
-          <div className="stats-grid">
+      <section className="profile-grid">
+        <div className="profile-info-card">
+          <h2>ข้อมูลบัญชี</h2>
+
+          <div className="profile-info-list">
             <div>
-              <strong>12</strong>
-              <span>คาเฟ่ที่ดู</span>
+              <span>
+                <FaUserCircle />
+                Username
+              </span>
+              <strong>{user.username ?? "-"}</strong>
             </div>
 
             <div>
-              <strong>5</strong>
-              <span>รายการโปรด</span>
+              <span>
+                <FaIdBadge />
+                ชื่อที่แสดง
+              </span>
+              <strong>{displayName}</strong>
             </div>
 
             <div>
-              <strong>3</strong>
-              <span>รีวิว</span>
+              <span>
+                <FaShieldAlt />
+                สิทธิ์ผู้ใช้งาน
+              </span>
+              <strong>{user.role === "ADMIN" ? "Admin" : "Member"}</strong>
             </div>
+          </div>
+        </div>
 
-            <div>
-              <strong>8</strong>
-              <span>มุมถ่ายรูป</span>
-            </div>
+        <div className="profile-action-card">
+          <h2>เมนูของฉัน</h2>
+
+          <div className="profile-menu-list">
+            <Link to="/explore">
+              <FaCompass />
+              สำรวจคาเฟ่
+            </Link>
+
+            <Link to="/favorites">
+              <FaHeart />
+              รายการโปรด
+            </Link>
+
+            {user.role === "ADMIN" && (
+              <Link to="/admin">
+                <FaTachometerAlt />
+                แดชบอร์ดผู้ดูแลระบบ
+              </Link>
+            )}
+
+            <button type="button" onClick={handleLogout}>
+              <FaSignOutAlt />
+              ออกจากระบบ
+            </button>
           </div>
         </div>
       </section>
