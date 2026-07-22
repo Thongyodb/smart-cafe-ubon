@@ -9,6 +9,7 @@ import CafeDetailPage from "./pages/CafeDetailPage";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import AdminCafeListPage from "./pages/admin/AdminCafeListPage";
 import AdminCafeFormPage from "./pages/admin/AdminCafeFormPage";
+import AdminUsersPage from "./pages/admin/AdminUsersPage";
 import AuthPage from "./pages/AuthPage";
 import ProtectedUserRoute from "./routes/ProtectedUserRoute";
 import ProtectedAdminRoute from "./routes/ProtectedAdminRoute";
@@ -38,6 +39,7 @@ function App() {
             <Route path="cafes" element={<AdminCafeListPage />} />
             <Route path="cafes/create" element={<AdminCafeFormPage />} />
             <Route path="cafes/:id/edit" element={<AdminCafeFormPage />} />
+            <Route path="users" element={<AdminUsersPage />} />
           </Route>
         </Route>
       </Routes>

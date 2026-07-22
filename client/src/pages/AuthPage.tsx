@@ -8,16 +8,22 @@ import {
   FaSignInAlt,
   FaUserPlus,
 } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { authService } from "../services/authService";
 import { authStorage } from "../utils/authStorage";
 
 function AuthPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  const [mode, setMode] = useState<"login" | "register">("login");
-  const [username, setUsername] = useState("admin");
-  const [password, setPassword] = useState("Admin@123456");
+  const initialMode =
+    searchParams.get("mode") === "register" ? "register" : "login";
+
+  const [mode, setMode] = useState<"login" | "register">(initialMode);
+  const [username, setUsername] = useState(initialMode === "login" ? "admin" : "");
+  const [password, setPassword] = useState(
+    initialMode === "login" ? "Admin@123456" : ""
+  );
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -30,6 +36,22 @@ function AuthPage() {
     navigate("/");
   };
 
+  const switchToLogin = () => {
+    setMode("login");
+    setUsername("admin");
+    setPassword("Admin@123456");
+    setConfirmPassword("");
+    navigate("/login", { replace: true });
+  };
+
+  const switchToRegister = () => {
+    setMode("register");
+    setUsername("");
+    setPassword("");
+    setConfirmPassword("");
+    navigate("/login?mode=register", { replace: true });
+  };
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -39,6 +61,11 @@ function AuthPage() {
       if (mode === "login") {
         await authService.login(username, password);
       } else {
+        if (password !== confirmPassword) {
+          alert("Password และ Confirm Password ต้องตรงกัน");
+          return;
+        }
+
         await authService.register(username, password, confirmPassword);
       }
 
@@ -72,7 +99,7 @@ function AuthPage() {
           <button
             type="button"
             className={mode === "login" ? "active" : ""}
-            onClick={() => setMode("login")}
+            onClick={switchToLogin}
           >
             เข้าสู่ระบบ
           </button>
@@ -80,12 +107,7 @@ function AuthPage() {
           <button
             type="button"
             className={mode === "register" ? "active" : ""}
-            onClick={() => {
-              setMode("register");
-              setUsername("");
-              setPassword("");
-              setConfirmPassword("");
-            }}
+            onClick={switchToRegister}
           >
             สมัครสมาชิก
           </button>

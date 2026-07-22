@@ -2147,3 +2147,168 @@
     text-align: left;
   }
 }
+.home-welcome-text {
+  margin: 12px 0 0;
+  color: var(--app-muted);
+  line-height: 1.7;
+  font-weight: 800;
+  max-width: 620px;
+}
+
+.home-auth-card {
+  margin-top: 20px;
+  padding: 22px;
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(111, 78, 55, 0.1);
+  box-shadow: 0 18px 44px rgba(111, 78, 55, 0.12);
+}
+
+.home-auth-card h2 {
+  margin: 0 0 8px;
+  color: var(--app-dark);
+}
+
+.home-auth-card p {
+  margin: 0 0 18px;
+  color: var(--app-muted);
+  line-height: 1.7;
+  font-weight: 800;
+}
+
+.home-auth-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.home-auth-actions button {
+  border: none;
+  border-radius: 999px;
+  padding: 12px 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  color: #fff;
+  background: var(--app-coffee);
+  font-weight: 950;
+}
+
+.home-auth-actions button:nth-child(2) {
+  color: var(--app-coffee);
+  background: rgba(111, 78, 55, 0.1);
+}
+
+.app-avatar-letter {
+  display: grid;
+  place-items: center;
+  background: var(--app-coffee);
+  color: #fff;
+  font-weight: 950;
+  font-size: 1.4rem;
+}
+.admin-users-summary {
+  padding: 16px 20px;
+  border-radius: 22px;
+  background: rgba(111, 78, 55, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--app-coffee);
+}
+
+.admin-users-summary svg {
+  font-size: 1.5rem;
+}
+
+.admin-users-summary strong {
+  display: block;
+  font-size: 1.7rem;
+  color: var(--app-dark);
+}
+
+.admin-users-summary span {
+  color: var(--app-muted);
+  font-weight: 900;
+}
+
+.admin-user-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-user-cell img,
+.admin-user-cell span {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  flex: 0 0 auto;
+}
+
+.admin-user-cell img {
+  object-fit: cover;
+}
+
+.admin-user-cell span {
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: var(--app-coffee);
+  font-weight: 950;
+}
+
+.admin-user-cell strong {
+  display: block;
+  color: var(--app-dark);
+}
+
+.admin-user-cell small {
+  display: block;
+  color: var(--app-muted);
+  font-weight: 800;
+  margin-top: 3px;
+}
+
+.provider-pill,
+.role-pill,
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 950;
+  font-size: 0.82rem;
+}
+
+.provider-pill {
+  color: var(--app-coffee);
+  background: rgba(111, 78, 55, 0.1);
+}
+
+.role-user {
+  color: #4f6f52;
+  background: rgba(79, 111, 82, 0.12);
+}
+
+.role-admin {
+  color: #fff;
+  background: var(--app-coffee);
+}
+
+.status-active {
+  color: #4f6f52;
+  background: rgba(79, 111, 82, 0.12);
+}
+
+.status-inactive {
+  color: #8a6d3b;
+  background: rgba(138, 109, 59, 0.14);
+}
+
+.status-banned {
+  color: #b4533f;
+  background: rgba(180, 83, 63, 0.14);
+}

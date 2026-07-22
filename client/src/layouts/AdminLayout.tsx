@@ -1,4 +1,11 @@
-import { FaChartLine, FaMapMarkedAlt, FaSignOutAlt, FaStore, FaTags } from "react-icons/fa";
+import {
+  FaChartLine,
+  FaMapMarkedAlt,
+  FaSignOutAlt,
+  FaStore,
+  FaTags,
+  FaUsers,
+} from "react-icons/fa";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { authService } from "../services/authService";
 import { authStorage } from "../utils/authStorage";
@@ -19,6 +26,7 @@ function AdminLayout() {
           <span className="admin-brand-icon">
             <FaStore />
           </span>
+
           <div>
             <strong>Smart Cafe</strong>
             <small>Admin Panel</small>
@@ -36,6 +44,11 @@ function AdminLayout() {
             จัดการคาเฟ่
           </NavLink>
 
+          <NavLink to="/admin/users">
+            <FaUsers />
+            จัดการสมาชิก
+          </NavLink>
+
           <NavLink to="/admin/spots">
             <FaMapMarkedAlt />
             จุดถ่ายรูป
@@ -50,10 +63,18 @@ function AdminLayout() {
         <div className="admin-sidebar-footer">
           <div className="admin-user-box">
             <strong>{adminUser?.fullName ?? "Admin"}</strong>
-            <span>{adminUser?.email ?? "admin@smartcafeubon.com"}</span>
+            <span>
+              {adminUser?.username
+                ? `@${adminUser.username}`
+                : adminUser?.email ?? "admin@smartcafeubon.com"}
+            </span>
           </div>
 
-          <button className="admin-logout-btn" type="button" onClick={handleLogout}>
+          <button
+            className="admin-logout-btn"
+            type="button"
+            onClick={handleLogout}
+          >
             <FaSignOutAlt />
             ออกจากระบบ
           </button>
