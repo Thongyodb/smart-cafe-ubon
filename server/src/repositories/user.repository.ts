@@ -19,4 +19,29 @@ export const userRepository = {
       },
     });
   },
+
+  updateStatus: async (
+    id: number,
+    status: "ACTIVE" | "INACTIVE" | "BANNED"
+  ) => {
+    return prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        status,
+      },
+      select: {
+        id: true,
+        username: true,
+        fullName: true,
+        email: true,
+        avatarUrl: true,
+        provider: true,
+        role: true,
+        status: true,
+        createdAt: true,
+      },
+    });
+  },
 };

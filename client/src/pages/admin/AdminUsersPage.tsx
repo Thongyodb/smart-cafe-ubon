@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { FaSearch, FaUserShield, FaUsers } from "react-icons/fa";
 import { userService } from "../../services/userService";
-import type { AdminUserItem } from "../../services/userService";
+import type { AdminUserItem, UserStatus } from "../../services/userService";
 
 function AdminUsersPage() {
   const [users, setUsers] = useState<AdminUserItem[]>([]);
@@ -37,7 +37,8 @@ function AdminUsersPage() {
         user.fullName.toLowerCase().includes(keyword) ||
         user.email?.toLowerCase().includes(keyword) ||
         user.provider.toLowerCase().includes(keyword) ||
-        user.role.toLowerCase().includes(keyword)
+        user.role.toLowerCase().includes(keyword) ||
+        user.status.toLowerCase().includes(keyword)
       );
     });
   }, [users, search]);
@@ -52,13 +53,47 @@ function AdminUsersPage() {
     });
   };
 
+  const handleStatusChange = async (
+    user: AdminUserItem,
+    nextStatus: UserStatus
+  ) => {
+    if (user.status === nextStatus) {
+      return;
+    }
+
+    if (user.role === "ADMIN") {
+      alert("เพื่อความปลอดภัย ไม่ควรเปลี่ยนสถานะบัญชี Admin จากหน้านี้");
+      return;
+    }
+
+    const confirmed = confirm(
+      `ต้องการเปลี่ยนสถานะของ "${user.fullName}" เป็น ${nextStatus} ใช่ไหม?`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      const result = await userService.updateUserStatus(user.id, nextStatus);
+
+      setUsers((current) =>
+        current.map((item) => (item.id === user.id ? result.data : item))
+      );
+
+      alert("เปลี่ยนสถานะสมาชิกสำเร็จ");
+    } catch {
+      alert("เปลี่ยนสถานะสมาชิกไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
+    }
+  };
+
   return (
     <div className="admin-page">
       <div className="admin-page-header admin-page-header-row">
         <div>
           <span className="admin-eyebrow">User Management</span>
           <h1>จัดการสมาชิก</h1>
-          <p>ดูรายชื่อสมาชิกทั้งหมดในระบบ วิธีสมัคร สิทธิ์ผู้ใช้ และวันที่สมัคร</p>
+          <p>ดูรายชื่อสมาชิกทั้งหมด วิธีสมัคร สิทธิ์ผู้ใช้ สถานะ และวันที่สมัคร</p>
         </div>
 
         <div className="admin-users-summary">
@@ -77,7 +112,7 @@ function AdminUsersPage() {
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="ค้นหา username, ชื่อ, อีเมล, provider..."
+              placeholder="ค้นหา username, ชื่อ, อีเมล, provider, status..."
             />
           </div>
 
@@ -93,6 +128,7 @@ function AdminUsersPage() {
                 <th>สิทธิ์</th>
                 <th>สถานะ</th>
                 <th>วันที่สมัคร</th>
+                <th>จัดการสถานะ</th>
               </tr>
             </thead>
 
@@ -135,18 +171,35 @@ function AdminUsersPage() {
                   </td>
 
                   <td>
-                    <span className={`status-pill status-${user.status.toLowerCase()}`}>
+                    <span
+                      className={`status-pill status-${user.status.toLowerCase()}`}
+                    >
                       {user.status}
                     </span>
                   </td>
 
                   <td>{formatDate(user.createdAt)}</td>
+
+                  <td>
+                    <select
+                      className="admin-status-select"
+                      value={user.status}
+                      disabled={user.role === "ADMIN"}
+                      onChange={(event) =>
+                        handleStatusChange(user, event.target.value as UserStatus)
+                      }
+                    >
+                      <option value="ACTIVE">ACTIVE</option>
+                      <option value="INACTIVE">INACTIVE</option>
+                      <option value="BANNED">BANNED</option>
+                    </select>
+                  </td>
                 </tr>
               ))}
 
               {filteredUsers.length === 0 && (
                 <tr>
-                  <td colSpan={5}>
+                  <td colSpan={6}>
                     <div className="admin-empty-row">
                       ไม่พบข้อมูลสมาชิกที่ตรงกับการค้นหา
                     </div>
