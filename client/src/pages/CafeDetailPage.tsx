@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   FaArrowLeft,
+  FaCamera,
   FaClock,
   FaEye,
+  FaImage,
   FaMapMarkerAlt,
   FaPhoneAlt,
   FaStar,
@@ -18,6 +20,8 @@ function CafeDetailPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    let isMounted = true;
+
     const loadCafe = async () => {
       try {
         setLoading(true);
@@ -31,19 +35,34 @@ function CafeDetailPage() {
         }
 
         const result = await cafeService.getCafeById(cafeId);
-        setCafe(result.data);
-      } catch (err) {
-        setError("ไม่พบข้อมูลคาเฟ่");
+
+        if (isMounted) {
+          setCafe(result.data);
+        }
+      } catch {
+        if (isMounted) {
+          setError("ไม่พบข้อมูลคาเฟ่");
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     loadCafe();
+
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
 
   if (loading) {
-    return <p className="status-text detail-status">กำลังโหลดรายละเอียดคาเฟ่...</p>;
+    return (
+      <p className="status-text detail-status">
+        กำลังโหลดรายละเอียดคาเฟ่...
+      </p>
+    );
   }
 
   if (error || !cafe) {
@@ -58,13 +77,15 @@ function CafeDetailPage() {
   }
 
   const tags = cafe.cafeTags?.map((item) => item.tag.name) ?? [];
+  const photoSpots = cafe.photoSpots ?? [];
+  const coverImageUrl = cafe.coverImageUrl ?? "";
 
   return (
     <main className="detail-page">
       <section
         className="detail-hero"
         style={{
-          backgroundImage: `linear-gradient(135deg, rgba(45, 35, 28, 0.78), rgba(45, 45, 45, 0.72)), url(${cafe.coverImageUrl})`,
+          backgroundImage: `linear-gradient(135deg, rgba(45, 35, 28, 0.78), rgba(45, 45, 45, 0.72)), url(${coverImageUrl})`,
         }}
       >
         <div className="container">
@@ -81,9 +102,11 @@ function CafeDetailPage() {
               <span>
                 <FaStar /> {cafe.averageRating.toFixed(1)}
               </span>
+
               <span>
                 <FaEye /> {cafe.totalViews} views
               </span>
+
               <span>
                 <FaMapMarkerAlt /> {cafe.district.name}
               </span>
@@ -142,19 +165,58 @@ function CafeDetailPage() {
               <div>
                 <span className="section-subtitle">Photo Spots</span>
                 <h2>มุมถ่ายรูปแนะนำ</h2>
+                <p className="section-description">
+                  รวมมุมถ่ายรูป เวลาแนะนำ และมุมกล้องที่เหมาะกับร้านนี้
+                </p>
               </div>
             </div>
 
-            <div className="spot-grid">
-              {cafe.photoSpots?.map((spot) => (
-                <div className="spot-card" key={spot.id}>
-                  <h3>{spot.name}</h3>
-                  <p>{spot.description}</p>
-                  <span>เวลาที่แนะนำ: {spot.bestTime ?? "-"}</span>
-                  <small>มุมกล้อง: {spot.cameraAngle ?? "-"}</small>
-                </div>
-              ))}
-            </div>
+            {photoSpots.length > 0 ? (
+              <div className="spot-grid">
+                {photoSpots.map((spot) => (
+                  <article className="spot-card" key={spot.id}>
+                    <div className="spot-image">
+                      {spot.imageUrl ? (
+                        <img src={spot.imageUrl} alt={spot.name} />
+                      ) : (
+                        <div className="spot-image-placeholder">
+                          <FaImage />
+                          <span>ไม่มีรูปภาพ</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="spot-content">
+                      <span className="spot-badge">
+                        <FaCamera />
+                        Photo Spot
+                      </span>
+
+                      <h3>{spot.name}</h3>
+                      <p>{spot.description ?? "ไม่มีรายละเอียดเพิ่มเติม"}</p>
+
+                      <div className="spot-meta">
+                        <span>
+                          <FaClock />
+                          เวลาแนะนำ: {spot.bestTime ?? "-"}
+                        </span>
+
+                        <span>
+                          <FaCamera />
+                          มุมกล้อง: {spot.cameraAngle ?? "-"}
+                        </span>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-photo-spots">
+                <FaImage />
+                <h3>ยังไม่มีจุดถ่ายรูปสำหรับร้านนี้</h3>
+                <p>สามารถเพิ่มจุดถ่ายรูปได้จากหน้า Admin</p>
+              </div>
+            )}
           </div>
         </div>
       </section>

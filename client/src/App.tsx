@@ -13,6 +13,7 @@ import AdminUsersPage from "./pages/admin/AdminUsersPage";
 import AuthPage from "./pages/AuthPage";
 import ProtectedUserRoute from "./routes/ProtectedUserRoute";
 import ProtectedAdminRoute from "./routes/ProtectedAdminRoute";
+import AdminPhotoSpotsPage from "./pages/admin/AdminPhotoSpotsPage";
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
             <Route path="cafes/create" element={<AdminCafeFormPage />} />
             <Route path="cafes/:id/edit" element={<AdminCafeFormPage />} />
             <Route path="users" element={<AdminUsersPage />} />
+            <Route path="spots" element={<AdminPhotoSpotsPage />} />
           </Route>
         </Route>
       </Routes>
