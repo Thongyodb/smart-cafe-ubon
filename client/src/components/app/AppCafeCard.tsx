@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState, type MouseEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { FaHeart, FaMapMarkerAlt, FaRegHeart, FaStar } from "react-icons/fa";
+import { favoriteService } from "../../services/favoriteService";
 import type { Cafe } from "../../types/cafe";
-import {
-  FAVORITE_UPDATED_EVENT,
-  favoriteStorage,
-} from "../../utils/favoriteStorage";
+import { authStorage } from "../../utils/authStorage";
 
 type Props = {
   cafe: Cafe;
@@ -14,31 +12,64 @@ type Props = {
 };
 
 function AppCafeCard({ cafe, compact = false, showFavorite = true }: Props) {
+  const navigate = useNavigate();
   const firstTag = cafe.cafeTags?.[0]?.tag.name ?? cafe.category.name;
   const [isFavorite, setIsFavorite] = useState(false);
+  const [savingFavorite, setSavingFavorite] = useState(false);
 
   useEffect(() => {
-    const updateFavoriteState = () => {
-      setIsFavorite(favoriteStorage.isFavorite(cafe.id));
+    let isMounted = true;
+
+    const loadFavoriteStatus = async () => {
+      if (!authStorage.isLoggedIn()) {
+        return;
+      }
+
+      try {
+        const result = await favoriteService.getFavorites();
+
+        const found = result.data.some(
+          (favoriteCafe) => favoriteCafe.id === cafe.id
+        );
+
+        if (isMounted) {
+          setIsFavorite(found);
+        }
+      } catch {
+        if (isMounted) {
+          setIsFavorite(false);
+        }
+      }
     };
 
-    updateFavoriteState();
-
-    window.addEventListener(FAVORITE_UPDATED_EVENT, updateFavoriteState);
+    void loadFavoriteStatus();
 
     return () => {
-      window.removeEventListener(FAVORITE_UPDATED_EVENT, updateFavoriteState);
+      isMounted = false;
     };
   }, [cafe.id]);
 
-  const handleToggleFavorite = (
-    event: React.MouseEvent<HTMLButtonElement>
+  const handleToggleFavorite = async (
+    event: MouseEvent<HTMLButtonElement>
   ) => {
     event.preventDefault();
     event.stopPropagation();
 
-    const nextState = favoriteStorage.toggle(cafe.id);
-    setIsFavorite(nextState);
+    if (!authStorage.isLoggedIn()) {
+      navigate("/login");
+      return;
+    }
+
+    try {
+      setSavingFavorite(true);
+
+      const result = await favoriteService.toggleFavorite(cafe.id);
+      setIsFavorite(result.data.isFavorite);
+    } catch {
+      alert("อัปเดตรายการโปรดไม่สำเร็จ");
+    } finally {
+      setSavingFavorite(false);
+    }
   };
 
   return (
@@ -54,6 +85,7 @@ function AppCafeCard({ cafe, compact = false, showFavorite = true }: Props) {
             className={isFavorite ? "app-heart-btn active" : "app-heart-btn"}
             type="button"
             onClick={handleToggleFavorite}
+            disabled={savingFavorite}
             aria-label={
               isFavorite ? "ลบออกจากรายการโปรด" : "เพิ่มในรายการโปรด"
             }
@@ -81,7 +113,7 @@ function AppCafeCard({ cafe, compact = false, showFavorite = true }: Props) {
           ฿{cafe.priceMin ?? "-"} - ฿{cafe.priceMax ?? "-"}
           {cafe.distanceKm !== undefined && (
             <span className="distance-text"> · {cafe.distanceKm} km</span>
-         )}
+          )}
         </small>
       </div>
     </Link>

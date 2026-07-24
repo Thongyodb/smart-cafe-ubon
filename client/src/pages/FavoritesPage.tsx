@@ -1,38 +1,54 @@
 import { useEffect, useState } from "react";
 import AppCafeCard from "../components/app/AppCafeCard";
-import { cafeService } from "../services/cafeService";
+import { favoriteService } from "../services/favoriteService";
 import type { Cafe } from "../types/cafe";
-import {
-  FAVORITE_UPDATED_EVENT,
-  favoriteStorage,
-} from "../utils/favoriteStorage";
 
 function FavoritesPage() {
   const [cafes, setCafes] = useState<Cafe[]>([]);
-
-  const loadFavorites = async () => {
-    const result = await cafeService.getCafes({});
-    const favoriteIds = favoriteStorage.getIds();
-
-    const favoriteCafes = result.data.filter((cafe) =>
-      favoriteIds.includes(cafe.id)
-    );
-
-    setCafes(favoriteCafes);
-  };
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadFavorites();
+    let isMounted = true;
 
-    window.addEventListener(FAVORITE_UPDATED_EVENT, loadFavorites);
+    const loadFavorites = async () => {
+      try {
+        const result = await favoriteService.getFavorites();
+
+        if (isMounted) {
+          setCafes(result.data);
+        }
+      } catch {
+        if (isMounted) {
+          alert("โหลดรายการโปรดไม่สำเร็จ");
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadFavorites();
 
     return () => {
-      window.removeEventListener(FAVORITE_UPDATED_EVENT, loadFavorites);
+      isMounted = false;
     };
   }, []);
 
-  const handleRemoveFavorite = (cafeId: number) => {
-    favoriteStorage.remove(cafeId);
+  const handleRemoveFavorite = async (cafeId: number) => {
+    const confirmed = confirm("ต้องการลบคาเฟ่นี้ออกจากรายการโปรดใช่ไหม?");
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await favoriteService.toggleFavorite(cafeId);
+
+      setCafes((current) => current.filter((cafe) => cafe.id !== cafeId));
+    } catch {
+      alert("ลบรายการโปรดไม่สำเร็จ");
+    }
   };
 
   return (
@@ -40,30 +56,35 @@ function FavoritesPage() {
       <div className="simple-header">
         <span className="eyebrow">Saved Spots</span>
         <h1>รายการโปรด</h1>
+        <p>คาเฟ่ที่คุณบันทึกไว้ในบัญชีของคุณ</p>
       </div>
 
-      {cafes.length === 0 && (
+      {loading && <p className="status-text">กำลังโหลดรายการโปรด...</p>}
+
+      {!loading && cafes.length === 0 && (
         <div className="empty-favorite-card">
           <h2>ยังไม่มีรายการโปรด</h2>
           <p>กดหัวใจที่คาเฟ่ที่ชอบ เพื่อบันทึกไว้ดูภายหลัง</p>
         </div>
       )}
 
-      <div className="favorite-layout">
-        {cafes.map((cafe) => (
-          <div className="favorite-card" key={cafe.id}>
-            <AppCafeCard cafe={cafe} showFavorite={false} />
+      {!loading && cafes.length > 0 && (
+        <div className="favorite-layout">
+          {cafes.map((cafe) => (
+            <div className="favorite-card" key={cafe.id}>
+              <AppCafeCard cafe={cafe} showFavorite={false} />
 
-            <button
-              className="remove-favorite-btn"
-              type="button"
-              onClick={() => handleRemoveFavorite(cafe.id)}
-            >
-              ลบออกจากรายการโปรด
-            </button>
-          </div>
-        ))}
-      </div>
+              <button
+                className="remove-favorite-btn"
+                type="button"
+                onClick={() => handleRemoveFavorite(cafe.id)}
+              >
+                ลบออกจากรายการโปรด
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </main>
   );
 }

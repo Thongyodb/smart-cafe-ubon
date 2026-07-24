@@ -14,6 +14,7 @@ import AuthPage from "./pages/AuthPage";
 import ProtectedUserRoute from "./routes/ProtectedUserRoute";
 import ProtectedAdminRoute from "./routes/ProtectedAdminRoute";
 import AdminPhotoSpotsPage from "./pages/admin/AdminPhotoSpotsPage";
+import AdminMetaPage from "./pages/admin/AdminMetaPage";
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
             <Route path="cafes/:id/edit" element={<AdminCafeFormPage />} />
             <Route path="users" element={<AdminUsersPage />} />
             <Route path="spots" element={<AdminPhotoSpotsPage />} />
+            <Route path="tags" element={<AdminMetaPage />} />
           </Route>
         </Route>
       </Routes>

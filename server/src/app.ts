@@ -6,6 +6,8 @@ import cafeRoutes from "./routes/cafe.routes";
 import metaRoutes from "./routes/meta.routes";
 import userRoutes from "./routes/user.routes";
 import photoSpotRoutes from "./routes/photoSpot.routes";
+import adminMetaRoutes from "./routes/adminMeta.routes";
+import favoriteRoutes from "./routes/favorite.routes";
 
 const app = express();
 
@@ -22,5 +24,7 @@ app.use("/api/cafes", cafeRoutes);
 app.use("/api/meta", metaRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/photo-spots", photoSpotRoutes);
+app.use("/api/admin-meta", adminMetaRoutes);
+app.use("/api/favorites", favoriteRoutes);
 
 export default app;

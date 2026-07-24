@@ -1,18 +1,18 @@
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
-type JwtPayload = {
+export type AuthPayload = {
   userId: number;
   username?: string;
   email?: string;
   role: "USER" | "ADMIN";
 };
 
-export const requireAdmin = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export type AuthRequest = Request & {
+  user?: AuthPayload;
+};
+
+const verifyToken = (req: Request) => {
   const authHeader = req.headers.authorization;
 
   const token = authHeader?.startsWith("Bearer ")
@@ -20,17 +20,54 @@ export const requireAdmin = (
     : null;
 
   if (!token) {
-    return res.status(401).json({
-      success: false,
-      message: "Unauthorized",
-    });
+    return null;
   }
 
+  return jwt.verify(
+    token,
+    process.env.JWT_SECRET ?? "SmartCafeUbonSecret"
+  ) as AuthPayload;
+};
+
+export const requireAuth = (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const payload = jwt.verify(
-      token,
-      process.env.JWT_SECRET ?? "SmartCafeUbonSecret"
-    ) as JwtPayload;
+    const payload = verifyToken(req);
+
+    if (!payload) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    req.user = payload;
+    next();
+  } catch {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired token",
+    });
+  }
+};
+
+export const requireAdmin = (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const payload = verifyToken(req);
+
+    if (!payload) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
 
     if (payload.role !== "ADMIN") {
       return res.status(403).json({
@@ -39,6 +76,7 @@ export const requireAdmin = (
       });
     }
 
+    req.user = payload;
     next();
   } catch {
     return res.status(401).json({
