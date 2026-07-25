@@ -77,6 +77,11 @@ export type PhotoSpot = Prisma.PhotoSpotModel
  */
 export type Review = Prisma.ReviewModel
 /**
+ * Model ReviewImage
+ * 
+ */
+export type ReviewImage = Prisma.ReviewImageModel
+/**
  * Model Favorite
  * 
  */

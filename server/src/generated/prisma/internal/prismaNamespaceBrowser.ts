@@ -58,6 +58,7 @@ export const ModelName = {
   CafeImage: 'CafeImage',
   PhotoSpot: 'PhotoSpot',
   Review: 'Review',
+  ReviewImage: 'ReviewImage',
   Favorite: 'Favorite',
   Tag: 'Tag',
   CafeTag: 'CafeTag',
@@ -192,6 +193,16 @@ export const ReviewScalarFieldEnum = {
 export type ReviewScalarFieldEnum = (typeof ReviewScalarFieldEnum)[keyof typeof ReviewScalarFieldEnum]
 
 
+export const ReviewImageScalarFieldEnum = {
+  id: 'id',
+  reviewId: 'reviewId',
+  imageUrl: 'imageUrl',
+  createdAt: 'createdAt'
+} as const
+
+export type ReviewImageScalarFieldEnum = (typeof ReviewImageScalarFieldEnum)[keyof typeof ReviewImageScalarFieldEnum]
+
+
 export const FavoriteScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -320,6 +331,13 @@ export const ReviewOrderByRelevanceFieldEnum = {
 } as const
 
 export type ReviewOrderByRelevanceFieldEnum = (typeof ReviewOrderByRelevanceFieldEnum)[keyof typeof ReviewOrderByRelevanceFieldEnum]
+
+
+export const ReviewImageOrderByRelevanceFieldEnum = {
+  imageUrl: 'imageUrl'
+} as const
+
+export type ReviewImageOrderByRelevanceFieldEnum = (typeof ReviewImageOrderByRelevanceFieldEnum)[keyof typeof ReviewImageOrderByRelevanceFieldEnum]
 
 
 export const TagOrderByRelevanceFieldEnum = {

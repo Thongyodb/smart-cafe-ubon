@@ -391,6 +391,7 @@ export const ModelName = {
   CafeImage: 'CafeImage',
   PhotoSpot: 'PhotoSpot',
   Review: 'Review',
+  ReviewImage: 'ReviewImage',
   Favorite: 'Favorite',
   Tag: 'Tag',
   CafeTag: 'CafeTag',
@@ -410,7 +411,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "category" | "district" | "cafe" | "cafeImage" | "photoSpot" | "review" | "favorite" | "tag" | "cafeTag" | "visitHistory"
+    modelProps: "user" | "category" | "district" | "cafe" | "cafeImage" | "photoSpot" | "review" | "reviewImage" | "favorite" | "tag" | "cafeTag" | "visitHistory"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -876,6 +877,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ReviewImage: {
+      payload: Prisma.$ReviewImagePayload<ExtArgs>
+      fields: Prisma.ReviewImageFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ReviewImageFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReviewImagePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ReviewImageFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReviewImagePayload>
+        }
+        findFirst: {
+          args: Prisma.ReviewImageFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReviewImagePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ReviewImageFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReviewImagePayload>
+        }
+        findMany: {
+          args: Prisma.ReviewImageFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReviewImagePayload>[]
+        }
+        create: {
+          args: Prisma.ReviewImageCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReviewImagePayload>
+        }
+        createMany: {
+          args: Prisma.ReviewImageCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.ReviewImageDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReviewImagePayload>
+        }
+        update: {
+          args: Prisma.ReviewImageUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReviewImagePayload>
+        }
+        deleteMany: {
+          args: Prisma.ReviewImageDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ReviewImageUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.ReviewImageUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReviewImagePayload>
+        }
+        aggregate: {
+          args: Prisma.ReviewImageAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateReviewImage>
+        }
+        groupBy: {
+          args: Prisma.ReviewImageGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReviewImageGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ReviewImageCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReviewImageCountAggregateOutputType> | number
+        }
+      }
+    }
     Favorite: {
       payload: Prisma.$FavoritePayload<ExtArgs>
       fields: Prisma.FavoriteFieldRefs
@@ -1291,6 +1358,16 @@ export const ReviewScalarFieldEnum = {
 export type ReviewScalarFieldEnum = (typeof ReviewScalarFieldEnum)[keyof typeof ReviewScalarFieldEnum]
 
 
+export const ReviewImageScalarFieldEnum = {
+  id: 'id',
+  reviewId: 'reviewId',
+  imageUrl: 'imageUrl',
+  createdAt: 'createdAt'
+} as const
+
+export type ReviewImageScalarFieldEnum = (typeof ReviewImageScalarFieldEnum)[keyof typeof ReviewImageScalarFieldEnum]
+
+
 export const FavoriteScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -1419,6 +1496,13 @@ export const ReviewOrderByRelevanceFieldEnum = {
 } as const
 
 export type ReviewOrderByRelevanceFieldEnum = (typeof ReviewOrderByRelevanceFieldEnum)[keyof typeof ReviewOrderByRelevanceFieldEnum]
+
+
+export const ReviewImageOrderByRelevanceFieldEnum = {
+  imageUrl: 'imageUrl'
+} as const
+
+export type ReviewImageOrderByRelevanceFieldEnum = (typeof ReviewImageOrderByRelevanceFieldEnum)[keyof typeof ReviewImageOrderByRelevanceFieldEnum]
 
 
 export const TagOrderByRelevanceFieldEnum = {
@@ -1620,6 +1704,7 @@ export type GlobalOmitConfig = {
   cafeImage?: Prisma.CafeImageOmit
   photoSpot?: Prisma.PhotoSpotOmit
   review?: Prisma.ReviewOmit
+  reviewImage?: Prisma.ReviewImageOmit
   favorite?: Prisma.FavoriteOmit
   tag?: Prisma.TagOmit
   cafeTag?: Prisma.CafeTagOmit

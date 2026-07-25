@@ -1,30 +1,46 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   FaArrowLeft,
   FaCamera,
   FaClock,
+  FaEdit,
   FaEye,
   FaImage,
+  FaImages,
   FaMapMarkerAlt,
   FaPhoneAlt,
+  FaSave,
   FaStar,
+  FaTimes,
+  FaTrash,
 } from "react-icons/fa";
 import { cafeService } from "../services/cafeService";
+import { reviewService, type ReviewItem } from "../services/reviewService";
 import type { Cafe } from "../types/cafe";
+import { authStorage } from "../utils/authStorage";
 
 function CafeDetailPage() {
   const { id } = useParams();
   const [cafe, setCafe] = useState<Cafe | null>(null);
+  const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState("");
+  const [reviewImages, setReviewImages] = useState<File[]>([]);
+  const [reviewImagePreviews, setReviewImagePreviews] = useState<string[]>([]);
+  const [editingReviewId, setEditingReviewId] = useState<number | null>(null);
+  const [savingReview, setSavingReview] = useState(false);
+
+  const currentUser = authStorage.getUser();
 
   useEffect(() => {
     let isMounted = true;
 
     const loadCafe = async () => {
       try {
-        setLoading(true);
         setError("");
 
         const cafeId = Number(id);
@@ -34,10 +50,14 @@ function CafeDetailPage() {
           return;
         }
 
-        const result = await cafeService.getCafeById(cafeId);
+        const [cafeResult, reviewResult] = await Promise.all([
+          cafeService.getCafeById(cafeId),
+          reviewService.getCafeReviews(cafeId),
+        ]);
 
         if (isMounted) {
-          setCafe(result.data);
+          setCafe(cafeResult.data);
+          setReviews(reviewResult.data);
         }
       } catch {
         if (isMounted) {
@@ -50,12 +70,162 @@ function CafeDetailPage() {
       }
     };
 
-    loadCafe();
+    void loadCafe();
 
     return () => {
       isMounted = false;
     };
   }, [id]);
+
+  const clearReviewImages = () => {
+    reviewImagePreviews.forEach((previewUrl) => {
+      URL.revokeObjectURL(previewUrl);
+    });
+
+    setReviewImages([]);
+    setReviewImagePreviews([]);
+  };
+
+  const resetReviewForm = () => {
+    setEditingReviewId(null);
+    setReviewRating(5);
+    setReviewComment("");
+    clearReviewImages();
+  };
+
+  const reloadCafeAndReviews = async () => {
+    if (!cafe) {
+      return;
+    }
+
+    const [cafeResult, reviewResult] = await Promise.all([
+      cafeService.getCafeById(cafe.id),
+      reviewService.getCafeReviews(cafe.id),
+    ]);
+
+    setCafe(cafeResult.data);
+    setReviews(reviewResult.data);
+  };
+
+  const myReview = currentUser
+    ? reviews.find((review) => review.userId === currentUser.id)
+    : undefined;
+
+  const handleReviewImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = Array.from(event.target.files ?? []);
+    const imageFiles = selectedFiles.filter((file) =>
+      file.type.startsWith("image/")
+    );
+
+    if (selectedFiles.length !== imageFiles.length) {
+      alert("เลือกได้เฉพาะไฟล์รูปภาพเท่านั้น");
+    }
+
+    if (imageFiles.length > 5) {
+      alert("เลือกรูปได้สูงสุด 5 รูปต่อครั้ง");
+    }
+
+    const limitedFiles = imageFiles.slice(0, 5);
+
+    clearReviewImages();
+
+    setReviewImages(limitedFiles);
+    setReviewImagePreviews(
+      limitedFiles.map((file) => URL.createObjectURL(file))
+    );
+
+    event.target.value = "";
+  };
+
+  const handleSubmitReview = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!cafe) {
+      return;
+    }
+
+    if (!authStorage.isLoggedIn()) {
+      alert("กรุณาเข้าสู่ระบบก่อนรีวิว");
+      return;
+    }
+
+    if (reviewRating < 1 || reviewRating > 5) {
+      alert("กรุณาเลือกคะแนน 1-5 ดาว");
+      return;
+    }
+
+    try {
+      setSavingReview(true);
+
+      if (editingReviewId) {
+        await reviewService.updateReview(editingReviewId, {
+          rating: reviewRating,
+          comment: reviewComment,
+          images: reviewImages,
+        });
+
+        alert("แก้ไขรีวิวสำเร็จ");
+      } else {
+        await reviewService.createReview(cafe.id, {
+          rating: reviewRating,
+          comment: reviewComment,
+          images: reviewImages,
+        });
+
+        alert("เพิ่มรีวิวสำเร็จ");
+      }
+
+      resetReviewForm();
+      await reloadCafeAndReviews();
+    } catch {
+      alert("บันทึกรีวิวไม่สำเร็จ อาจเป็นเพราะคุณเคยรีวิวร้านนี้แล้ว");
+    } finally {
+      setSavingReview(false);
+    }
+  };
+
+  const handleEditReview = (review: ReviewItem) => {
+    clearReviewImages();
+    setEditingReviewId(review.id);
+    setReviewRating(review.rating);
+    setReviewComment(review.comment ?? "");
+  };
+
+  const handleDeleteReview = async (reviewId: number) => {
+    const confirmed = confirm("ต้องการลบรีวิวนี้ใช่ไหม?");
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await reviewService.deleteReview(reviewId);
+      await reloadCafeAndReviews();
+      resetReviewForm();
+
+      alert("ลบรีวิวสำเร็จ");
+    } catch {
+      alert("ลบรีวิวไม่สำเร็จ");
+    }
+  };
+
+  const formatDate = (dateText: string) => {
+    return new Date(dateText).toLocaleDateString("th-TH", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  const getReviewImageUrls = (review: ReviewItem) => {
+    const imageUrls = review.images?.map((image) => image.imageUrl) ?? [];
+
+    if (imageUrls.length > 0) {
+      return imageUrls;
+    }
+
+    return review.imageUrl ? [review.imageUrl] : [];
+  };
 
   if (loading) {
     return (
@@ -79,6 +249,7 @@ function CafeDetailPage() {
   const tags = cafe.cafeTags?.map((item) => item.tag.name) ?? [];
   const photoSpots = cafe.photoSpots ?? [];
   const coverImageUrl = cafe.coverImageUrl ?? "";
+  const showReviewForm = Boolean(currentUser && (!myReview || editingReviewId));
 
   return (
     <main className="detail-page">
@@ -218,6 +389,225 @@ function CafeDetailPage() {
               </div>
             )}
           </div>
+        </div>
+
+        <div className="container">
+          <section className="review-section">
+            <div className="section-header">
+              <div>
+                <span className="section-subtitle">Reviews</span>
+                <h2>รีวิวจากผู้ใช้งาน</h2>
+                <p className="section-description">
+                  คะแนนเฉลี่ย {cafe.averageRating.toFixed(1)} จาก{" "}
+                  {cafe.totalReviews} รีวิว
+                </p>
+              </div>
+            </div>
+
+            {!currentUser && (
+              <div className="review-login-card">
+                <h3>เข้าสู่ระบบเพื่อเขียนรีวิว</h3>
+                <p>สมาชิกสามารถให้คะแนน เขียนรีวิว และเพิ่มรูปภาพได้</p>
+                <Link to="/login" className="detail-btn">
+                  เข้าสู่ระบบ
+                </Link>
+              </div>
+            )}
+
+            {currentUser && myReview && !editingReviewId && (
+              <div className="my-review-card">
+                <div>
+                  <span className="section-subtitle">Your Review</span>
+                  <h3>คุณรีวิวร้านนี้แล้ว</h3>
+                  <p>สามารถแก้ไขรีวิว หรือเพิ่มรูปภาพรีวิวของตัวเองได้</p>
+                </div>
+
+                <div className="review-action-row">
+                  <button
+                    className="review-secondary-btn"
+                    type="button"
+                    onClick={() => handleEditReview(myReview)}
+                  >
+                    <FaEdit />
+                    แก้ไข/เพิ่มรูป
+                  </button>
+
+                  <button
+                    className="review-danger-btn"
+                    type="button"
+                    onClick={() => handleDeleteReview(myReview.id)}
+                  >
+                    <FaTrash />
+                    ลบรีวิว
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {showReviewForm && (
+              <form className="review-form-card" onSubmit={handleSubmitReview}>
+                <div className="admin-form-title">
+                  <div>
+                    <h3>
+                      {editingReviewId ? "แก้ไขรีวิวของคุณ" : "เขียนรีวิว"}
+                    </h3>
+                    <p>
+                      ให้คะแนน เขียนความคิดเห็น และแนบรูปภาพได้สูงสุด 5 รูป
+                    </p>
+                  </div>
+
+                  {editingReviewId && (
+                    <button
+                      className="review-secondary-btn"
+                      type="button"
+                      onClick={resetReviewForm}
+                    >
+                      <FaTimes />
+                      ยกเลิก
+                    </button>
+                  )}
+                </div>
+
+                <div className="review-stars-input">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      className={
+                        reviewRating >= star
+                          ? "review-star-btn active"
+                          : "review-star-btn"
+                      }
+                      type="button"
+                      key={star}
+                      onClick={() => setReviewRating(star)}
+                    >
+                      <FaStar />
+                    </button>
+                  ))}
+                </div>
+
+                <textarea
+                  value={reviewComment}
+                  onChange={(event) => setReviewComment(event.target.value)}
+                  placeholder="เขียนรีวิว เช่น ร้านสวย บรรยากาศดี เหมาะกับการถ่ายรูป"
+                  rows={4}
+                />
+
+                <label className="review-upload-box">
+                  <FaImages />
+                  <div>
+                    <strong>
+                      {editingReviewId ? "เพิ่มรูปภาพรีวิว" : "เลือกรูปภาพรีวิว"}
+                    </strong>
+                    <span>รองรับไฟล์รูปภาพ เลือกได้สูงสุด 5 รูปต่อครั้ง</span>
+                  </div>
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleReviewImageChange}
+                  />
+                </label>
+
+                {reviewImagePreviews.length > 0 && (
+                  <div className="review-preview-grid">
+                    {reviewImagePreviews.map((previewUrl) => (
+                      <div className="review-preview-item" key={previewUrl}>
+                        <img src={previewUrl} alt="preview" />
+                      </div>
+                    ))}
+
+                    <button
+                      className="review-secondary-btn"
+                      type="button"
+                      onClick={clearReviewImages}
+                    >
+                      <FaTimes />
+                      ล้างรูปที่เลือก
+                    </button>
+                  </div>
+                )}
+
+                <button
+                  className="review-submit-btn"
+                  type="submit"
+                  disabled={savingReview}
+                >
+                  <FaSave />
+                  {savingReview
+                    ? "กำลังบันทึก..."
+                    : editingReviewId
+                    ? "บันทึกการแก้ไข"
+                    : "ส่งรีวิว"}
+                </button>
+              </form>
+            )}
+
+            <div className="review-list">
+              {reviews.length === 0 && (
+                <div className="empty-photo-spots">
+                  <FaStar />
+                  <h3>ยังไม่มีรีวิว</h3>
+                  <p>เป็นคนแรกที่รีวิวคาเฟ่นี้</p>
+                </div>
+              )}
+
+              {reviews.map((review) => {
+                const reviewImageUrls = getReviewImageUrls(review);
+
+                return (
+                  <article className="review-card" key={review.id}>
+                    <div className="review-user-avatar">
+                      {review.user.avatarUrl ? (
+                        <img
+                          src={review.user.avatarUrl}
+                          alt={review.user.fullName}
+                        />
+                      ) : (
+                        <span>
+                          {(review.user.fullName || review.user.username || "U")
+                            .charAt(0)
+                            .toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="review-card-body">
+                      <div className="review-card-header">
+                        <div>
+                          <h3>{review.user.fullName}</h3>
+                          <small>{formatDate(review.createdAt)}</small>
+                        </div>
+
+                        <div className="review-stars-display">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <FaStar
+                              key={star}
+                              className={review.rating >= star ? "active" : ""}
+                            />
+                          ))}
+                        </div>
+                      </div>
+
+                      <p>{review.comment || "ไม่มีข้อความรีวิว"}</p>
+
+                      {reviewImageUrls.length > 0 && (
+                        <div className="review-photo-grid">
+                          {reviewImageUrls.map((imageUrl) => (
+                            <img
+                              src={imageUrl}
+                              alt="review"
+                              key={imageUrl}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
         </div>
       </section>
     </main>

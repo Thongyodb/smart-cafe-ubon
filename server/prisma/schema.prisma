@@ -164,12 +164,25 @@ model Review {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  cafe      Cafe     @relation(fields: [cafeId], references: [id], onDelete: Cascade)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cafe      Cafe          @relation(fields: [cafeId], references: [id], onDelete: Cascade)
+  images    ReviewImage[]
 
   @@unique([userId, cafeId])
   @@index([cafeId])
   @@map("reviews")
+}
+
+model ReviewImage {
+  id        Int      @id @default(autoincrement())
+  reviewId  Int
+  imageUrl  String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@index([reviewId])
+  @@map("review_images")
 }
 
 model Favorite {
