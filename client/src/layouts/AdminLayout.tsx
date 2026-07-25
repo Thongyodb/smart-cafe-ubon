@@ -1,5 +1,6 @@
 import {
   FaChartLine,
+  FaComments,
   FaMapMarkedAlt,
   FaSignOutAlt,
   FaStore,
@@ -23,13 +24,13 @@ function AdminLayout() {
     <div className="admin-layout">
       <aside className="admin-sidebar">
         <Link to="/admin" className="admin-brand">
-          <span className="admin-brand-icon">
+          <div className="admin-brand-icon">
             <FaStore />
-          </span>
+          </div>
 
           <div>
             <strong>Smart Cafe</strong>
-            <small>Admin Panel</small>
+            <span>Admin Panel</span>
           </div>
         </Link>
 
@@ -58,16 +59,17 @@ function AdminLayout() {
             <FaTags />
             หมวดหมู่/แท็ก
           </NavLink>
+
+          <NavLink to="/admin/reviews">
+            <FaComments />
+            จัดการรีวิว
+          </NavLink>
         </nav>
 
         <div className="admin-sidebar-footer">
-          <div className="admin-user-box">
-            <strong>{adminUser?.fullName ?? "Admin"}</strong>
-            <span>
-              {adminUser?.username
-                ? `@${adminUser.username}`
-                : adminUser?.email ?? "admin@smartcafeubon.com"}
-            </span>
+          <div className="admin-profile-mini">
+            <strong>{adminUser?.fullName ?? "Smart Cafe Admin"}</strong>
+            <span>@{adminUser?.username ?? "admin"}</span>
           </div>
 
           <button
@@ -79,7 +81,7 @@ function AdminLayout() {
             ออกจากระบบ
           </button>
 
-          <Link to="/" className="admin-back-link">
+          <Link to="/" className="admin-back-site">
             กลับหน้าเว็บไซต์
           </Link>
         </div>

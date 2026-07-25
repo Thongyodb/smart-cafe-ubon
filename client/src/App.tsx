@@ -15,6 +15,7 @@ import ProtectedUserRoute from "./routes/ProtectedUserRoute";
 import ProtectedAdminRoute from "./routes/ProtectedAdminRoute";
 import AdminPhotoSpotsPage from "./pages/admin/AdminPhotoSpotsPage";
 import AdminMetaPage from "./pages/admin/AdminMetaPage";
+import AdminReviewsPage from "./pages/admin/AdminReviewsPage";
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
             <Route path="users" element={<AdminUsersPage />} />
             <Route path="spots" element={<AdminPhotoSpotsPage />} />
             <Route path="tags" element={<AdminMetaPage />} />
+            <Route path="reviews" element={<AdminReviewsPage />} />
           </Route>
         </Route>
       </Routes>

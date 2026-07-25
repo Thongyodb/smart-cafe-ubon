@@ -10,6 +10,7 @@ import userRoutes from "./routes/user.routes";
 import photoSpotRoutes from "./routes/photoSpot.routes";
 import adminMetaRoutes from "./routes/adminMeta.routes";
 import favoriteRoutes from "./routes/favorite.routes";
+import adminReviewRoutes from "./routes/adminReview.routes";
 
 const app = express();
 
@@ -32,5 +33,6 @@ app.use("/api/users", userRoutes);
 app.use("/api/photo-spots", photoSpotRoutes);
 app.use("/api/admin-meta", adminMetaRoutes);
 app.use("/api/favorites", favoriteRoutes);
+app.use("/api/admin-reviews", adminReviewRoutes);
 
 export default app;
