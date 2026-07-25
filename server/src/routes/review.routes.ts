@@ -54,4 +54,10 @@ router.put(
 
 router.delete("/reviews/:reviewId", requireAuth, reviewController.deleteReview);
 
+router.delete(
+  "/review-images/:imageId",
+  requireAuth,
+  reviewController.deleteReviewImage
+);
+
 export default router;

@@ -175,4 +175,41 @@ export const reviewController = {
       });
     }
   },
+
+  deleteReviewImage: async (req: AuthRequest, res: Response) => {
+    try {
+      const userId = req.user?.userId;
+      const imageId = Number(req.params.imageId);
+
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          message: "Unauthorized",
+        });
+      }
+
+      if (Number.isNaN(imageId)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid review image id",
+        });
+      }
+
+      const result = await reviewService.deleteReviewImage(userId, imageId);
+
+      res.json({
+        success: true,
+        message: "Review image deleted successfully",
+        data: result,
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to delete review image",
+      });
+    }
+  },
 };

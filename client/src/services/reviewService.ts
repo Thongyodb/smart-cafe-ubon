@@ -40,6 +40,16 @@ type ReviewResponse = {
   data: ReviewItem;
 };
 
+type DeleteReviewImageResponse = {
+  success: boolean;
+  message: string;
+  data: {
+    imageId: number;
+    reviewId: number;
+    imageUrl: string;
+  };
+};
+
 type ReviewPayload = {
   rating: number;
   comment: string;
@@ -92,6 +102,14 @@ export const reviewService = {
 
   deleteReview: async (reviewId: number) => {
     const response = await axiosClient.delete(`/reviews/${reviewId}`);
+    return response.data;
+  },
+
+  deleteReviewImage: async (imageId: number) => {
+    const response = await axiosClient.delete<DeleteReviewImageResponse>(
+      `/review-images/${imageId}`
+    );
+
     return response.data;
   },
 };

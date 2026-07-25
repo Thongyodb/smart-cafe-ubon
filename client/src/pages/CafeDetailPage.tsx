@@ -20,6 +20,8 @@ import { reviewService, type ReviewItem } from "../services/reviewService";
 import type { Cafe } from "../types/cafe";
 import { authStorage } from "../utils/authStorage";
 
+const MAX_REVIEW_IMAGES = 5;
+
 function CafeDetailPage() {
   const { id } = useParams();
   const [cafe, setCafe] = useState<Cafe | null>(null);
@@ -111,6 +113,16 @@ function CafeDetailPage() {
     ? reviews.find((review) => review.userId === currentUser.id)
     : undefined;
 
+  const editingReview = editingReviewId
+    ? reviews.find((review) => review.id === editingReviewId)
+    : undefined;
+
+  const existingReviewImages = editingReview?.images ?? [];
+
+  const remainingReviewImageSlots = editingReviewId
+    ? Math.max(MAX_REVIEW_IMAGES - existingReviewImages.length, 0)
+    : MAX_REVIEW_IMAGES;
+
   const handleReviewImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(event.target.files ?? []);
     const imageFiles = selectedFiles.filter((file) =>
@@ -121,11 +133,33 @@ function CafeDetailPage() {
       alert("เลือกได้เฉพาะไฟล์รูปภาพเท่านั้น");
     }
 
-    if (imageFiles.length > 5) {
-      alert("เลือกรูปได้สูงสุด 5 รูปต่อครั้ง");
+    if (remainingReviewImageSlots <= 0) {
+      alert("รีวิวนี้มีรูปครบ 5 รูปแล้ว กรุณาลบรูปเก่าก่อนเพิ่มรูปใหม่");
+      event.target.value = "";
+      return;
     }
 
-    const limitedFiles = imageFiles.slice(0, 5);
+    const uniqueImageFiles = imageFiles.filter((file, index, array) => {
+      return (
+        index ===
+        array.findIndex(
+          (item) =>
+            item.name === file.name &&
+            item.size === file.size &&
+            item.lastModified === file.lastModified
+        )
+      );
+    });
+
+    if (uniqueImageFiles.length !== imageFiles.length) {
+      alert("มีรูปซ้ำในชุดที่เลือก ระบบจะใช้เฉพาะรูปที่ไม่ซ้ำ");
+    }
+
+    if (uniqueImageFiles.length > remainingReviewImageSlots) {
+      alert(`เพิ่มรูปได้อีก ${remainingReviewImageSlots} รูปเท่านั้น`);
+    }
+
+    const limitedFiles = uniqueImageFiles.slice(0, remainingReviewImageSlots);
 
     clearReviewImages();
 
@@ -154,6 +188,11 @@ function CafeDetailPage() {
       return;
     }
 
+    if (reviewImages.length > remainingReviewImageSlots) {
+      alert(`เพิ่มรูปได้อีก ${remainingReviewImageSlots} รูปเท่านั้น`);
+      return;
+    }
+
     try {
       setSavingReview(true);
 
@@ -178,7 +217,7 @@ function CafeDetailPage() {
       resetReviewForm();
       await reloadCafeAndReviews();
     } catch {
-      alert("บันทึกรีวิวไม่สำเร็จ อาจเป็นเพราะคุณเคยรีวิวร้านนี้แล้ว");
+      alert("บันทึกรีวิวไม่สำเร็จ อาจเป็นเพราะรูปเกิน 5 รูป หรือคุณเคยรีวิวร้านนี้แล้ว");
     } finally {
       setSavingReview(false);
     }
@@ -206,6 +245,24 @@ function CafeDetailPage() {
       alert("ลบรีวิวสำเร็จ");
     } catch {
       alert("ลบรีวิวไม่สำเร็จ");
+    }
+  };
+
+  const handleDeleteExistingReviewImage = async (imageId: number) => {
+    const confirmed = confirm("ต้องการลบรูปรีวิวนี้ใช่ไหม?");
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await reviewService.deleteReviewImage(imageId);
+      await reloadCafeAndReviews();
+      clearReviewImages();
+
+      alert("ลบรูปรีวิวสำเร็จ");
+    } catch {
+      alert("ลบรูปรีวิวไม่สำเร็จ");
     }
   };
 
@@ -452,7 +509,7 @@ function CafeDetailPage() {
                       {editingReviewId ? "แก้ไขรีวิวของคุณ" : "เขียนรีวิว"}
                     </h3>
                     <p>
-                      ให้คะแนน เขียนความคิดเห็น และแนบรูปภาพได้สูงสุด 5 รูป
+                      1 รีวิวเพิ่มรูปได้สูงสุด {MAX_REVIEW_IMAGES} รูปรวมทั้งหมด
                     </p>
                   </div>
 
@@ -492,19 +549,66 @@ function CafeDetailPage() {
                   rows={4}
                 />
 
-                <label className="review-upload-box">
+                {editingReviewId && existingReviewImages.length > 0 && (
+                  <div className="existing-review-images-box">
+                    <div className="existing-review-images-header">
+                      <strong>
+                        รูปภาพรีวิวเดิม {existingReviewImages.length}/
+                        {MAX_REVIEW_IMAGES}
+                      </strong>
+                      <span>กด X เพื่อลบรูปที่ไม่ต้องการ</span>
+                    </div>
+
+                    <div className="existing-review-image-grid">
+                      {existingReviewImages.map((image) => (
+                        <div
+                          className="existing-review-image-item"
+                          key={image.id}
+                        >
+                          <img src={image.imageUrl} alt="review" />
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleDeleteExistingReviewImage(image.id)
+                            }
+                            aria-label="ลบรูปรีวิว"
+                          >
+                            <FaTimes />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <label
+                  className={
+                    remainingReviewImageSlots <= 0
+                      ? "review-upload-box disabled"
+                      : "review-upload-box"
+                  }
+                >
                   <FaImages />
                   <div>
                     <strong>
-                      {editingReviewId ? "เพิ่มรูปภาพรีวิว" : "เลือกรูปภาพรีวิว"}
+                      {editingReviewId
+                        ? "เพิ่มรูปภาพรีวิว"
+                        : "เลือกรูปภาพรีวิว"}
                     </strong>
-                    <span>รองรับไฟล์รูปภาพ เลือกได้สูงสุด 5 รูปต่อครั้ง</span>
+
+                    <span>
+                      {remainingReviewImageSlots > 0
+                        ? `เพิ่มได้อีก ${remainingReviewImageSlots} รูป จากทั้งหมด ${MAX_REVIEW_IMAGES} รูป`
+                        : `รูปครบ ${MAX_REVIEW_IMAGES} รูปแล้ว กรุณาลบรูปเก่าก่อนเพิ่มรูปใหม่`}
+                    </span>
                   </div>
 
                   <input
                     type="file"
                     accept="image/*"
                     multiple
+                    disabled={remainingReviewImageSlots <= 0}
                     onChange={handleReviewImageChange}
                   />
                 </label>
@@ -594,11 +698,7 @@ function CafeDetailPage() {
                       {reviewImageUrls.length > 0 && (
                         <div className="review-photo-grid">
                           {reviewImageUrls.map((imageUrl) => (
-                            <img
-                              src={imageUrl}
-                              alt="review"
-                              key={imageUrl}
-                            />
+                            <img src={imageUrl} alt="review" key={imageUrl} />
                           ))}
                         </div>
                       )}

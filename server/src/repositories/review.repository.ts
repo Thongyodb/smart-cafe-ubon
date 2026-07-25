@@ -112,6 +112,47 @@ export const reviewRepository = {
     });
   },
 
+  findReviewImageById: async (imageId: number) => {
+    return prisma.reviewImage.findUnique({
+      where: {
+        id: imageId,
+      },
+      include: {
+        review: true,
+      },
+    });
+  },
+
+  deleteReviewImage: async (imageId: number) => {
+    return prisma.reviewImage.delete({
+      where: {
+        id: imageId,
+      },
+    });
+  },
+
+  findImagesByReviewId: async (reviewId: number) => {
+    return prisma.reviewImage.findMany({
+      where: {
+        reviewId,
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+  },
+
+  updateReviewMainImage: async (reviewId: number, imageUrl: string | null) => {
+    return prisma.review.update({
+      where: {
+        id: reviewId,
+      },
+      data: {
+        imageUrl,
+      },
+    });
+  },
+
   calculateCafeRating: async (cafeId: number) => {
     return prisma.review.aggregate({
       where: {

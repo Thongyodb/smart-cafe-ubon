@@ -2853,3 +2853,62 @@
   border-radius: 18px;
   border: 1px solid rgba(111, 78, 55, 0.1);
 }
+.existing-review-images-box {
+  display: grid;
+  gap: 12px;
+}
+
+.existing-review-images-header strong {
+  display: block;
+  color: var(--app-dark);
+  font-weight: 950;
+}
+
+.existing-review-images-header span {
+  display: block;
+  margin-top: 4px;
+  color: var(--app-muted);
+  font-weight: 800;
+}
+
+.existing-review-image-grid {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.existing-review-image-item {
+  width: 110px;
+  height: 110px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid rgba(111, 78, 55, 0.14);
+  background: rgba(111, 78, 55, 0.08);
+}
+
+.existing-review-image-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.existing-review-image-item button {
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  border: 0;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: white;
+  background: rgba(220, 38, 38, 0.92);
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+.review-upload-box.disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
