@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import type { AuthRequest } from "../middleware/auth.middleware";
 import { cafeService } from "../services/cafe.service";
 
 export const cafeController = {
@@ -35,6 +36,8 @@ export const cafeController = {
         data: cafes,
       });
     } catch (error) {
+      console.error("GET CAFES ERROR:", error);
+
       res.status(500).json({
         success: false,
         message: "Failed to get cafes",
@@ -101,8 +104,14 @@ export const cafeController = {
         instagramUrl,
         websiteUrl,
         coverImageUrl,
-        priceMin: priceMin ? Number(priceMin) : null,
-        priceMax: priceMax ? Number(priceMax) : null,
+        priceMin:
+          priceMin !== undefined && priceMin !== null && priceMin !== ""
+            ? Number(priceMin)
+            : null,
+        priceMax:
+          priceMax !== undefined && priceMax !== null && priceMax !== ""
+            ? Number(priceMax)
+            : null,
         categoryId: Number(categoryId),
         districtId: Number(districtId),
         tagIds: Array.isArray(tagIds) ? tagIds.map((id) => Number(id)) : [],
@@ -192,8 +201,14 @@ export const cafeController = {
         instagramUrl,
         websiteUrl,
         coverImageUrl,
-        priceMin: priceMin ? Number(priceMin) : null,
-        priceMax: priceMax ? Number(priceMax) : null,
+        priceMin:
+          priceMin !== undefined && priceMin !== null && priceMin !== ""
+            ? Number(priceMin)
+            : null,
+        priceMax:
+          priceMax !== undefined && priceMax !== null && priceMax !== ""
+            ? Number(priceMax)
+            : null,
         categoryId: Number(categoryId),
         districtId: Number(districtId),
         tagIds: Array.isArray(tagIds) ? tagIds.map((tagId) => Number(tagId)) : [],
@@ -243,9 +258,11 @@ export const cafeController = {
     }
   },
 
-  getCafeById: async (req: Request, res: Response) => {
+  getCafeById: async (req: AuthRequest, res: Response) => {
     try {
       const id = Number(req.params.id);
+      const userId = req.user?.userId;
+      const ipAddress = req.ip;
 
       if (Number.isNaN(id)) {
         return res.status(400).json({
@@ -254,13 +271,15 @@ export const cafeController = {
         });
       }
 
-      const cafe = await cafeService.getCafeById(id);
+      const cafe = await cafeService.getCafeById(id, userId, ipAddress);
 
       res.json({
         success: true,
         data: cafe,
       });
     } catch (error) {
+      console.error("GET CAFE BY ID ERROR:", error);
+
       res.status(404).json({
         success: false,
         message: "Cafe not found",
@@ -277,6 +296,8 @@ export const cafeController = {
         data: cafes,
       });
     } catch (error) {
+      console.error("GET TOP RATED CAFES ERROR:", error);
+
       res.status(500).json({
         success: false,
         message: "Failed to get top rated cafes",
@@ -293,6 +314,8 @@ export const cafeController = {
         data: cafes,
       });
     } catch (error) {
+      console.error("GET POPULAR CAFES ERROR:", error);
+
       res.status(500).json({
         success: false,
         message: "Failed to get popular cafes",
@@ -321,6 +344,8 @@ export const cafeController = {
         data: cafes,
       });
     } catch (error) {
+      console.error("GET NEARBY CAFES ERROR:", error);
+
       res.status(500).json({
         success: false,
         message: "Failed to get nearby cafes",
@@ -337,6 +362,8 @@ export const cafeController = {
         data: cafe,
       });
     } catch (error) {
+      console.error("GET RANDOM CAFE ERROR:", error);
+
       res.status(404).json({
         success: false,
         message: "No cafe available",

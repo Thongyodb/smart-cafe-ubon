@@ -12,12 +12,16 @@ export type AuthRequest = Request & {
   user?: AuthPayload;
 };
 
-const verifyToken = (req: Request) => {
+const getTokenFromRequest = (req: Request) => {
   const authHeader = req.headers.authorization;
 
-  const token = authHeader?.startsWith("Bearer ")
+  return authHeader?.startsWith("Bearer ")
     ? authHeader.replace("Bearer ", "")
     : null;
+};
+
+const verifyToken = (req: Request) => {
+  const token = getTokenFromRequest(req);
 
   if (!token) {
     return null;
@@ -27,6 +31,24 @@ const verifyToken = (req: Request) => {
     token,
     process.env.JWT_SECRET ?? "SmartCafeUbonSecret"
   ) as AuthPayload;
+};
+
+export const optionalAuth = (
+  req: AuthRequest,
+  _res: Response,
+  next: NextFunction
+) => {
+  try {
+    const payload = verifyToken(req);
+
+    if (payload) {
+      req.user = payload;
+    }
+
+    next();
+  } catch {
+    next();
+  }
 };
 
 export const requireAuth = (

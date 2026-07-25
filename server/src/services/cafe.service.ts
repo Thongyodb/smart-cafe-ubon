@@ -67,11 +67,28 @@ export const cafeService = {
     return cafeRepository.findAll(params);
   },
 
-  getCafeById: async (id: number) => {
+  getCafeById: async (id: number, userId?: number, ipAddress?: string) => {
     const cafe = await cafeRepository.findById(id);
 
     if (!cafe) {
       throw new Error("Cafe not found");
+    }
+
+    if (userId) {
+      const existingVisit = await cafeRepository.findVisitHistory(userId, id);
+
+      if (!existingVisit) {
+        await cafeRepository.createVisitHistory(userId, id, ipAddress);
+        await cafeRepository.increaseTotalViews(id);
+
+        const updatedCafe = await cafeRepository.findById(id);
+
+        if (!updatedCafe) {
+          throw new Error("Cafe not found");
+        }
+
+        return updatedCafe;
+      }
     }
 
     return cafe;

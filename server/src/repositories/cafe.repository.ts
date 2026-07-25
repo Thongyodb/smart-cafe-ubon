@@ -31,10 +31,49 @@ type CreateCafeData = {
 
 type UpdateCafeData = Omit<CreateCafeData, "slug">;
 
+const cafeInclude = {
+  category: true,
+  district: true,
+  images: true,
+  photoSpots: true,
+  cafeTags: {
+    include: {
+      tag: true,
+    },
+  },
+};
+
+const cafeDetailInclude = {
+  category: true,
+  district: true,
+  images: true,
+  photoSpots: true,
+  reviews: {
+    include: {
+      user: {
+        select: {
+          id: true,
+          fullName: true,
+          avatarUrl: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc" as const,
+    },
+  },
+  cafeTags: {
+    include: {
+      tag: true,
+    },
+  },
+};
+
 export const cafeRepository = {
   findAll: async (filters: CafeFilters) => {
     const where = {
       isActive: true,
+
       ...(filters.search && {
         OR: [
           { name: { contains: filters.search } },
@@ -42,12 +81,15 @@ export const cafeRepository = {
           { address: { contains: filters.search } },
         ],
       }),
+
       ...(filters.categoryId && {
         categoryId: filters.categoryId,
       }),
+
       ...(filters.districtId && {
         districtId: filters.districtId,
       }),
+
       ...(filters.tagIds &&
         filters.tagIds.length > 0 && {
           cafeTags: {
@@ -62,17 +104,7 @@ export const cafeRepository = {
 
     return prisma.cafe.findMany({
       where,
-      include: {
-        category: true,
-        district: true,
-        images: true,
-        photoSpots: true,
-        cafeTags: {
-          include: {
-            tag: true,
-          },
-        },
-      },
+      include: cafeInclude,
       orderBy: {
         createdAt: "desc",
       },
@@ -82,32 +114,10 @@ export const cafeRepository = {
 
   findById: async (id: number) => {
     return prisma.cafe.findUnique({
-      where: { id },
-      include: {
-        category: true,
-        district: true,
-        images: true,
-        photoSpots: true,
-        reviews: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                fullName: true,
-                avatarUrl: true,
-              },
-            },
-          },
-          orderBy: {
-            createdAt: "desc",
-          },
-        },
-        cafeTags: {
-          include: {
-            tag: true,
-          },
-        },
+      where: {
+        id,
       },
+      include: cafeDetailInclude,
     });
   },
 
@@ -116,17 +126,7 @@ export const cafeRepository = {
       where: {
         isActive: true,
       },
-      include: {
-        category: true,
-        district: true,
-        images: true,
-        photoSpots: true,
-        cafeTags: {
-          include: {
-            tag: true,
-          },
-        },
-      },
+      include: cafeInclude,
       orderBy: [
         {
           averageRating: "desc",
@@ -144,17 +144,7 @@ export const cafeRepository = {
       where: {
         isActive: true,
       },
-      include: {
-        category: true,
-        district: true,
-        images: true,
-        photoSpots: true,
-        cafeTags: {
-          include: {
-            tag: true,
-          },
-        },
-      },
+      include: cafeInclude,
       orderBy: {
         totalViews: "desc",
       },
@@ -167,17 +157,7 @@ export const cafeRepository = {
       where: {
         isActive: true,
       },
-      include: {
-        category: true,
-        district: true,
-        images: true,
-        photoSpots: true,
-        cafeTags: {
-          include: {
-            tag: true,
-          },
-        },
-      },
+      include: cafeInclude,
     });
   },
 
@@ -217,17 +197,7 @@ export const cafeRepository = {
       where: {
         id: cafe.id,
       },
-      include: {
-        category: true,
-        district: true,
-        images: true,
-        photoSpots: true,
-        cafeTags: {
-          include: {
-            tag: true,
-          },
-        },
-      },
+      include: cafeInclude,
     });
   },
 
@@ -275,17 +245,7 @@ export const cafeRepository = {
       where: {
         id,
       },
-      include: {
-        category: true,
-        district: true,
-        images: true,
-        photoSpots: true,
-        cafeTags: {
-          include: {
-            tag: true,
-          },
-        },
-      },
+      include: cafeInclude,
     });
   },
 
@@ -305,17 +265,7 @@ export const cafeRepository = {
       where: {
         isActive: true,
       },
-      include: {
-        category: true,
-        district: true,
-        images: true,
-        photoSpots: true,
-        cafeTags: {
-          include: {
-            tag: true,
-          },
-        },
-      },
+      include: cafeInclude,
     });
 
     if (cafes.length === 0) {
@@ -324,5 +274,41 @@ export const cafeRepository = {
 
     const randomIndex = Math.floor(Math.random() * cafes.length);
     return cafes[randomIndex];
+  },
+
+  findVisitHistory: async (userId: number, cafeId: number) => {
+    return prisma.visitHistory.findFirst({
+      where: {
+        userId,
+        cafeId,
+      },
+    });
+  },
+
+  createVisitHistory: async (
+    userId: number,
+    cafeId: number,
+    ipAddress?: string
+  ) => {
+    return prisma.visitHistory.create({
+      data: {
+        userId,
+        cafeId,
+        ipAddress,
+      },
+    });
+  },
+
+  increaseTotalViews: async (cafeId: number) => {
+    return prisma.cafe.update({
+      where: {
+        id: cafeId,
+      },
+      data: {
+        totalViews: {
+          increment: 1,
+        },
+      },
+    });
   },
 };
