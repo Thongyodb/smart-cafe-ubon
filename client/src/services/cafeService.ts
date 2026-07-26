@@ -42,6 +42,11 @@ export const cafeService = {
     return response.data;
   },
 
+  getById: async (id: number) => {
+  const response = await axiosClient.get(`/cafes/${id}`);
+  return response.data;
+  },
+
   createCafe: async (data: CreateCafePayload) => {
     const response = await axiosClient.post<CafeDetailResponse>("/cafes", data);
     return response.data;

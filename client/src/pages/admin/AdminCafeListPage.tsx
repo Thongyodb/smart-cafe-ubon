@@ -1,5 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { FaEdit, FaEye, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
+import {
+  FaEdit,
+  FaEye,
+  FaImages,
+  FaPlus,
+  FaSearch,
+  FaTrash,
+} from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { cafeService } from "../../services/cafeService";
 import type { Cafe } from "../../types/cafe";
@@ -100,7 +107,13 @@ function AdminCafeListPage() {
                 <tr key={cafe.id}>
                   <td>
                     <div className="admin-cafe-cell">
-                      <img src={cafe.coverImageUrl ?? ""} alt={cafe.name} />
+                      <img
+                        src={
+                          cafe.coverImageUrl ||
+                          "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb"
+                        }
+                        alt={cafe.name}
+                      />
 
                       <div>
                         <strong>{cafe.name}</strong>
@@ -116,13 +129,26 @@ function AdminCafeListPage() {
 
                   <td>
                     <div className="admin-action-group">
-                      <Link to={`/cafes/${cafe.id}`} className="admin-icon-btn">
+                      <Link
+                        to={`/cafes/${cafe.id}`}
+                        className="admin-icon-btn"
+                        title="ดูหน้าเว็บ"
+                      >
                         <FaEye />
+                      </Link>
+
+                      <Link
+                        to={`/admin/cafes/${cafe.id}/images`}
+                        className="admin-icon-btn"
+                        title="จัดการรูปภาพ"
+                      >
+                        <FaImages />
                       </Link>
 
                       <Link
                         to={`/admin/cafes/${cafe.id}/edit`}
                         className="admin-icon-btn"
+                        title="แก้ไข"
                       >
                         <FaEdit />
                       </Link>
@@ -130,6 +156,7 @@ function AdminCafeListPage() {
                       <button
                         className="admin-icon-btn danger"
                         type="button"
+                        title="ปิดใช้งาน"
                         onClick={() => handleDeleteCafe(cafe)}
                       >
                         <FaTrash />

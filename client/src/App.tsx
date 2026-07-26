@@ -16,6 +16,7 @@ import ProtectedAdminRoute from "./routes/ProtectedAdminRoute";
 import AdminPhotoSpotsPage from "./pages/admin/AdminPhotoSpotsPage";
 import AdminMetaPage from "./pages/admin/AdminMetaPage";
 import AdminReviewsPage from "./pages/admin/AdminReviewsPage";
+import AdminCafeImagesPage from "./pages/admin/AdminCafeImagesPage";
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
             <Route path="cafes" element={<AdminCafeListPage />} />
             <Route path="cafes/create" element={<AdminCafeFormPage />} />
             <Route path="cafes/:id/edit" element={<AdminCafeFormPage />} />
+            <Route path="cafes/:id/images" element={<AdminCafeImagesPage />} />
             <Route path="users" element={<AdminUsersPage />} />
             <Route path="spots" element={<AdminPhotoSpotsPage />} />
             <Route path="tags" element={<AdminMetaPage />} />
