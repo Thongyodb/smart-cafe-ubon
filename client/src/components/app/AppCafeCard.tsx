@@ -1,39 +1,84 @@
-import { useEffect, useState, type MouseEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import type { MouseEvent } from "react";
+import { Link } from "react-router-dom";
 import { FaHeart, FaMapMarkerAlt, FaRegHeart, FaStar } from "react-icons/fa";
-import { favoriteService } from "../../services/favoriteService";
 import type { Cafe } from "../../types/cafe";
+import { favoriteService } from "../../services/favoriteService";
 import { authStorage } from "../../utils/authStorage";
 
 type Props = {
   cafe: Cafe;
-  compact?: boolean;
-  showFavorite?: boolean;
 };
 
-function AppCafeCard({ cafe, compact = false, showFavorite = true }: Props) {
-  const navigate = useNavigate();
-  const firstTag = cafe.cafeTags?.[0]?.tag.name ?? cafe.category.name;
+const FALLBACK_IMAGE =
+  "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=900&q=80";
+
+function AppCafeCard({ cafe }: Props) {
+  const isLoggedIn = authStorage.isLoggedIn();
+
   const [isFavorite, setIsFavorite] = useState(false);
-  const [savingFavorite, setSavingFavorite] = useState(false);
+  const [loadingFavorite, setLoadingFavorite] = useState(false);
+
+  const imageUrl = cafe.coverImageUrl || FALLBACK_IMAGE;
+
+  const tags = useMemo(() => {
+    return (
+      cafe.cafeTags
+        ?.map((cafeTag) => cafeTag.tag?.name)
+        .filter((tag): tag is string => Boolean(tag)) ?? []
+    );
+  }, [cafe.cafeTags]);
+
+  const rating = Number(cafe.averageRating ?? 0);
+
+  const priceMin = cafe.priceMin ?? 0;
+  const priceMax = cafe.priceMax ?? 0;
+
+  const priceText =
+    priceMin > 0 || priceMax > 0
+      ? `${priceMin}฿ ~ ${priceMax}฿`
+      : "ไม่ระบุราคา";
+
+  const handleToggleFavorite = async (
+    event: MouseEvent<HTMLButtonElement>
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!isLoggedIn) {
+      window.location.href = "/login";
+      return;
+    }
+
+    try {
+      setLoadingFavorite(true);
+
+      await favoriteService.toggleFavorite(cafe.id);
+
+      setIsFavorite((currentValue) => !currentValue);
+    } catch {
+      alert("ไม่สามารถบันทึกรายการโปรดได้");
+    } finally {
+      setLoadingFavorite(false);
+    }
+  };
 
   useEffect(() => {
     let isMounted = true;
 
-    const loadFavoriteStatus = async () => {
-      if (!authStorage.isLoggedIn()) {
-        return;
-      }
+    if (!isLoggedIn) {
+      return () => {
+        isMounted = false;
+      };
+    }
 
+    const loadFavoriteStatus = async () => {
       try {
         const result = await favoriteService.getFavorites();
-
-        const found = result.data.some(
-          (favoriteCafe) => favoriteCafe.id === cafe.id
-        );
+        const favorites: Cafe[] = result.data ?? [];
 
         if (isMounted) {
-          setIsFavorite(found);
+          setIsFavorite(favorites.some((item) => item.id === cafe.id));
         }
       } catch {
         if (isMounted) {
@@ -42,79 +87,55 @@ function AppCafeCard({ cafe, compact = false, showFavorite = true }: Props) {
       }
     };
 
-    void loadFavoriteStatus();
+    loadFavoriteStatus();
 
     return () => {
       isMounted = false;
     };
-  }, [cafe.id]);
-
-  const handleToggleFavorite = async (
-    event: MouseEvent<HTMLButtonElement>
-  ) => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if (!authStorage.isLoggedIn()) {
-      navigate("/login");
-      return;
-    }
-
-    try {
-      setSavingFavorite(true);
-
-      const result = await favoriteService.toggleFavorite(cafe.id);
-      setIsFavorite(result.data.isFavorite);
-    } catch {
-      alert("อัปเดตรายการโปรดไม่สำเร็จ");
-    } finally {
-      setSavingFavorite(false);
-    }
-  };
+  }, [cafe.id, isLoggedIn]);
 
   return (
-    <Link
-      to={`/cafes/${cafe.id}`}
-      className={compact ? "app-cafe-card compact" : "app-cafe-card"}
-    >
+    <Link to={`/cafes/${cafe.id}`} className="app-cafe-card">
       <div className="app-cafe-image">
-        <img src={cafe.coverImageUrl ?? ""} alt={cafe.name} />
+        <img src={imageUrl} alt={cafe.name} />
 
-        {showFavorite && (
-          <button
-            className={isFavorite ? "app-heart-btn active" : "app-heart-btn"}
-            type="button"
-            onClick={handleToggleFavorite}
-            disabled={savingFavorite}
-            aria-label={
-              isFavorite ? "ลบออกจากรายการโปรด" : "เพิ่มในรายการโปรด"
-            }
-          >
-            {isFavorite ? <FaHeart /> : <FaRegHeart />}
-          </button>
-        )}
+        <button
+          type="button"
+          className={`app-heart-btn ${isFavorite ? "active" : ""}`}
+          onClick={handleToggleFavorite}
+          disabled={loadingFavorite}
+          aria-label="favorite"
+        >
+          {isFavorite ? <FaHeart /> : <FaRegHeart />}
+        </button>
       </div>
 
       <div className="app-cafe-body">
         <h3>{cafe.name}</h3>
-        <p>{firstTag}</p>
 
-        <div className="app-cafe-meta">
-          <span>
-            <FaStar /> {cafe.averageRating.toFixed(1)}
-          </span>
+        <p className="app-cafe-location">
+          <FaMapMarkerAlt />
+          {cafe.district?.name ?? "อุบลราชธานี"}
+        </p>
 
-          <span>
-            <FaMapMarkerAlt /> {cafe.district.name}
-          </span>
+        <div className="app-cafe-tags">
+          {tags.length > 0 ? (
+            tags.map((tag) => <span key={`${cafe.id}-${tag}`}>{tag}</span>)
+          ) : (
+            <span>{cafe.category?.name ?? "Cafe"}</span>
+          )}
         </div>
 
-        <small>
-          ฿{cafe.priceMin ?? "-"} - ฿{cafe.priceMax ?? "-"}
-          {cafe.distanceKm !== undefined && (
-            <span className="distance-text"> · {cafe.distanceKm} km</span>
-          )}
-        </small>
+        <div className="app-cafe-divider" />
+
+        <div className="app-cafe-bottom">
+          <strong>{priceText}</strong>
+
+          <span>
+            {rating.toFixed(1)}
+            <FaStar />
+          </span>
+        </div>
       </div>
     </Link>
   );

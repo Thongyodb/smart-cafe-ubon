@@ -1,5 +1,6 @@
 const AUTH_TOKEN_KEY = "smart_cafe_auth_token";
 const AUTH_USER_KEY = "smart_cafe_auth_user";
+export const AUTH_CHANGE_EVENT = "smart-cafe-auth-change";
 
 export type AuthUser = {
   id: number;
@@ -10,26 +11,33 @@ export type AuthUser = {
   avatarUrl?: string | null;
 };
 
+const notifyAuthChange = () => {
+  window.dispatchEvent(new Event(AUTH_CHANGE_EVENT));
+};
+
 export const authStorage = {
   setAuth: (token: string, user: AuthUser) => {
     localStorage.setItem(AUTH_TOKEN_KEY, token);
     localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+    notifyAuthChange();
   },
 
   getToken: () => {
     return localStorage.getItem(AUTH_TOKEN_KEY);
   },
 
-  getUser: () => {
-    const userJson = localStorage.getItem(AUTH_USER_KEY);
+  getUser: (): AuthUser | null => {
+    const userText = localStorage.getItem(AUTH_USER_KEY);
 
-    if (!userJson) {
+    if (!userText) {
       return null;
     }
 
     try {
-      return JSON.parse(userJson) as AuthUser;
+      return JSON.parse(userText) as AuthUser;
     } catch {
+      localStorage.removeItem(AUTH_USER_KEY);
+      notifyAuthChange();
       return null;
     }
   },
@@ -39,12 +47,23 @@ export const authStorage = {
   },
 
   isAdmin: () => {
-    const user = authStorage.getUser();
-    return user?.role === "ADMIN";
+    const userText = localStorage.getItem(AUTH_USER_KEY);
+
+    if (!userText) {
+      return false;
+    }
+
+    try {
+      const user = JSON.parse(userText) as AuthUser;
+      return user.role === "ADMIN";
+    } catch {
+      return false;
+    }
   },
 
   logout: () => {
     localStorage.removeItem(AUTH_TOKEN_KEY);
     localStorage.removeItem(AUTH_USER_KEY);
+    notifyAuthChange();
   },
 };

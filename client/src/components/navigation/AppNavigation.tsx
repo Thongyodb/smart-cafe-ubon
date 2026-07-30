@@ -1,137 +1,161 @@
+import { useMemo, useSyncExternalStore } from "react";
+import { NavLink } from "react-router-dom";
 import {
+  FaCoffee,
+  FaCog,
   FaCompass,
   FaHeart,
   FaHome,
   FaSignInAlt,
-  FaSignOutAlt,
-  FaTachometerAlt,
   FaUser,
 } from "react-icons/fa";
-import { NavLink, useNavigate } from "react-router-dom";
-import { authService } from "../../services/authService";
 import { authStorage } from "../../utils/authStorage";
+import type { AuthUser } from "../../utils/authStorage";
+
+const AUTH_TOKEN_KEY = "smart_cafe_auth_token";
+const AUTH_USER_KEY = "smart_cafe_auth_user";
+
+const subscribeAuth = (callback: () => void) => {
+  window.addEventListener("storage", callback);
+  window.addEventListener("focus", callback);
+  window.addEventListener("smart-cafe-auth-change", callback);
+
+  return () => {
+    window.removeEventListener("storage", callback);
+    window.removeEventListener("focus", callback);
+    window.removeEventListener("smart-cafe-auth-change", callback);
+  };
+};
+
+const getAuthSnapshot = () => {
+  const token = localStorage.getItem(AUTH_TOKEN_KEY) ?? "";
+  const user = localStorage.getItem(AUTH_USER_KEY) ?? "";
+
+  return `${token}|${user}`;
+};
 
 function AppNavigation() {
-  const navigate = useNavigate();
+  const authSnapshot = useSyncExternalStore(
+    subscribeAuth,
+    getAuthSnapshot,
+    getAuthSnapshot
+  );
 
-  const isLoggedIn = authStorage.isLoggedIn();
-  const isAdmin = authStorage.isAdmin();
-  const user = authStorage.getUser();
+  const token = useMemo(() => authStorage.getToken(), [authSnapshot]);
+  const user = useMemo<AuthUser | null>(
+    () => authStorage.getUser(),
+    [authSnapshot]
+  );
 
-  const handleLogout = () => {
-    authService.logout();
-    navigate("/login");
-  };
+  const isLoggedIn = Boolean(user && token);
+  const isAdmin = user?.role === "ADMIN";
+
+  const displayName = user?.fullName || user?.username || "User";
+  const avatarLetter = displayName.charAt(0).toUpperCase();
 
   return (
     <>
       <header className="app-topbar">
         <NavLink to="/" className="app-brand">
-          <span className="app-brand-icon">☕</span>
+          <div className="app-brand-icon">
+            <FaCoffee />
+          </div>
 
           <div>
-            <strong>Smart Cafe Ubon</strong>
+            <strong>SMART CAFE UBON</strong>
             <small>ค้นหาคาเฟ่และจุดถ่ายรูป</small>
           </div>
         </NavLink>
 
         <nav className="app-desktop-nav">
-          <NavLink to="/">
+          <NavLink to="/" end>
             <FaHome />
-            หน้าแรก
+            Home
           </NavLink>
 
           {isLoggedIn && (
             <>
               <NavLink to="/explore">
                 <FaCompass />
-                สำรวจ
+                Explore
               </NavLink>
 
               <NavLink to="/favorites">
                 <FaHeart />
-                รายการโปรด
+                Favorite
               </NavLink>
 
               <NavLink to="/profile">
                 <FaUser />
-                โปรไฟล์
+                Profile
               </NavLink>
+
+              {isAdmin && (
+                <NavLink to="/admin" className="dashboard-nav-link">
+                  <FaCog />
+                  Dashboard
+                </NavLink>
+              )}
             </>
           )}
 
-          {isLoggedIn && isAdmin && (
-            <NavLink to="/admin">
-              <FaTachometerAlt />
-              แดชบอร์ดผู้ดูแลระบบ
-            </NavLink>
-          )}
-
-          {!isLoggedIn ? (
+          {!isLoggedIn && (
             <NavLink to="/login" className="app-login-link">
               <FaSignInAlt />
-              เข้าสู่ระบบ
+              Sign In
             </NavLink>
-          ) : (
-            <button className="app-logout-link" type="button" onClick={handleLogout}>
-              <FaSignOutAlt />
-              ออกจากระบบ
-            </button>
           )}
         </nav>
 
-        {isLoggedIn && (
+        {isLoggedIn && isAdmin && (
+          <NavLink to="/admin" className="admin-top-button">
+            Admin
+          </NavLink>
+        )}
+
+        {isLoggedIn && !isAdmin && (
           <div className="app-user-mini">
             {user?.avatarUrl ? (
-              <img src={user.avatarUrl} alt={user.fullName} />
+              <img src={user.avatarUrl} alt={displayName} />
             ) : (
-              <span>{user?.fullName?.charAt(0).toUpperCase() ?? "U"}</span>
+              <span>{avatarLetter}</span>
             )}
 
             <div>
-              <strong>{user?.fullName ?? user?.username ?? "User"}</strong>
-              <small>{user?.role === "ADMIN" ? "Admin" : "Member"}</small>
+              <strong>{displayName}</strong>
+              <small>Member</small>
             </div>
           </div>
         )}
       </header>
 
       <nav className="app-bottom-nav">
-        <NavLink to="/">
+        <NavLink to="/" end>
           <FaHome />
-          <span>หน้าแรก</span>
+          <span>Home</span>
         </NavLink>
 
-        {isLoggedIn && (
+        {isLoggedIn ? (
           <>
             <NavLink to="/explore">
               <FaCompass />
-              <span>สำรวจ</span>
+              <span>Explore</span>
             </NavLink>
 
             <NavLink to="/favorites">
               <FaHeart />
-              <span>โปรด</span>
+              <span>Favorite</span>
             </NavLink>
 
             <NavLink to="/profile">
               <FaUser />
-              <span>โปรไฟล์</span>
+              <span>Profile</span>
             </NavLink>
           </>
-        )}
-
-        {isLoggedIn && isAdmin && (
-          <NavLink to="/admin">
-            <FaTachometerAlt />
-            <span>Admin</span>
-          </NavLink>
-        )}
-
-        {!isLoggedIn && (
+        ) : (
           <NavLink to="/login">
             <FaSignInAlt />
-            <span>เข้าสู่ระบบ</span>
+            <span>Sign In</span>
           </NavLink>
         )}
       </nav>

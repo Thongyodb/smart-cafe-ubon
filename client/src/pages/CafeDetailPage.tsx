@@ -5,7 +5,6 @@ import {
   FaCamera,
   FaClock,
   FaEdit,
-  FaEye,
   FaImage,
   FaImages,
   FaMapMarkerAlt,
@@ -22,6 +21,43 @@ import { authStorage } from "../utils/authStorage";
 
 const MAX_REVIEW_IMAGES = 5;
 
+type CafeGalleryImage = {
+  id?: number;
+  imageUrl?: string | null;
+};
+
+const getCafeGalleryImageUrls = (cafe: Cafe | null) => {
+  if (!cafe) {
+    return [];
+  }
+
+  const cafeWithGallery = cafe as Cafe & {
+    images?: CafeGalleryImage[];
+    cafeImages?: CafeGalleryImage[];
+  };
+
+  const galleryUrls = [
+    ...(cafeWithGallery.images ?? []).map((image) => image.imageUrl),
+    ...(cafeWithGallery.cafeImages ?? []).map((image) => image.imageUrl),
+    cafe.coverImageUrl,
+  ].filter((imageUrl): imageUrl is string => Boolean(imageUrl));
+
+  return Array.from(new Set(galleryUrls));
+};
+
+const getGoogleMapUrl = (cafe: Cafe) => {
+  const hasLatLng =
+    Number.isFinite(cafe.latitude) && Number.isFinite(cafe.longitude);
+
+  const query = hasLatLng
+    ? `${cafe.latitude},${cafe.longitude}`
+    : `${cafe.name} ${cafe.address}`;
+
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    query
+  )}`;
+};
+
 function CafeDetailPage() {
   const { id } = useParams();
   const [cafe, setCafe] = useState<Cafe | null>(null);
@@ -36,7 +72,11 @@ function CafeDetailPage() {
   const [editingReviewId, setEditingReviewId] = useState<number | null>(null);
   const [savingReview, setSavingReview] = useState(false);
 
+  const [activeCafeImageIndex, setActiveCafeImageIndex] = useState(0);
+
   const currentUser = authStorage.getUser();
+  const displayName = currentUser?.fullName || currentUser?.username || "User";
+  const avatarLetter = displayName.charAt(0).toUpperCase();
 
   useEffect(() => {
     let isMounted = true;
@@ -60,6 +100,7 @@ function CafeDetailPage() {
         if (isMounted) {
           setCafe(cafeResult.data);
           setReviews(reviewResult.data);
+          setActiveCafeImageIndex(0);
         }
       } catch {
         if (isMounted) {
@@ -78,6 +119,22 @@ function CafeDetailPage() {
       isMounted = false;
     };
   }, [id]);
+
+  useEffect(() => {
+    const galleryImageUrls = getCafeGalleryImageUrls(cafe);
+
+    if (galleryImageUrls.length <= 1) {
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      setActiveCafeImageIndex((currentIndex) => currentIndex + 1);
+    }, 3500);
+
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, [cafe]);
 
   const clearReviewImages = () => {
     reviewImagePreviews.forEach((previewUrl) => {
@@ -217,7 +274,9 @@ function CafeDetailPage() {
       resetReviewForm();
       await reloadCafeAndReviews();
     } catch {
-      alert("บันทึกรีวิวไม่สำเร็จ อาจเป็นเพราะรูปเกิน 5 รูป หรือคุณเคยรีวิวร้านนี้แล้ว");
+      alert(
+        "บันทึกรีวิวไม่สำเร็จ อาจเป็นเพราะรูปเกิน 5 รูป หรือคุณเคยรีวิวร้านนี้แล้ว"
+      );
     } finally {
       setSavingReview(false);
     }
@@ -304,87 +363,188 @@ function CafeDetailPage() {
   }
 
   const tags = cafe.cafeTags?.map((item) => item.tag.name) ?? [];
-  const photoSpots = cafe.photoSpots ?? [];
+  const photoSpots = (cafe.photoSpots ?? []).slice(0, 9);
   const coverImageUrl = cafe.coverImageUrl ?? "";
+  const galleryImageUrls = getCafeGalleryImageUrls(cafe);
+  const normalizedGalleryIndex =
+    galleryImageUrls.length > 0
+      ? activeCafeImageIndex % galleryImageUrls.length
+      : 0;
+  const activeGalleryImageUrl =
+    galleryImageUrls[normalizedGalleryIndex] || coverImageUrl;
+  const mapUrl = getGoogleMapUrl(cafe);
   const showReviewForm = Boolean(currentUser && (!myReview || editingReviewId));
 
   return (
-    <main className="detail-page">
-      <section
-        className="detail-hero"
-        style={{
-          backgroundImage: `linear-gradient(135deg, rgba(45, 35, 28, 0.78), rgba(45, 45, 45, 0.72)), url(${coverImageUrl})`,
-        }}
-      >
-        <div className="container">
-          <Link to="/" className="back-link">
-            <FaArrowLeft /> กลับหน้าแรก
-          </Link>
+    <main className="detail-page cafe-detail-redesign">
+      <header className="cafe-detail-topbar">
+        <Link to="/" className="cafe-detail-title-link">
+          <FaArrowLeft />
+          <span>Cafe Details</span>
+        </Link>
 
-          <div className="detail-hero-content">
-            <span className="hero-badge">{cafe.category.name}</span>
-            <h1>{cafe.name}</h1>
-            <p>{cafe.description}</p>
+        {currentUser && (
+          <div className="cafe-detail-user-pill">
+            {currentUser.avatarUrl ? (
+              <img src={currentUser.avatarUrl} alt={displayName} />
+            ) : (
+              <span>{avatarLetter}</span>
+            )}
 
-            <div className="detail-stats">
-              <span>
-                <FaStar /> {cafe.averageRating.toFixed(1)}
-              </span>
-
-              <span>
-                <FaEye /> {cafe.totalViews} views
-              </span>
-
-              <span>
-                <FaMapMarkerAlt /> {cafe.district.name}
-              </span>
-            </div>
+            <strong>{displayName}</strong>
           </div>
-        </div>
-      </section>
+        )}
+      </header>
 
-      <section className="detail-content-section">
-        <div className="container detail-grid">
-          <div className="detail-main-card">
-            <h2>ข้อมูลร้าน</h2>
+      <section
+        className="cafe-detail-cover"
+        style={{
+          backgroundImage: `linear-gradient(180deg, rgba(244, 250, 253, 0.08), rgba(244, 250, 253, 0.86)), url(${coverImageUrl})`,
+        }}
+      />
 
-            <div className="info-list">
+      <section className="detail-content-section cafe-detail-content-section">
+        <div className="container detail-grid cafe-detail-layout">
+          <div className="detail-main-card cafe-detail-info-card">
+            <div className="cafe-detail-card-head">
               <div>
-                <FaMapMarkerAlt />
-                <span>{cafe.address}</span>
+                <div className="cafe-detail-rating-inline">
+                  <FaStar />
+                  <span>{cafe.averageRating.toFixed(1)}</span>
+                </div>
+
+                <h1>{cafe.name}</h1>
+
+                <p>
+                  {cafe.description || "ไม่มีรายละเอียดเพิ่มเติมสำหรับร้านนี้"}
+                </p>
               </div>
 
-              <div>
-                <FaClock />
-                <span>
-                  เปิด {cafe.openTime} - {cafe.closeTime}
-                </span>
+              <button className="cafe-detail-heart-btn" type="button">
+                ♡
+              </button>
+            </div>
+
+            <div className="cafe-detail-divider" />
+
+            <div className="cafe-detail-info-grid">
+              <div className="cafe-detail-info-item">
+                <div>
+                  <FaClock />
+                </div>
+
+                <section>
+                  <span>Opening Hours</span>
+                  <strong>
+                    {cafe.openTime} - {cafe.closeTime}
+                  </strong>
+                </section>
               </div>
 
-              <div>
-                <FaPhoneAlt />
-                <span>{cafe.phone ?? "ไม่มีข้อมูลเบอร์โทร"}</span>
+              <div className="cafe-detail-info-item">
+                <div>
+                  <FaMapMarkerAlt />
+                </div>
+
+                <section>
+                  <span>Location</span>
+                  <strong>{cafe.district.name}</strong>
+                </section>
+              </div>
+
+              <div className="cafe-detail-info-item">
+                <div>
+                  <FaPhoneAlt />
+                </div>
+
+                <section>
+                  <span>Contact</span>
+                  <strong>{cafe.phone ?? "ไม่มีข้อมูลเบอร์โทร"}</strong>
+                </section>
+              </div>
+
+              <div className="cafe-detail-info-item">
+                <div>
+                  <FaImage />
+                </div>
+
+                <section>
+                  <span>Price Range</span>
+                  <strong>
+                    {cafe.priceMin ?? "-"}฿ ~ {cafe.priceMax ?? "-"}฿
+                  </strong>
+                </section>
               </div>
             </div>
 
-            <div className="tag-list detail-tags">
+            <div className="tag-list detail-tags cafe-detail-tags">
               {tags.map((tag) => (
                 <span className="tag" key={tag}>
                   {tag}
                 </span>
               ))}
             </div>
+          </div>
 
-            <div className="price-box">
-              ราคาโดยประมาณ: ฿{cafe.priceMin ?? "-"} - ฿{cafe.priceMax ?? "-"}
+          <aside className="detail-sidebar cafe-detail-sidebar">
+            <a
+              className="detail-map-button"
+              href={mapUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <FaMapMarkerAlt />
+              นำทางไปที่ร้าน
+            </a>
+
+            {activeGalleryImageUrl && (
+              <div className="detail-gallery-slider">
+                <img
+                  src={activeGalleryImageUrl}
+                  alt={`${cafe.name} gallery`}
+                  key={activeGalleryImageUrl}
+                />
+
+                {galleryImageUrls.length > 1 && (
+                  <div className="detail-gallery-dots">
+                    {galleryImageUrls.map((imageUrl, index) => (
+                      <button
+                        key={`${imageUrl}-${index}`}
+                        type="button"
+                        className={
+                          normalizedGalleryIndex === index ? "active" : ""
+                        }
+                        onClick={() => setActiveCafeImageIndex(index)}
+                        aria-label={`ดูรูปที่ ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="detail-side-card">
+              <h3>คะแนนความนิยม</h3>
+              <strong>{cafe.averageRating.toFixed(1)}</strong>
+
+              <div className="detail-rating-stars">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <FaStar
+                    key={star}
+                    className={cafe.averageRating >= star ? "active" : ""}
+                  />
+                ))}
+              </div>
+
+              <p>จาก {cafe.totalReviews} รีวิว</p>
+
+              {currentUser && (
+                <a href="#review-form" className="detail-write-review-btn">
+                  เขียนรีวิว
+                </a>
+              )}
             </div>
-          </div>
-
-          <div className="detail-side-card">
-            <h3>คะแนนความนิยม</h3>
-            <strong>{cafe.averageRating.toFixed(1)}</strong>
-            <p>จาก {cafe.totalReviews} รีวิว</p>
-          </div>
+          </aside>
         </div>
 
         <div className="container">
@@ -401,7 +561,7 @@ function CafeDetailPage() {
 
             {photoSpots.length > 0 ? (
               <div className="spot-grid">
-                {photoSpots.map((spot) => (
+                {photoSpots.map((spot, index) => (
                   <article className="spot-card" key={spot.id}>
                     <div className="spot-image">
                       {spot.imageUrl ? (
@@ -415,10 +575,7 @@ function CafeDetailPage() {
                     </div>
 
                     <div className="spot-content">
-                      <span className="spot-badge">
-                        <FaCamera />
-                        Photo Spot
-                      </span>
+                      <span className="spot-number">{index + 1}</span>
 
                       <h3>{spot.name}</h3>
                       <p>{spot.description ?? "ไม่มีรายละเอียดเพิ่มเติม"}</p>
@@ -502,7 +659,11 @@ function CafeDetailPage() {
             )}
 
             {showReviewForm && (
-              <form className="review-form-card" onSubmit={handleSubmitReview}>
+              <form
+                id="review-form"
+                className="review-form-card"
+                onSubmit={handleSubmitReview}
+              >
                 <div className="admin-form-title">
                   <div>
                     <h3>

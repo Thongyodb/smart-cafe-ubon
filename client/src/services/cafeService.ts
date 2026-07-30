@@ -6,6 +6,7 @@ export type CafeQueryParams = {
   categoryId?: number;
   districtId?: number;
   tagIds?: number[];
+  limit?: number;
 };
 
 export type CreateCafePayload = {

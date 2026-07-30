@@ -4,7 +4,6 @@ import {
   FaFacebookF,
   FaGoogle,
   FaInstagram,
-  FaLock,
   FaSignInAlt,
   FaUserPlus,
 } from "react-icons/fa";
@@ -20,14 +19,14 @@ function AuthPage() {
     searchParams.get("mode") === "register" ? "register" : "login";
 
   const [mode, setMode] = useState<"login" | "register">(initialMode);
-  const [username, setUsername] = useState(initialMode === "login" ? "admin" : "");
-  const [password, setPassword] = useState(
-    initialMode === "login" ? "Admin@123456" : ""
-  );
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const goAfterLogin = () => {
+    window.dispatchEvent(new Event("smart-cafe-auth-change"));
+
     if (authStorage.isAdmin()) {
       navigate("/admin");
       return;
@@ -36,19 +35,21 @@ function AuthPage() {
     navigate("/");
   };
 
+  const clearForm = () => {
+    setUsername("");
+    setPassword("");
+    setConfirmPassword("");
+  };
+
   const switchToLogin = () => {
     setMode("login");
-    setUsername("admin");
-    setPassword("Admin@123456");
-    setConfirmPassword("");
+    clearForm();
     navigate("/login", { replace: true });
   };
 
   const switchToRegister = () => {
     setMode("register");
-    setUsername("");
-    setPassword("");
-    setConfirmPassword("");
+    clearForm();
     navigate("/login?mode=register", { replace: true });
   };
 
@@ -59,16 +60,17 @@ function AuthPage() {
       setLoading(true);
 
       if (mode === "login") {
-        await authService.login(username, password);
+        await authService.login(username.trim(), password);
       } else {
         if (password !== confirmPassword) {
           alert("Password และ Confirm Password ต้องตรงกัน");
           return;
         }
 
-        await authService.register(username, password, confirmPassword);
+        await authService.register(username.trim(), password, confirmPassword);
       }
 
+      clearForm();
       goAfterLogin();
     } catch {
       alert(
@@ -113,13 +115,19 @@ function AuthPage() {
           </button>
         </div>
 
-        <form className="auth-form" onSubmit={handleSubmit}>
+        <form
+          className="auth-form"
+          onSubmit={handleSubmit}
+          autoComplete="off"
+        >
           <label>
             Username
             <input
               value={username}
               onChange={(event) => setUsername(event.target.value)}
               placeholder="กรอก username"
+              autoComplete="off"
+              name="smart-cafe-username"
             />
           </label>
 
@@ -130,6 +138,8 @@ function AuthPage() {
               onChange={(event) => setPassword(event.target.value)}
               placeholder="กรอกรหัสผ่าน"
               type="password"
+              autoComplete="new-password"
+              name="smart-cafe-password"
             />
           </label>
 
@@ -141,6 +151,8 @@ function AuthPage() {
                 onChange={(event) => setConfirmPassword(event.target.value)}
                 placeholder="ยืนยันรหัสผ่าน"
                 type="password"
+                autoComplete="new-password"
+                name="smart-cafe-confirm-password"
               />
             </label>
           )}
@@ -181,11 +193,6 @@ function AuthPage() {
             <FaInstagram />
             Instagram
           </button>
-        </div>
-
-        <div className="admin-login-hint">
-          <FaLock />
-          <span>Admin ใช้ username/password ที่กำหนดไว้เพื่อเข้าแดชบอร์ด</span>
         </div>
       </section>
     </main>

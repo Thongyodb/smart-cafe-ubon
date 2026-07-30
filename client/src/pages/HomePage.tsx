@@ -1,38 +1,38 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FaCamera,
-  FaHeart,
+  FaChevronDown,
+  FaChevronRight,
   FaLocationArrow,
   FaMapMarkerAlt,
   FaSearch,
-  FaSignInAlt,
-  FaStore,
-  FaTachometerAlt,
-  FaUserPlus,
+  FaStar,
 } from "react-icons/fa";
 import AppCafeCard from "../components/app/AppCafeCard";
-import CafeFilterBar from "../components/app/CafeFilterBar";
-import type { CafeFilterState } from "../components/app/CafeFilterBar";
 import LeafletMapView from "../components/app/LeafletMapView";
 import { cafeService } from "../services/cafeService";
 import type { Cafe } from "../types/cafe";
 import { authStorage } from "../utils/authStorage";
 
-const defaultFilters: CafeFilterState = {
-  tagIds: [],
-};
+const HERO_FALLBACK_IMAGE =
+  "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1600&q=80";
+
+const SLIDE_INTERVAL_MS = 5000;
+const NEARBY_RADIUS_KM = 20;
 
 function HomePage() {
   const navigate = useNavigate();
+  const featureRef = useRef<HTMLDivElement | null>(null);
 
   const isLoggedIn = authStorage.isLoggedIn();
-  const isAdmin = authStorage.isAdmin();
-  const user = authStorage.getUser();
 
+  const [allCafes, setAllCafes] = useState<Cafe[]>([]);
   const [cafes, setCafes] = useState<Cafe[]>([]);
   const [search, setSearch] = useState("");
-  const [filters, setFilters] = useState<CafeFilterState>(defaultFilters);
+  const [selectedTagId, setSelectedTagId] = useState("");
+  const [currentSlide, setCurrentSlide] = useState(0);
   const [isNearbyMode, setIsNearbyMode] = useState(false);
   const [nearbyMessage, setNearbyMessage] = useState("");
   const [loadingNearby, setLoadingNearby] = useState(false);
@@ -41,37 +41,100 @@ function HomePage() {
     lng: number;
   } | null>(null);
 
-  const loadCafes = async (nextFilters = filters) => {
+  const heroCafes = useMemo(() => {
+    const cafesWithCover = allCafes.filter((cafe) => cafe.coverImageUrl);
+
+    return cafesWithCover.length > 0 ? cafesWithCover : allCafes;
+  }, [allCafes]);
+
+  const heroCafe = useMemo(() => {
+    if (heroCafes.length === 0) {
+      return null;
+    }
+
+    return heroCafes[currentSlide % heroCafes.length];
+  }, [heroCafes, currentSlide]);
+
+  const heroImageUrl = heroCafe?.coverImageUrl || HERO_FALLBACK_IMAGE;
+  const heroTitle = heroCafe?.name || "Cafe Ubon Ratchathani";
+
+  const mapCafes = cafes.length > 0 ? cafes : allCafes;
+
+  const recommendedCafes = useMemo(() => {
+    return cafes.slice(0, 4);
+  }, [cafes]);
+
+  const availableTags = useMemo(() => {
+    const tagMap = new Map<number, string>();
+
+    allCafes.forEach((cafe) => {
+      cafe.cafeTags?.forEach((cafeTag) => {
+        const tag = cafeTag.tag;
+
+        if (tag?.id && tag?.name) {
+          tagMap.set(tag.id, tag.name);
+        }
+      });
+    });
+
+    return Array.from(tagMap.entries()).map(([id, name]) => ({
+      id,
+      name,
+    }));
+  }, [allCafes]);
+
+  const nearbyText = loadingNearby
+    ? "กำลังค้นหาร้านใกล้คุณ..."
+    : nearbyMessage || `กด Explore Now เพื่อค้นหาร้านใกล้คุณ ภายใน ${NEARBY_RADIUS_KM} km`;
+
+  const loadCafes = async (options?: {
+    keyword?: string;
+    tagId?: string;
+    resetNearby?: boolean;
+  }) => {
+    const keyword = options?.keyword ?? search;
+    const tagId = options?.tagId ?? selectedTagId;
+
     const result = await cafeService.getCafes({
-      search,
-      categoryId: nextFilters.categoryId,
-      districtId: nextFilters.districtId,
-      tagIds: nextFilters.tagIds,
+      search: keyword.trim() || undefined,
+      tagIds: tagId ? [Number(tagId)] : [],
+      limit: 50,
     });
 
     setCafes(result.data);
-    setIsNearbyMode(false);
-    setNearbyMessage("");
-    setUserLocation(null);
+
+    if (options?.resetNearby !== false) {
+      setIsNearbyMode(false);
+      setNearbyMessage("");
+      setUserLocation(null);
+    }
   };
 
-  const handleFilterChange = async (nextFilters: CafeFilterState) => {
-    setFilters(nextFilters);
-    await loadCafes(nextFilters);
+  const handleSearchSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    try {
+      await loadCafes({
+        keyword: search,
+        tagId: selectedTagId,
+      });
+    } catch {
+      alert("ค้นหาคาเฟ่ไม่สำเร็จ");
+    }
   };
 
-  const handleClearFilters = async () => {
-    setSearch("");
-    setFilters(defaultFilters);
+  const handleStyleChange = async (event: ChangeEvent<HTMLSelectElement>) => {
+    const nextTagId = event.target.value;
+    setSelectedTagId(nextTagId);
 
-    const result = await cafeService.getCafes({
-      tagIds: [],
-    });
-
-    setCafes(result.data);
-    setIsNearbyMode(false);
-    setNearbyMessage("");
-    setUserLocation(null);
+    try {
+      await loadCafes({
+        keyword: search,
+        tagId: nextTagId,
+      });
+    } catch {
+      alert("กรองสไตล์คาเฟ่ไม่สำเร็จ");
+    }
   };
 
   const handleNearby = () => {
@@ -85,6 +148,11 @@ function HomePage() {
       return;
     }
 
+    featureRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+
     setLoadingNearby(true);
     setNearbyMessage("กำลังค้นหาร้านใกล้คุณ...");
 
@@ -96,11 +164,17 @@ function HomePage() {
 
           setUserLocation({ lat, lng });
 
-          const result = await cafeService.getNearbyCafes(lat, lng, 20);
+          const result = await cafeService.getNearbyCafes(
+            lat,
+            lng,
+            NEARBY_RADIUS_KM
+          );
 
           setCafes(result.data);
           setIsNearbyMode(true);
-          setNearbyMessage(`พบคาเฟ่ใกล้คุณ ${result.count} ร้าน ภายใน 20 km`);
+          setNearbyMessage(
+            `พบคาเฟ่ใกล้คุณ ${result.count} ร้าน ภายใน ${NEARBY_RADIUS_KM} km`
+          );
         } catch {
           setNearbyMessage("ไม่สามารถโหลดคาเฟ่ใกล้คุณได้");
         } finally {
@@ -127,14 +201,17 @@ function HomePage() {
     cafeService
       .getCafes({
         tagIds: [],
+        limit: 50,
       })
       .then((result) => {
         if (isMounted) {
+          setAllCafes(result.data);
           setCafes(result.data);
         }
       })
       .catch(() => {
         if (isMounted) {
+          setAllCafes([]);
           setCafes([]);
         }
       });
@@ -144,205 +221,170 @@ function HomePage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (heroCafes.length <= 1) {
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      setCurrentSlide((current) => (current + 1) % heroCafes.length);
+    }, SLIDE_INTERVAL_MS);
+
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, [heroCafes.length]);
+
   return (
-    <main className="app-page home-page">
-      <section className="home-hero">
-        <div className="home-hero-left">
-          <div className="app-header">
-            <div>
-              <span className="eyebrow">Cafe Ubon Ratchathani</span>
-              <h1>ค้นหาคาเฟ่และจุดถ่ายรูปในอุบลราชธานี</h1>
+    <main className="home-redesign">
+      <section
+        className="home-showcase"
+        style={{
+          backgroundImage: `url("${heroImageUrl}")`,
+        }}
+      >
+        <div className="home-showcase-shade" />
 
-              {isLoggedIn ? (
-                <p className="home-welcome-text">
-                  ยินดีต้อนรับ {user?.fullName ?? user?.username ?? "สมาชิก"}{" "}
-                  เข้าสู่ระบบแนะนำคาเฟ่
-                </p>
-              ) : (
-                <p className="home-welcome-text">
-                  สมัครสมาชิกหรือเข้าสู่ระบบก่อน เพื่อใช้งานสำรวจคาเฟ่
-                  รายการโปรด โปรไฟล์ และค้นหาร้านใกล้คุณ
-                </p>
-              )}
+        <div className="home-showcase-inner">
+          <div className="home-showcase-copy">
+            <h1>{heroTitle}</h1>
+
+            <div className="home-showcase-description">
+              <p>ยินดีต้อนรับ Smart Cafe Ubon เข้าสู่ระบบแนะนำคาเฟ่</p>
+              <p>ค้นหาคาเฟ่และจุดถ่ายรูปในอุบลราชธานี</p>
             </div>
 
-            {isLoggedIn ? (
-              user?.avatarUrl ? (
-                <img src={user.avatarUrl} alt="profile" className="app-avatar" />
-              ) : (
-                <div className="app-avatar app-avatar-letter">
-                  {(user?.fullName ?? user?.username ?? "U")
-                    .charAt(0)
-                    .toUpperCase()}
-                </div>
-              )
-            ) : (
-              <img
-                src="https://api.dicebear.com/7.x/adventurer/svg?seed=cafe"
-                alt="profile"
-                className="app-avatar"
-              />
-            )}
+            <button
+              className="home-explore-now-btn"
+              type="button"
+              onClick={handleNearby}
+              disabled={loadingNearby}
+            >
+              <FaLocationArrow />
+              {loadingNearby ? "Finding..." : "Explore Now"}
+            </button>
           </div>
 
-          {isLoggedIn ? (
-            <>
-              <form
-                className="app-search"
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  loadCafes();
-                }}
-              >
-                <FaSearch />
-
-                <input
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  placeholder="ค้นหาคาเฟ่ หรือโทนสีที่ชอบ..."
-                />
-
-                <button type="submit">ค้นหา</button>
-              </form>
-
-              <CafeFilterBar
-                filters={filters}
-                onChange={handleFilterChange}
-                onClear={handleClearFilters}
-              />
-            </>
-          ) : (
-            <div className="home-auth-card">
-              <h2>เริ่มใช้งาน Smart Cafe Ubon</h2>
-              <p>
-                เข้าสู่ระบบหรือสมัครสมาชิกเพื่อปลดล็อกฟีเจอร์ทั้งหมดของระบบ
-              </p>
-
-              <div className="home-auth-actions">
-                <button type="button" onClick={() => navigate("/login")}>
-                  <FaSignInAlt />
-                  เข้าสู่ระบบ
-                </button>
-
-                <button type="button" onClick={() => navigate("/login?mode=register")}>
-                  <FaUserPlus />
-                  สมัครสมาชิก
-                </button>
-              </div>
-            </div>
-          )}
-
-          <div className="quick-actions">
-            {isLoggedIn ? (
-              <>
-                <button type="button" onClick={() => navigate("/explore")}>
-                  <FaStore />
-                  <span>Explore Cafes</span>
-                </button>
-
-                <button type="button" onClick={() => navigate("/favorites")}>
-                  <FaHeart />
-                  <span>Saved Spots</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleNearby}
-                  disabled={loadingNearby}
-                >
-                  <FaMapMarkerAlt />
-                  <span>{loadingNearby ? "Finding..." : "Nearby"}</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    alert("ฟีเจอร์ Posing Guide จะทำในขั้นตอนถัดไป")
-                  }
-                >
-                  <FaCamera />
-                  <span>Posing Guide</span>
-                </button>
-
-                {isAdmin && (
-                  <button type="button" onClick={() => navigate("/admin")}>
-                    <FaTachometerAlt />
-                    <span>Admin Dashboard</span>
-                  </button>
-                )}
-              </>
-            ) : (
-              <>
-                <button type="button" onClick={() => navigate("/login")}>
-                  <FaSignInAlt />
-                  <span>Login</span>
-                </button>
-
-                <button type="button" onClick={() => navigate("/login?mode=register")}>
-                  <FaUserPlus />
-                  <span>Register</span>
-                </button>
-              </>
-            )}
+          <div className="home-showcase-map-card">
+            <LeafletMapView cafes={mapCafes} userLocation={userLocation} />
           </div>
-
-          {nearbyMessage && <div className="nearby-status">{nearbyMessage}</div>}
         </div>
 
-        <div className="home-map-feature">
-          <LeafletMapView cafes={cafes} userLocation={userLocation} />
+        {heroCafes.length > 1 && (
+          <div className="home-slide-dots">
+            {heroCafes.map((cafe, index) => (
+              <button
+                key={cafe.id}
+                className={
+                  index === currentSlide % heroCafes.length ? "active" : ""
+                }
+                type="button"
+                aria-label={`slide ${index + 1}`}
+                onClick={() => setCurrentSlide(index)}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="home-feature-wrap" ref={featureRef}>
+        <div className="home-feature-card">
+          <form className="home-feature-item" onSubmit={handleSearchSubmit}>
+            <div className="home-feature-icon">
+              <FaSearch />
+            </div>
+
+            <div className="home-feature-content">
+              <h3>Search for Cafe</h3>
+
+              <input
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="ค้นหาคาเฟ่อุบล..."
+              />
+            </div>
+          </form>
+
+          <div className="home-feature-divider" />
+
+          <div className="home-feature-item">
+            <div className="home-feature-icon">
+              <FaCamera />
+            </div>
+
+            <div className="home-feature-content">
+              <h3>Cafe Style</h3>
+
+              <div className="home-style-select-wrap">
+                <select value={selectedTagId} onChange={handleStyleChange}>
+                  <option value="">Select Style</option>
+
+                  {availableTags.map((tag) => (
+                    <option value={tag.id} key={tag.id}>
+                      {tag.name}
+                    </option>
+                  ))}
+                </select>
+
+                <FaChevronDown />
+              </div>
+            </div>
+          </div>
+
+          <div className="home-feature-divider" />
 
           <button
-            className="map-nearby-floating-btn"
+            className="home-feature-item home-nearby-item"
             type="button"
             onClick={handleNearby}
             disabled={loadingNearby}
           >
-            <FaLocationArrow />
-            {isLoggedIn
-              ? loadingNearby
-                ? "กำลังค้นหา..."
-                : "สำรวจใกล้ฉัน"
-              : "เข้าสู่ระบบเพื่อสำรวจ"}
+            <div className="home-feature-icon">
+              <FaMapMarkerAlt />
+            </div>
+
+            <div className="home-feature-content">
+              <h3>Nearby</h3>
+              <p>{nearbyText}</p>
+            </div>
           </button>
         </div>
       </section>
 
-      <section className="app-section">
-        <div className="section-heading">
+      <section className="home-recommended-section">
+        <div className="home-section-heading">
           <div>
-            <span>
-              {isNearbyMode
-                ? "Nearby Cafes"
-                : isLoggedIn
-                ? "Recommended Cafes"
-                : "Preview Cafes"}
-            </span>
             <h2>
-              {isNearbyMode
-                ? "คาเฟ่ใกล้คุณ"
-                : isLoggedIn
-                ? "คาเฟ่ที่แนะนำ"
-                : "ตัวอย่างคาเฟ่ที่แนะนำ"}
+              {isNearbyMode ? "Nearby Cafes" : "Recommended Cafes"}
+              <FaStar />
             </h2>
+
+            <p>
+              {isNearbyMode
+                ? "คาเฟ่ใกล้ตำแหน่งของคุณ"
+                : "คาเฟ่ที่แนะนำในจังหวัดอุบลราชธานี"}
+            </p>
           </div>
 
-          {isLoggedIn ? (
-            <button type="button" onClick={() => loadCafes()}>
-              {isNearbyMode ? "กลับไปดูทั้งหมด" : "รีเฟรช"}
-            </button>
-          ) : (
-            <button type="button" onClick={() => navigate("/login")}>
-              เข้าสู่ระบบเพื่อใช้งานเต็ม
-            </button>
-          )}
+          <button
+            className="home-view-all-btn"
+            type="button"
+            onClick={() => navigate("/explore")}
+          >
+            View All
+            <FaChevronRight />
+          </button>
         </div>
 
-        <div className="responsive-cafe-grid">
-          {cafes.map((cafe) => (
-            <AppCafeCard cafe={cafe} key={cafe.id} />
-          ))}
-        </div>
+        {recommendedCafes.length > 0 ? (
+          <div className="responsive-cafe-grid home-recommended-grid">
+            {recommendedCafes.map((cafe) => (
+              <AppCafeCard cafe={cafe} key={cafe.id} />
+            ))}
+          </div>
+        ) : (
+          <div className="home-empty-card">ไม่พบข้อมูลคาเฟ่ในขณะนี้</div>
+        )}
       </section>
     </main>
   );
