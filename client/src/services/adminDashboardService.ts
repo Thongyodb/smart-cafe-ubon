@@ -20,6 +20,9 @@ export type DashboardReview = {
     username?: string | null;
     fullName: string;
     avatarUrl?: string | null;
+    avatarFocusX?: number;
+    avatarFocusY?: number;
+    avatarZoom?: number;
   };
   cafe: {
     id: number;

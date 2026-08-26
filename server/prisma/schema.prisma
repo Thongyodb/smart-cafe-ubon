@@ -26,11 +26,9 @@ enum TagType {
   TIME
   FEATURE
 }
+
 enum AuthProvider {
   LOCAL
-  GOOGLE
-  FACEBOOK
-  INSTAGRAM
 }
 
 model User {
@@ -39,8 +37,13 @@ model User {
   fullName     String       @db.VarChar(150)
   email        String?      @unique @db.VarChar(150)
   password     String?      @db.VarChar(255)
-  phone        String?      @db.VarChar(20)
+  phone        String?      @unique @db.VarChar(20)
+
   avatarUrl    String?      @db.VarChar(255)
+  avatarFocusX Float        @default(50)
+  avatarFocusY Float        @default(50)
+  avatarZoom   Float        @default(1)
+  
   provider     AuthProvider @default(LOCAL)
   providerId   String?      @db.VarChar(255)
   role         UserRole     @default(USER)
@@ -80,41 +83,43 @@ model District {
 }
 
 model Cafe {
-  id              Int      @id @default(autoincrement())
-  name            String   @db.VarChar(150)
-  slug            String   @unique @db.VarChar(180)
-  description     String?  @db.Text
-  address         String   @db.Text
-  latitude        Float
-  longitude       Float
-  openTime        String   @db.VarChar(20)
-  closeTime       String   @db.VarChar(20)
-  phone           String?  @db.VarChar(20)
-  facebookUrl     String?  @db.VarChar(255)
-  instagramUrl    String?  @db.VarChar(255)
-  websiteUrl      String?  @db.VarChar(255)
-  coverImageUrl   String?  @db.VarChar(255)
-  priceMin        Int?
-  priceMax        Int?
-  averageRating   Float    @default(0)
-  totalReviews    Int      @default(0)
-  totalViews      Int      @default(0)
-  isActive        Boolean  @default(true)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             Int      @id @default(autoincrement())
+  name           String   @db.VarChar(150)
+  slug           String   @unique @db.VarChar(180)
+  description    String?  @db.Text
+  address        String   @db.Text
+  latitude       Float
+  longitude      Float
+  openTime       String   @db.VarChar(20)
+  closeTime      String   @db.VarChar(20)
+  phone          String?  @db.VarChar(20)
+  facebookUrl    String?  @db.VarChar(255)
+  instagramUrl   String?  @db.VarChar(255)
+  websiteUrl     String?  @db.VarChar(255)
+  coverImageUrl  String?  @db.VarChar(255)
+  coverFocusX    Float    @default(50)
+  coverFocusY    Float    @default(50)
+  coverZoom      Float    @default(1)
+  priceMin       Int?
+  priceMax       Int?
+  averageRating  Float    @default(0)
+  totalReviews   Int      @default(0)
+  totalViews     Int      @default(0)
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  categoryId      Int
-  districtId      Int
+  categoryId     Int
+  districtId     Int
 
-  category        Category @relation(fields: [categoryId], references: [id])
-  district        District @relation(fields: [districtId], references: [id])
-
-  images          CafeImage[]
-  photoSpots      PhotoSpot[]
-  reviews         Review[]
-  favorites       Favorite[]
-  cafeTags        CafeTag[]
-  visitHistory    VisitHistory[]
+  category       Category @relation(fields: [categoryId], references: [id])
+  district       District @relation(fields: [districtId], references: [id])
+  images         CafeImage[]
+  photoSpots     PhotoSpot[]
+  reviews        Review[]
+  favorites      Favorite[]
+  cafeTags       CafeTag[]
+  visitHistory   VisitHistory[]
 
   @@index([categoryId])
   @@index([districtId])
@@ -123,14 +128,14 @@ model Cafe {
 }
 
 model CafeImage {
-  id          Int      @id @default(autoincrement())
-  cafeId      Int
-  imageUrl    String   @db.VarChar(255)
-  caption     String?  @db.VarChar(255)
-  isCover     Boolean  @default(false)
-  createdAt   DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  cafeId    Int
+  imageUrl  String   @db.VarChar(255)
+  caption   String?  @db.VarChar(255)
+  isCover   Boolean  @default(false)
+  createdAt DateTime @default(now())
 
-  cafe        Cafe     @relation(fields: [cafeId], references: [id], onDelete: Cascade)
+  cafe      Cafe     @relation(fields: [cafeId], references: [id], onDelete: Cascade)
 
   @@index([cafeId])
   @@map("cafe_images")
@@ -213,12 +218,12 @@ model Tag {
 }
 
 model CafeTag {
-  id        Int      @id @default(autoincrement())
-  cafeId    Int
-  tagId     Int
+  id     Int @id @default(autoincrement())
+  cafeId Int
+  tagId  Int
 
-  cafe      Cafe     @relation(fields: [cafeId], references: [id], onDelete: Cascade)
-  tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  cafe   Cafe @relation(fields: [cafeId], references: [id], onDelete: Cascade)
+  tag    Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@unique([cafeId, tagId])
   @@index([tagId])

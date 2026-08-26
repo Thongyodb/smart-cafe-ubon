@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import type { FormEvent } from "react";
-import { FaSave, FaTimes } from "react-icons/fa";
+import type { ChangeEvent, FormEvent } from "react";
+import { FaImage, FaSave, FaTimes, FaUpload } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import { cafeService } from "../../services/cafeService";
 import { metaService } from "../../services/metaService";
@@ -20,6 +20,9 @@ function AdminCafeFormPage() {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(isEditMode);
 
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
+  const [coverImagePreview, setCoverImagePreview] = useState("");
+
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -31,7 +34,6 @@ function AdminCafeFormPage() {
     phone: "",
     facebookUrl: "",
     instagramUrl: "",
-    websiteUrl: "",
     coverImageUrl: "",
     priceMin: "",
     priceMax: "",
@@ -40,9 +42,15 @@ function AdminCafeFormPage() {
   });
 
   useEffect(() => {
+    let isMounted = true;
+
     const loadData = async () => {
       try {
         const filterResult = await metaService.getFilters();
+
+        if (!isMounted) {
+          return;
+        }
 
         setCategories(filterResult.data.categories);
         setDistricts(filterResult.data.districts);
@@ -51,6 +59,10 @@ function AdminCafeFormPage() {
         if (isEditMode && editCafeId) {
           const cafeResult = await cafeService.getCafeById(editCafeId);
           const cafe = cafeResult.data;
+
+          if (!isMounted) {
+            return;
+          }
 
           setForm({
             name: cafe.name ?? "",
@@ -63,7 +75,6 @@ function AdminCafeFormPage() {
             phone: cafe.phone ?? "",
             facebookUrl: cafe.facebookUrl ?? "",
             instagramUrl: cafe.instagramUrl ?? "",
-            websiteUrl: cafe.websiteUrl ?? "",
             coverImageUrl: cafe.coverImageUrl ?? "",
             priceMin: cafe.priceMin ? String(cafe.priceMin) : "",
             priceMax: cafe.priceMax ? String(cafe.priceMax) : "",
@@ -71,19 +82,29 @@ function AdminCafeFormPage() {
             districtId: cafe.district?.id ? String(cafe.district.id) : "",
           });
 
+          setCoverImagePreview(cafe.coverImageUrl ?? "");
+
           setSelectedTagIds(
             cafe.cafeTags?.map((cafeTag) => cafeTag.tag.id) ?? []
           );
         }
       } catch {
-        alert("โหลดข้อมูลไม่สำเร็จ");
-        navigate("/admin/cafes");
+        if (isMounted) {
+          alert("โหลดข้อมูลไม่สำเร็จ");
+          navigate("/admin/cafes");
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
-    loadData();
+    void loadData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [editCafeId, isEditMode, navigate]);
 
   const updateField = (field: keyof typeof form, value: string) => {
@@ -101,6 +122,32 @@ function AdminCafeFormPage() {
     );
   };
 
+  const handleCoverImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+
+    if (!selectedFile) {
+      return;
+    }
+
+    if (!selectedFile.type.startsWith("image/")) {
+      alert("กรุณาเลือกไฟล์รูปภาพเท่านั้น");
+      event.target.value = "";
+      return;
+    }
+
+    const previewUrl = URL.createObjectURL(selectedFile);
+
+    setCoverImageFile(selectedFile);
+    setCoverImagePreview(previewUrl);
+
+    event.target.value = "";
+  };
+
+  const handleRemoveSelectedCover = () => {
+    setCoverImageFile(null);
+    setCoverImagePreview(form.coverImageUrl);
+  };
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -114,34 +161,40 @@ function AdminCafeFormPage() {
       return;
     }
 
-    const payload = {
-      name: form.name,
-      description: form.description,
-      address: form.address,
-      latitude: Number(form.latitude),
-      longitude: Number(form.longitude),
-      openTime: form.openTime,
-      closeTime: form.closeTime,
-      phone: form.phone,
-      facebookUrl: form.facebookUrl,
-      instagramUrl: form.instagramUrl,
-      websiteUrl: form.websiteUrl,
-      coverImageUrl: form.coverImageUrl,
-      priceMin: form.priceMin ? Number(form.priceMin) : null,
-      priceMax: form.priceMax ? Number(form.priceMax) : null,
-      categoryId: Number(form.categoryId),
-      districtId: Number(form.districtId),
-      tagIds: selectedTagIds,
-    };
+    const formData = new FormData();
+
+    formData.append("name", form.name);
+    formData.append("description", form.description);
+    formData.append("address", form.address);
+    formData.append("latitude", String(Number(form.latitude)));
+    formData.append("longitude", String(Number(form.longitude)));
+    formData.append("openTime", form.openTime);
+    formData.append("closeTime", form.closeTime);
+    formData.append("phone", form.phone);
+    formData.append("facebookUrl", form.facebookUrl);
+    formData.append("instagramUrl", form.instagramUrl);
+    formData.append("coverImageUrl", form.coverImageUrl);
+    formData.append("priceMin", form.priceMin ? String(Number(form.priceMin)) : "");
+    formData.append("priceMax", form.priceMax ? String(Number(form.priceMax)) : "");
+    formData.append("categoryId", String(Number(form.categoryId)));
+    formData.append("districtId", String(Number(form.districtId)));
+
+    selectedTagIds.forEach((tagId) => {
+      formData.append("tagIds", String(tagId));
+    });
+
+    if (coverImageFile) {
+      formData.append("coverImage", coverImageFile);
+    }
 
     setSaving(true);
 
     try {
       if (isEditMode && editCafeId) {
-        await cafeService.updateCafe(editCafeId, payload);
+        await cafeService.updateCafe(editCafeId, formData as never);
         alert("แก้ไขคาเฟ่สำเร็จ");
       } else {
-        await cafeService.createCafe(payload);
+        await cafeService.createCafe(formData as never);
         alert("เพิ่มคาเฟ่สำเร็จ");
       }
 
@@ -201,7 +254,7 @@ function AdminCafeFormPage() {
             <input
               value={form.name}
               onChange={(event) => updateField("name", event.target.value)}
-              placeholder="เช่น Minimal Garden Cafe"
+              placeholder=""
             />
           </label>
 
@@ -210,7 +263,7 @@ function AdminCafeFormPage() {
             <input
               value={form.phone}
               onChange={(event) => updateField("phone", event.target.value)}
-              placeholder="0800000000"
+              placeholder=""
             />
           </label>
 
@@ -230,7 +283,7 @@ function AdminCafeFormPage() {
             <input
               value={form.address}
               onChange={(event) => updateField("address", event.target.value)}
-              placeholder="อำเภอเมืองอุบลราชธานี จังหวัดอุบลราชธานี"
+              placeholder=""
             />
           </label>
 
@@ -239,7 +292,7 @@ function AdminCafeFormPage() {
             <input
               value={form.latitude}
               onChange={(event) => updateField("latitude", event.target.value)}
-              placeholder="15.2287"
+              placeholder=""
             />
           </label>
 
@@ -248,7 +301,7 @@ function AdminCafeFormPage() {
             <input
               value={form.longitude}
               onChange={(event) => updateField("longitude", event.target.value)}
-              placeholder="104.8564"
+              placeholder=""
             />
           </label>
 
@@ -275,7 +328,7 @@ function AdminCafeFormPage() {
             <input
               value={form.priceMin}
               onChange={(event) => updateField("priceMin", event.target.value)}
-              placeholder="60"
+              placeholder=""
             />
           </label>
 
@@ -284,7 +337,7 @@ function AdminCafeFormPage() {
             <input
               value={form.priceMax}
               onChange={(event) => updateField("priceMax", event.target.value)}
-              placeholder="180"
+              placeholder=""
             />
           </label>
 
@@ -322,16 +375,54 @@ function AdminCafeFormPage() {
             </select>
           </label>
 
-          <label className="admin-form-full">
-            รูปหน้าปก URL
-            <input
-              value={form.coverImageUrl}
-              onChange={(event) =>
-                updateField("coverImageUrl", event.target.value)
-              }
-              placeholder="https://images.unsplash.com/..."
-            />
-          </label>
+          <div className="admin-form-full cafe-cover-upload-field">
+            <span className="admin-upload-label">รูปหน้าปก</span>
+
+            <div className="admin-cover-upload-box">
+              <div className="admin-cover-preview">
+                {coverImagePreview ? (
+                  <img src={coverImagePreview} alt="cover preview" />
+                ) : (
+                  <div>
+                    <FaImage />
+                    <span>ยังไม่มีรูปหน้าปก</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="admin-cover-upload-actions">
+                <label className="admin-cover-upload-button">
+                  <FaUpload />
+                  <span>
+                    {coverImagePreview
+                      ? "เปลี่ยนรูปหน้าปก"
+                      : "อัปโหลดรูปหน้าปก"}
+                  </span>
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleCoverImageChange}
+                  />
+                </label>
+
+                {coverImageFile && (
+                  <button
+                    className="admin-cover-remove-button"
+                    type="button"
+                    onClick={handleRemoveSelectedCover}
+                  >
+                    <FaTimes />
+                    ยกเลิกรูปที่เลือก
+                  </button>
+                )}
+
+                {coverImageFile && (
+                  <small>ไฟล์ที่เลือก: {coverImageFile.name}</small>
+                )}
+              </div>
+            </div>
+          </div>
 
           <label>
             Facebook URL
@@ -352,15 +443,6 @@ function AdminCafeFormPage() {
                 updateField("instagramUrl", event.target.value)
               }
               placeholder="https://instagram.com/..."
-            />
-          </label>
-
-          <label className="admin-form-full">
-            Website URL
-            <input
-              value={form.websiteUrl}
-              onChange={(event) => updateField("websiteUrl", event.target.value)}
-              placeholder="https://example.com"
             />
           </label>
         </div>
@@ -392,8 +474,8 @@ function AdminCafeFormPage() {
             {saving
               ? "กำลังบันทึก..."
               : isEditMode
-                ? "บันทึกการแก้ไข"
-                : "บันทึกคาเฟ่"}
+              ? "บันทึกการแก้ไข"
+              : "บันทึกคาเฟ่"}
           </button>
         </div>
       </form>

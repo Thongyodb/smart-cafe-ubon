@@ -1254,6 +1254,9 @@ export const UserScalarFieldEnum = {
   password: 'password',
   phone: 'phone',
   avatarUrl: 'avatarUrl',
+  avatarFocusX: 'avatarFocusX',
+  avatarFocusY: 'avatarFocusY',
+  avatarZoom: 'avatarZoom',
   provider: 'provider',
   providerId: 'providerId',
   role: 'role',
@@ -1301,6 +1304,9 @@ export const CafeScalarFieldEnum = {
   instagramUrl: 'instagramUrl',
   websiteUrl: 'websiteUrl',
   coverImageUrl: 'coverImageUrl',
+  coverFocusX: 'coverFocusX',
+  coverFocusY: 'coverFocusY',
+  coverZoom: 'coverZoom',
   priceMin: 'priceMin',
   priceMax: 'priceMax',
   averageRating: 'averageRating',
@@ -1540,6 +1546,13 @@ export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 
 
 
 /**
+ * Reference to a field of type 'Float'
+ */
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+/**
  * Reference to a field of type 'AuthProvider'
  */
 export type EnumAuthProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AuthProvider'>
@@ -1564,13 +1577,6 @@ export type EnumUserStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$Prism
  * Reference to a field of type 'DateTime'
  */
 export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
-    
-
-
-/**
- * Reference to a field of type 'Float'
- */
-export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
     
 
 

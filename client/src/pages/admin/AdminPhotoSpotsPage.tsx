@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import type { ChangeEvent } from "react";
 import {
   FaEdit,
   FaImage,
@@ -7,12 +8,12 @@ import {
   FaSearch,
   FaTrash,
   FaTimes,
+  FaUpload,
 } from "react-icons/fa";
 import { cafeService } from "../../services/cafeService";
 import {
   photoSpotService,
   type PhotoSpotItem,
-  type PhotoSpotPayload,
 } from "../../services/photoSpotService";
 import type { Cafe } from "../../types/cafe";
 
@@ -23,6 +24,20 @@ type PhotoSpotForm = {
   imageUrl: string;
   bestTime: string;
   cameraAngle: string;
+};
+
+const API_BASE_URL = "http://localhost:5000";
+
+const getImageUrl = (imageUrl?: string | null) => {
+  if (!imageUrl) {
+    return "";
+  }
+
+  if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
+    return imageUrl;
+  }
+
+  return `${API_BASE_URL}${imageUrl}`;
 };
 
 const emptyForm: PhotoSpotForm = {
@@ -41,6 +56,9 @@ function AdminPhotoSpotsPage() {
   const [form, setForm] = useState<PhotoSpotForm>(emptyForm);
   const [editingSpot, setEditingSpot] = useState<PhotoSpotItem | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const [spotImageFile, setSpotImageFile] = useState<File | null>(null);
+  const [spotImagePreview, setSpotImagePreview] = useState("");
 
   useEffect(() => {
     let isMounted = true;
@@ -80,10 +98,15 @@ function AdminPhotoSpotsPage() {
   const resetForm = () => {
     setForm(emptyForm);
     setEditingSpot(null);
+    setSpotImageFile(null);
+    setSpotImagePreview("");
   };
 
   const handleEdit = (spot: PhotoSpotItem) => {
     setEditingSpot(spot);
+    setSpotImageFile(null);
+    setSpotImagePreview(getImageUrl(spot.imageUrl));
+
     setForm({
       cafeId: String(spot.cafeId),
       name: spot.name,
@@ -94,7 +117,33 @@ function AdminPhotoSpotsPage() {
     });
   };
 
-  const buildPayload = (): PhotoSpotPayload | null => {
+  const handleSpotImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+
+    if (!selectedFile) {
+      return;
+    }
+
+    if (!selectedFile.type.startsWith("image/")) {
+      alert("กรุณาเลือกไฟล์รูปภาพเท่านั้น");
+      event.target.value = "";
+      return;
+    }
+
+    const previewUrl = URL.createObjectURL(selectedFile);
+
+    setSpotImageFile(selectedFile);
+    setSpotImagePreview(previewUrl);
+
+    event.target.value = "";
+  };
+
+  const handleRemoveSelectedImage = () => {
+    setSpotImageFile(null);
+    setSpotImagePreview(getImageUrl(form.imageUrl));
+  };
+
+  const buildFormData = (): FormData | null => {
     const cafeId = Number(form.cafeId);
 
     if (!cafeId || Number.isNaN(cafeId)) {
@@ -107,20 +156,26 @@ function AdminPhotoSpotsPage() {
       return null;
     }
 
-    return {
-      cafeId,
-      name: form.name.trim(),
-      description: form.description.trim(),
-      imageUrl: form.imageUrl.trim(),
-      bestTime: form.bestTime.trim(),
-      cameraAngle: form.cameraAngle.trim(),
-    };
+    const formData = new FormData();
+
+    formData.append("cafeId", String(cafeId));
+    formData.append("name", form.name.trim());
+    formData.append("description", form.description.trim());
+    formData.append("imageUrl", form.imageUrl.trim());
+    formData.append("bestTime", form.bestTime.trim());
+    formData.append("cameraAngle", form.cameraAngle.trim());
+
+    if (spotImageFile) {
+      formData.append("image", spotImageFile);
+    }
+
+    return formData;
   };
 
   const handleSubmit = async () => {
-    const payload = buildPayload();
+    const formData = buildFormData();
 
-    if (!payload) {
+    if (!formData) {
       return;
     }
 
@@ -130,7 +185,7 @@ function AdminPhotoSpotsPage() {
       if (editingSpot) {
         const result = await photoSpotService.updatePhotoSpot(
           editingSpot.id,
-          payload
+          formData
         );
 
         setPhotoSpots((current) =>
@@ -141,7 +196,7 @@ function AdminPhotoSpotsPage() {
 
         alert("แก้ไขจุดถ่ายรูปสำเร็จ");
       } else {
-        const result = await photoSpotService.createPhotoSpot(payload);
+        const result = await photoSpotService.createPhotoSpot(formData);
 
         setPhotoSpots((current) => [result.data, ...current]);
 
@@ -206,7 +261,11 @@ function AdminPhotoSpotsPage() {
           </div>
 
           {editingSpot && (
-            <button className="admin-secondary-btn" type="button" onClick={resetForm}>
+            <button
+              className="admin-secondary-btn"
+              type="button"
+              onClick={resetForm}
+            >
               <FaTimes />
               ยกเลิกแก้ไข
             </button>
@@ -276,19 +335,54 @@ function AdminPhotoSpotsPage() {
             />
           </label>
 
-          <label className="admin-form-full">
-            URL รูปภาพ
-            <input
-              value={form.imageUrl}
-              onChange={(event) =>
-                setForm((current) => ({
-                  ...current,
-                  imageUrl: event.target.value,
-                }))
-              }
-              placeholder="https://..."
-            />
-          </label>
+          <div className="admin-form-full cafe-cover-upload-field">
+            <span className="admin-upload-label">รูปจุดถ่ายรูป</span>
+
+            <div className="admin-cover-upload-box">
+              <div className="admin-cover-preview">
+                {spotImagePreview ? (
+                  <img src={spotImagePreview} alt="photo spot preview" />
+                ) : (
+                  <div>
+                    <FaImage />
+                    <span>ยังไม่มีรูปจุดถ่ายรูป</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="admin-cover-upload-actions">
+                <label className="admin-cover-upload-button">
+                  <FaUpload />
+                  <span>
+                    {spotImagePreview
+                      ? "เปลี่ยนรูปจุดถ่ายรูป"
+                      : "อัปโหลดรูปจุดถ่ายรูป"}
+                  </span>
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleSpotImageChange}
+                  />
+                </label>
+
+                {spotImageFile && (
+                  <button
+                    className="admin-cover-remove-button"
+                    type="button"
+                    onClick={handleRemoveSelectedImage}
+                  >
+                    <FaTimes />
+                    ยกเลิกรูปที่เลือก
+                  </button>
+                )}
+
+                {spotImageFile && (
+                  <small>ไฟล์ที่เลือก: {spotImageFile.name}</small>
+                )}
+              </div>
+            </div>
+          </div>
 
           <label className="admin-form-full">
             รายละเอียด
@@ -350,56 +444,60 @@ function AdminPhotoSpotsPage() {
             </thead>
 
             <tbody>
-              {filteredPhotoSpots.map((spot) => (
-                <tr key={spot.id}>
-                  <td>
-                    <div className="admin-photo-spot-cell">
-                      {spot.imageUrl ? (
-                        <img src={spot.imageUrl} alt={spot.name} />
-                      ) : (
-                        <span>
-                          <FaImage />
-                        </span>
-                      )}
+              {filteredPhotoSpots.map((spot) => {
+                const spotImageUrl = getImageUrl(spot.imageUrl);
 
-                      <div>
-                        <strong>{spot.name}</strong>
-                        <small>{spot.description ?? "ไม่มีรายละเอียด"}</small>
+                return (
+                  <tr key={spot.id}>
+                    <td>
+                      <div className="admin-photo-spot-cell">
+                        {spotImageUrl ? (
+                          <img src={spotImageUrl} alt={spot.name} />
+                        ) : (
+                          <span>
+                            <FaImage />
+                          </span>
+                        )}
+
+                        <div>
+                          <strong>{spot.name}</strong>
+                          <small>{spot.description ?? "ไม่มีรายละเอียด"}</small>
+                        </div>
                       </div>
-                    </div>
-                  </td>
+                    </td>
 
-                  <td>
-                    <strong>{spot.cafe.name}</strong>
-                    <small className="admin-muted-block">
-                      {spot.cafe.district.name}
-                    </small>
-                  </td>
+                    <td>
+                      <strong>{spot.cafe.name}</strong>
+                      <small className="admin-muted-block">
+                        {spot.cafe.district.name}
+                      </small>
+                    </td>
 
-                  <td>{spot.bestTime || "-"}</td>
-                  <td>{spot.cameraAngle || "-"}</td>
+                    <td>{spot.bestTime || "-"}</td>
+                    <td>{spot.cameraAngle || "-"}</td>
 
-                  <td>
-                    <div className="admin-action-group">
-                      <button
-                        className="admin-icon-btn"
-                        type="button"
-                        onClick={() => handleEdit(spot)}
-                      >
-                        <FaEdit />
-                      </button>
+                    <td>
+                      <div className="admin-action-group">
+                        <button
+                          className="admin-icon-btn"
+                          type="button"
+                          onClick={() => handleEdit(spot)}
+                        >
+                          <FaEdit />
+                        </button>
 
-                      <button
-                        className="admin-icon-btn danger"
-                        type="button"
-                        onClick={() => handleDelete(spot)}
-                      >
-                        <FaTrash />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                        <button
+                          className="admin-icon-btn danger"
+                          type="button"
+                          onClick={() => handleDelete(spot)}
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
 
               {filteredPhotoSpots.length === 0 && (
                 <tr>

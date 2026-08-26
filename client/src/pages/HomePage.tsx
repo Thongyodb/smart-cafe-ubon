@@ -20,7 +20,31 @@ const HERO_FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1600&q=80";
 
 const SLIDE_INTERVAL_MS = 5000;
-const NEARBY_RADIUS_KM = 20;
+const NEARBY_RADIUS_KM = 5;
+
+type CafeWithCoverFocus = Cafe & {
+  coverFocusX?: number | string | null;
+  coverFocusY?: number | string | null;
+  coverZoom?: number | string | null;
+};
+
+const toNumber = (value: unknown, fallback: number) => {
+  const numberValue = Number(value);
+
+  if (!Number.isFinite(numberValue)) {
+    return fallback;
+  }
+
+  return numberValue;
+};
+
+const getCoverFocus = (cafe: CafeWithCoverFocus | null) => {
+  return {
+    x: toNumber(cafe?.coverFocusX, 50),
+    y: toNumber(cafe?.coverFocusY, 50),
+    zoom: toNumber(cafe?.coverZoom, 1),
+  };
+};
 
 function HomePage() {
   const navigate = useNavigate();
@@ -55,13 +79,19 @@ function HomePage() {
     return heroCafes[currentSlide % heroCafes.length];
   }, [heroCafes, currentSlide]);
 
-  const heroImageUrl = heroCafe?.coverImageUrl || HERO_FALLBACK_IMAGE;
   const heroTitle = heroCafe?.name || "Cafe Ubon Ratchathani";
 
   const mapCafes = cafes.length > 0 ? cafes : allCafes;
 
   const recommendedCafes = useMemo(() => {
-    return cafes.slice(0, 4);
+  return [...cafes]
+    .sort((firstCafe, secondCafe) => {
+      const firstRating = Number(firstCafe.averageRating ?? 0);
+      const secondRating = Number(secondCafe.averageRating ?? 0);
+
+      return secondRating - firstRating;
+    })
+    .slice(0, 4);
   }, [cafes]);
 
   const availableTags = useMemo(() => {
@@ -85,7 +115,8 @@ function HomePage() {
 
   const nearbyText = loadingNearby
     ? "กำลังค้นหาร้านใกล้คุณ..."
-    : nearbyMessage || `กด Explore Now เพื่อค้นหาร้านใกล้คุณ ภายใน ${NEARBY_RADIUS_KM} km`;
+    : nearbyMessage ||
+      `กด Explore Now เพื่อค้นหาร้านใกล้คุณ ภายใน ${NEARBY_RADIUS_KM} km`;
 
   const loadCafes = async (options?: {
     keyword?: string;
@@ -240,12 +271,75 @@ function HomePage() {
       <section
         className="home-showcase"
         style={{
-          backgroundImage: `url("${heroImageUrl}")`,
+          position: "relative",
+          overflow: "hidden",
+          backgroundImage: "none",
         }}
       >
-        <div className="home-showcase-shade" />
+        <div
+          className="home-hero-slide-track"
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 0,
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            transform: `translateX(-${currentSlide * 100}%)`,
+            transition: "transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
+            willChange: "transform",
+          }}
+        >
+          {(heroCafes.length > 0 ? heroCafes : [null]).map(
+            (slideCafe, index) => {
+              const slideImageUrl =
+                slideCafe?.coverImageUrl || HERO_FALLBACK_IMAGE;
+              const slideTitle =
+                slideCafe?.name || "Cafe Ubon Ratchathani";
+              const slideFocus = getCoverFocus(
+                slideCafe as CafeWithCoverFocus | null
+              );
 
-        <div className="home-showcase-inner">
+              return (
+                <div
+                  className="home-hero-slide"
+                  key={slideCafe?.id ?? `fallback-${index}`}
+                  style={{
+                    minWidth: "100%",
+                    width: "100%",
+                    height: "100%",
+                    position: "relative",
+                    overflow: "hidden",
+                    flexShrink: 0,
+                  }}
+                >
+                  <img
+                    src={slideImageUrl}
+                    alt={slideTitle}
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      objectPosition: `${slideFocus.x}% ${slideFocus.y}%`,
+                      transform: `scale(${slideFocus.zoom})`,
+                      transformOrigin: `${slideFocus.x}% ${slideFocus.y}%`,
+                      pointerEvents: "none",
+                    }}
+                  />
+                </div>
+              );
+            }
+          )}
+        </div>
+
+        <div className="home-showcase-shade" style={{ zIndex: 1 }} />
+
+        <div
+          className="home-showcase-inner"
+          style={{ position: "relative", zIndex: 2 }}
+        >
           <div className="home-showcase-copy">
             <h1>{heroTitle}</h1>
 

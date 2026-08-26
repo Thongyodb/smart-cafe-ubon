@@ -1,19 +1,22 @@
 import { axiosClient } from "../api/axiosClient";
 import type { Cafe } from "../types/cafe";
 
+export type FavoriteItem = Cafe & {
+  cafeId?: number;
+  cafe?: Cafe;
+};
+
 type FavoriteListResponse = {
   success: boolean;
-  count: number;
-  data: Cafe[];
+  count?: number;
+  data: FavoriteItem[];
 };
 
 type ToggleFavoriteResponse = {
   success: boolean;
   message: string;
-  data: {
-    isFavorite: boolean;
-    cafeId: number;
-  };
+  data?: unknown;
+  isFavorite?: boolean;
 };
 
 export const favoriteService = {

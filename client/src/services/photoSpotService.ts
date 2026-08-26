@@ -28,6 +28,8 @@ export type PhotoSpotPayload = {
   cameraAngle?: string;
 };
 
+type PhotoSpotRequestData = PhotoSpotPayload | FormData;
+
 type PhotoSpotListResponse = {
   success: boolean;
   count: number;
@@ -40,6 +42,10 @@ type PhotoSpotDetailResponse = {
   data: PhotoSpotItem;
 };
 
+const isFormData = (data: PhotoSpotRequestData): data is FormData => {
+  return data instanceof FormData;
+};
+
 export const photoSpotService = {
   getPhotoSpots: async () => {
     const response = await axiosClient.get<PhotoSpotListResponse>(
@@ -49,19 +55,33 @@ export const photoSpotService = {
     return response.data;
   },
 
-  createPhotoSpot: async (data: PhotoSpotPayload) => {
+  createPhotoSpot: async (data: PhotoSpotRequestData) => {
     const response = await axiosClient.post<PhotoSpotDetailResponse>(
       "/photo-spots",
-      data
+      data,
+      isFormData(data)
+        ? {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        : undefined
     );
 
     return response.data;
   },
 
-  updatePhotoSpot: async (id: number, data: PhotoSpotPayload) => {
+  updatePhotoSpot: async (id: number, data: PhotoSpotRequestData) => {
     const response = await axiosClient.put<PhotoSpotDetailResponse>(
       `/photo-spots/${id}`,
-      data
+      data,
+      isFormData(data)
+        ? {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        : undefined
     );
 
     return response.data;
@@ -69,6 +89,7 @@ export const photoSpotService = {
 
   deletePhotoSpot: async (id: number) => {
     const response = await axiosClient.delete(`/photo-spots/${id}`);
+
     return response.data;
   },
 };

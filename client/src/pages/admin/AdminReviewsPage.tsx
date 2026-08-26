@@ -12,6 +12,25 @@ import {
   type AdminReviewItem,
 } from "../../services/adminReviewService";
 
+const API_BASE_URL = "http://localhost:5000";
+
+const getImageUrl = (imageUrl?: string | null) => {
+  if (!imageUrl) {
+    return "";
+  }
+
+  if (
+    imageUrl.startsWith("http://") ||
+    imageUrl.startsWith("https://") ||
+    imageUrl.startsWith("data:") ||
+    imageUrl.startsWith("blob:")
+  ) {
+    return imageUrl;
+  }
+
+  return `${API_BASE_URL}${imageUrl}`;
+};
+
 function AdminReviewsPage() {
   const [reviews, setReviews] = useState<AdminReviewItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -243,16 +262,26 @@ function AdminReviewsPage() {
         <div className="admin-review-list">
           {reviews.map((review) => {
             const imageUrls = getReviewImageUrls(review);
+            const userAvatarUrl = getImageUrl(review.user.avatarUrl);
 
             return (
               <article className="admin-review-card" key={review.id}>
                 <div className="admin-review-card-header">
                   <div className="admin-review-user">
-                    <div className="admin-review-avatar">
-                      {review.user.avatarUrl ? (
+                    <div className="admin-review-avatar admin-review-avatar-crop">
+                      {userAvatarUrl ? (
                         <img
-                          src={review.user.avatarUrl}
+                          src={userAvatarUrl}
                           alt={review.user.fullName}
+                          style={{
+                            objectPosition: `${review.user.avatarFocusX ?? 50}% ${
+                              review.user.avatarFocusY ?? 50
+                            }%`,
+                            transform: `scale(${review.user.avatarZoom ?? 1})`,
+                            transformOrigin: `${
+                              review.user.avatarFocusX ?? 50
+                            }% ${review.user.avatarFocusY ?? 50}%`,
+                          }}
                         />
                       ) : (
                         <FaUser />
@@ -307,31 +336,41 @@ function AdminReviewsPage() {
                 {imageUrls.length > 0 ? (
                   <div className="admin-review-image-grid">
                     {review.images && review.images.length > 0
-                      ? review.images.map((image) => (
-                          <div
-                            className="admin-review-image-item"
-                            key={image.id}
-                          >
-                            <img src={image.imageUrl} alt="review" />
+                      ? review.images.map((image) => {
+                          const reviewImageUrl = getImageUrl(image.imageUrl);
 
-                            <button
-                              type="button"
-                              disabled={deletingImageId === image.id}
-                              onClick={() => handleDeleteReviewImage(image.id)}
-                              aria-label="ลบรูปรีวิว"
+                          return (
+                            <div
+                              className="admin-review-image-item"
+                              key={image.id}
                             >
-                              <FaTrash />
-                            </button>
-                          </div>
-                        ))
-                      : imageUrls.map((imageUrl) => (
-                          <div
-                            className="admin-review-image-item"
-                            key={imageUrl}
-                          >
-                            <img src={imageUrl} alt="review" />
-                          </div>
-                        ))}
+                              <img src={reviewImageUrl} alt="review" />
+
+                              <button
+                                type="button"
+                                disabled={deletingImageId === image.id}
+                                onClick={() =>
+                                  handleDeleteReviewImage(image.id)
+                                }
+                                aria-label="ลบรูปรีวิว"
+                              >
+                                <FaTrash />
+                              </button>
+                            </div>
+                          );
+                        })
+                      : imageUrls.map((imageUrl) => {
+                          const reviewImageUrl = getImageUrl(imageUrl);
+
+                          return (
+                            <div
+                              className="admin-review-image-item"
+                              key={imageUrl}
+                            >
+                              <img src={reviewImageUrl} alt="review" />
+                            </div>
+                          );
+                        })}
                   </div>
                 ) : (
                   <div className="admin-review-no-image">

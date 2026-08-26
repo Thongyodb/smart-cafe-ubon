@@ -7,8 +7,12 @@ export type AuthUser = {
   username?: string | null;
   fullName: string;
   email?: string | null;
-  role: "USER" | "ADMIN";
+  phone?: string | null;
+  role: "USER" | "ADMIN" | "SUPER_ADMIN";
   avatarUrl?: string | null;
+  avatarFocusX?: number;
+  avatarFocusY?: number;
+  avatarZoom?: number;
 };
 
 const notifyAuthChange = () => {
@@ -55,7 +59,7 @@ export const authStorage = {
 
     try {
       const user = JSON.parse(userText) as AuthUser;
-      return user.role === "ADMIN";
+      return user.role === "ADMIN" || user.role === "SUPER_ADMIN";
     } catch {
       return false;
     }

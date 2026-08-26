@@ -1,12 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import {
-  FaFacebookF,
-  FaGoogle,
-  FaInstagram,
-  FaSignInAlt,
-  FaUserPlus,
-} from "react-icons/fa";
+import { FaSignInAlt, FaUserPlus } from "react-icons/fa";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { authService } from "../services/authService";
 import { authStorage } from "../utils/authStorage";
@@ -19,9 +13,14 @@ function AuthPage() {
     searchParams.get("mode") === "register" ? "register" : "login";
 
   const [mode, setMode] = useState<"login" | "register">(initialMode);
+
+  const [loginIdentifier, setLoginIdentifier] = useState("");
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
   const [loading, setLoading] = useState(false);
 
   const goAfterLogin = () => {
@@ -36,7 +35,10 @@ function AuthPage() {
   };
 
   const clearForm = () => {
+    setLoginIdentifier("");
     setUsername("");
+    setEmail("");
+    setPhone("");
     setPassword("");
     setConfirmPassword("");
   };
@@ -60,14 +62,36 @@ function AuthPage() {
       setLoading(true);
 
       if (mode === "login") {
-        await authService.login(username.trim(), password);
+        if (!loginIdentifier.trim() || !password.trim()) {
+          alert("กรุณากรอก Username / Email / Phone และ Password");
+          return;
+        }
+
+        await authService.login(loginIdentifier.trim(), password);
       } else {
+        if (
+          !username.trim() ||
+          !email.trim() ||
+          !phone.trim() ||
+          !password.trim() ||
+          !confirmPassword.trim()
+        ) {
+          alert("กรุณากรอกข้อมูลสมัครสมาชิกให้ครบถ้วน");
+          return;
+        }
+
         if (password !== confirmPassword) {
           alert("Password และ Confirm Password ต้องตรงกัน");
           return;
         }
 
-        await authService.register(username.trim(), password, confirmPassword);
+        await authService.register({
+          username: username.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          password,
+          confirmPassword,
+        });
       }
 
       clearForm();
@@ -75,16 +99,12 @@ function AuthPage() {
     } catch {
       alert(
         mode === "login"
-          ? "เข้าสู่ระบบไม่สำเร็จ กรุณาตรวจสอบ Username หรือ Password"
+          ? "เข้าสู่ระบบไม่สำเร็จ กรุณาตรวจสอบ Username / Email / Phone หรือ Password"
           : "สมัครสมาชิกไม่สำเร็จ กรุณาตรวจสอบข้อมูลอีกครั้ง"
       );
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleSocialLogin = (provider: string) => {
-    alert(`${provider} Login จะทำในขั้นตอนถัดไป หลังจากเตรียม Client ID / App ID`);
   };
 
   return (
@@ -93,8 +113,11 @@ function AuthPage() {
         <span className="admin-eyebrow">Smart Cafe Ubon</span>
 
         <h1>{mode === "login" ? "เข้าสู่ระบบ" : "สมัครสมาชิก"}</h1>
+
         <p>
-          เข้าสู่ระบบเพื่อใช้งานสำรวจคาเฟ่ รายการโปรด โปรไฟล์ และฟีเจอร์สมาชิก
+          {mode === "login"
+            ? "เข้าสู่ระบบด้วย Username, Email หรือเบอร์โทรศัพท์ เพื่อใช้งานฟีเจอร์สมาชิก"
+            : "สมัครสมาชิกเพื่อบันทึกรายการโปรด เขียนรีวิว และใช้งานระบบ Smart Cafe Ubon"}
         </p>
 
         <div className="auth-tabs">
@@ -115,21 +138,56 @@ function AuthPage() {
           </button>
         </div>
 
-        <form
-          className="auth-form"
-          onSubmit={handleSubmit}
-          autoComplete="off"
-        >
-          <label>
-            Username
-            <input
-              value={username}
-              onChange={(event) => setUsername(event.target.value)}
-              placeholder="กรอก username"
-              autoComplete="off"
-              name="smart-cafe-username"
-            />
-          </label>
+        <form className="auth-form" onSubmit={handleSubmit} autoComplete="off">
+          {mode === "login" ? (
+            <label>
+              Username / Email / Phone
+              <input
+                value={loginIdentifier}
+                onChange={(event) => setLoginIdentifier(event.target.value)}
+                placeholder="กรอก username, email หรือเบอร์โทร"
+                autoComplete="off"
+                name="smart-cafe-login-identifier"
+              />
+            </label>
+          ) : (
+            <>
+              <label>
+                Username
+                <input
+                  value={username}
+                  onChange={(event) => setUsername(event.target.value)}
+                  placeholder="กรอก username"
+                  autoComplete="off"
+                  name="smart-cafe-register-username"
+                />
+              </label>
+
+              <label>
+                Email
+                <input
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder="กรอก email"
+                  type="email"
+                  autoComplete="off"
+                  name="smart-cafe-register-email"
+                />
+              </label>
+
+              <label>
+                Phone number
+                <input
+                  value={phone}
+                  onChange={(event) => setPhone(event.target.value)}
+                  placeholder="กรอกเบอร์โทรศัพท์"
+                  type="tel"
+                  autoComplete="off"
+                  name="smart-cafe-register-phone"
+                />
+              </label>
+            </>
+          )}
 
           <label>
             Password
@@ -173,27 +231,6 @@ function AuthPage() {
             )}
           </button>
         </form>
-
-        <div className="auth-divider">
-          <span>หรือเข้าสู่ระบบด้วย</span>
-        </div>
-
-        <div className="social-login-grid">
-          <button type="button" onClick={() => handleSocialLogin("Google")}>
-            <FaGoogle />
-            Google
-          </button>
-
-          <button type="button" onClick={() => handleSocialLogin("Facebook")}>
-            <FaFacebookF />
-            Facebook
-          </button>
-
-          <button type="button" onClick={() => handleSocialLogin("Instagram")}>
-            <FaInstagram />
-            Instagram
-          </button>
-        </div>
       </section>
     </main>
   );

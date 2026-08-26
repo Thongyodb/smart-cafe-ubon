@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import L from "leaflet";
@@ -16,6 +16,7 @@ type MapPoint = {
 type Props = {
   cafes: Cafe[];
   userLocation?: MapPoint | null;
+  selectedCafeId?: number;
   height?: string;
 };
 
@@ -26,9 +27,10 @@ const UBON_CENTER: MapPoint = {
 
 const DEFAULT_ZOOM = 13;
 const USER_ZOOM = 13;
+const SELECTED_CAFE_ZOOM = 17;
 const MAX_FIT_ZOOM = 14;
 const MIN_MAP_ZOOM = 10;
-const MAX_MAP_ZOOM = 17;
+const MAX_MAP_ZOOM = 18;
 
 const cafeMarkerIcon = L.icon({
   iconRetinaUrl: markerIcon2x,
@@ -58,14 +60,20 @@ const isValidPoint = (
   );
 };
 
+const isCafePointValid = (cafe: Cafe) => {
+  return Number.isFinite(cafe.latitude) && Number.isFinite(cafe.longitude);
+};
+
 function MapController({
   cafes,
   userLocation,
   center,
+  selectedCafeId,
 }: {
   cafes: Cafe[];
   userLocation?: MapPoint | null;
   center: MapPoint;
+  selectedCafeId?: number;
 }) {
   const map = useMap();
 
@@ -80,11 +88,23 @@ function MapController({
   }, [map, cafes.length]);
 
   useEffect(() => {
+    const selectedCafe = cafes.find((cafe) => cafe.id === selectedCafeId);
+
+    if (selectedCafe && isCafePointValid(selectedCafe)) {
+      map.flyTo(
+        [selectedCafe.latitude, selectedCafe.longitude],
+        SELECTED_CAFE_ZOOM,
+        {
+          animate: true,
+          duration: 0.9,
+        }
+      );
+
+      return;
+    }
+
     const points: MapPoint[] = cafes
-      .filter(
-        (cafe) =>
-          Number.isFinite(cafe.latitude) && Number.isFinite(cafe.longitude)
-      )
+      .filter(isCafePointValid)
       .map((cafe) => ({
         lat: cafe.latitude,
         lng: cafe.longitude,
@@ -115,17 +135,69 @@ function MapController({
         animate: true,
       }
     );
-  }, [map, cafes, userLocation, center]);
+  }, [map, cafes, userLocation, center, selectedCafeId]);
 
   return null;
 }
 
-function LeafletMapView({ cafes, userLocation, height = "100%" }: Props) {
+function CafeMarker({
+  cafe,
+  selectedCafeId,
+}: {
+  cafe: Cafe;
+  selectedCafeId?: number;
+}) {
+  const markerRef = useRef<L.Marker | null>(null);
+
+  useEffect(() => {
+    if (selectedCafeId !== cafe.id) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      markerRef.current?.openPopup();
+    }, 650);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [selectedCafeId, cafe.id]);
+
+  return (
+    <Marker
+      ref={markerRef}
+      position={[cafe.latitude, cafe.longitude]}
+      icon={cafeMarkerIcon}
+    >
+     <Popup>
+  <div className="leaflet-popup-content-custom explore-cafe-popup">
+    <h3>{cafe.name}</h3>
+
+    <p>
+      {cafe.description
+        ? cafe.description
+        : "รายละเอียดร้านคาเฟ่ บรรยากาศน่านั่ง เหมาะสำหรับค้นหาคาเฟ่และจุดถ่ายรูป"}
+    </p>
+
+    {cafe.distanceKm !== undefined && (
+      <small>{cafe.distanceKm} km จากคุณ</small>
+    )}
+
+    <Link to={`/cafes/${cafe.id}`}>ดูรายละเอียดร้าน</Link>
+  </div>
+</Popup>
+    </Marker>
+  );
+}
+
+function LeafletMapView({
+  cafes,
+  userLocation,
+  selectedCafeId,
+  height = "100%",
+}: Props) {
   const validCafes = useMemo(() => {
-    return cafes.filter(
-      (cafe) =>
-        Number.isFinite(cafe.latitude) && Number.isFinite(cafe.longitude)
-    );
+    return cafes.filter(isCafePointValid);
   }, [cafes]);
 
   const mapCenter: MapPoint = useMemo(() => {
@@ -161,6 +233,7 @@ function LeafletMapView({ cafes, userLocation, height = "100%" }: Props) {
           cafes={validCafes}
           userLocation={userLocation}
           center={mapCenter}
+          selectedCafeId={selectedCafeId}
         />
 
         <TileLayer
@@ -189,24 +262,11 @@ function LeafletMapView({ cafes, userLocation, height = "100%" }: Props) {
         )}
 
         {validCafes.map((cafe) => (
-          <Marker
+          <CafeMarker
+            cafe={cafe}
+            selectedCafeId={selectedCafeId}
             key={cafe.id}
-            position={[cafe.latitude, cafe.longitude]}
-            icon={cafeMarkerIcon}
-          >
-            <Popup>
-              <div className="leaflet-popup-content-custom">
-                <h3>{cafe.name}</h3>
-                <p>{cafe.district.name}</p>
-
-                {cafe.distanceKm !== undefined && (
-                  <small>{cafe.distanceKm} km จากคุณ</small>
-                )}
-
-                <Link to={`/cafes/${cafe.id}`}>ดูรายละเอียดร้าน</Link>
-              </div>
-            </Popup>
-          </Marker>
+          />
         ))}
       </MapContainer>
     </div>

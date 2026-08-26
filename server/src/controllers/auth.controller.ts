@@ -4,17 +4,20 @@ import { authService } from "../services/auth.service";
 export const authController = {
   register: async (req: Request, res: Response) => {
     try {
-      const { username, password, confirmPassword } = req.body;
+      const { username, email, phone, password, confirmPassword } = req.body;
 
-      if (!username || !password || !confirmPassword) {
+      if (!username || !email || !phone || !password || !confirmPassword) {
         return res.status(400).json({
           success: false,
-          message: "Username, password and confirm password are required",
+          message:
+            "Username, email, phone, password and confirm password are required",
         });
       }
 
       const result = await authService.register({
         username,
+        email,
+        phone,
         password,
         confirmPassword,
       });
@@ -34,17 +37,17 @@ export const authController = {
 
   login: async (req: Request, res: Response) => {
     try {
-      const { username, password } = req.body;
+      const { identifier, password } = req.body;
 
-      if (!username || !password) {
+      if (!identifier || !password) {
         return res.status(400).json({
           success: false,
-          message: "Username and password are required",
+          message: "Username, email, phone and password are required",
         });
       }
 
       const result = await authService.login({
-        username,
+        identifier,
         password,
       });
 

@@ -3,9 +3,10 @@ import jwt from "jsonwebtoken";
 
 export type AuthPayload = {
   userId: number;
-  username?: string;
-  email?: string;
-  role: "USER" | "ADMIN";
+  username?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  role: "USER" | "ADMIN" | "SUPER_ADMIN";
 };
 
 export type AuthRequest = Request & {

@@ -28,10 +28,16 @@ export type AggregateUser = {
 
 export type UserAvgAggregateOutputType = {
   id: number | null
+  avatarFocusX: number | null
+  avatarFocusY: number | null
+  avatarZoom: number | null
 }
 
 export type UserSumAggregateOutputType = {
   id: number | null
+  avatarFocusX: number | null
+  avatarFocusY: number | null
+  avatarZoom: number | null
 }
 
 export type UserMinAggregateOutputType = {
@@ -42,6 +48,9 @@ export type UserMinAggregateOutputType = {
   password: string | null
   phone: string | null
   avatarUrl: string | null
+  avatarFocusX: number | null
+  avatarFocusY: number | null
+  avatarZoom: number | null
   provider: $Enums.AuthProvider | null
   providerId: string | null
   role: $Enums.UserRole | null
@@ -58,6 +67,9 @@ export type UserMaxAggregateOutputType = {
   password: string | null
   phone: string | null
   avatarUrl: string | null
+  avatarFocusX: number | null
+  avatarFocusY: number | null
+  avatarZoom: number | null
   provider: $Enums.AuthProvider | null
   providerId: string | null
   role: $Enums.UserRole | null
@@ -74,6 +86,9 @@ export type UserCountAggregateOutputType = {
   password: number
   phone: number
   avatarUrl: number
+  avatarFocusX: number
+  avatarFocusY: number
+  avatarZoom: number
   provider: number
   providerId: number
   role: number
@@ -86,10 +101,16 @@ export type UserCountAggregateOutputType = {
 
 export type UserAvgAggregateInputType = {
   id?: true
+  avatarFocusX?: true
+  avatarFocusY?: true
+  avatarZoom?: true
 }
 
 export type UserSumAggregateInputType = {
   id?: true
+  avatarFocusX?: true
+  avatarFocusY?: true
+  avatarZoom?: true
 }
 
 export type UserMinAggregateInputType = {
@@ -100,6 +121,9 @@ export type UserMinAggregateInputType = {
   password?: true
   phone?: true
   avatarUrl?: true
+  avatarFocusX?: true
+  avatarFocusY?: true
+  avatarZoom?: true
   provider?: true
   providerId?: true
   role?: true
@@ -116,6 +140,9 @@ export type UserMaxAggregateInputType = {
   password?: true
   phone?: true
   avatarUrl?: true
+  avatarFocusX?: true
+  avatarFocusY?: true
+  avatarZoom?: true
   provider?: true
   providerId?: true
   role?: true
@@ -132,6 +159,9 @@ export type UserCountAggregateInputType = {
   password?: true
   phone?: true
   avatarUrl?: true
+  avatarFocusX?: true
+  avatarFocusY?: true
+  avatarZoom?: true
   provider?: true
   providerId?: true
   role?: true
@@ -235,6 +265,9 @@ export type UserGroupByOutputType = {
   password: string | null
   phone: string | null
   avatarUrl: string | null
+  avatarFocusX: number
+  avatarFocusY: number
+  avatarZoom: number
   provider: $Enums.AuthProvider
   providerId: string | null
   role: $Enums.UserRole
@@ -274,6 +307,9 @@ export type UserWhereInput = {
   password?: Prisma.StringNullableFilter<"User"> | string | null
   phone?: Prisma.StringNullableFilter<"User"> | string | null
   avatarUrl?: Prisma.StringNullableFilter<"User"> | string | null
+  avatarFocusX?: Prisma.FloatFilter<"User"> | number
+  avatarFocusY?: Prisma.FloatFilter<"User"> | number
+  avatarZoom?: Prisma.FloatFilter<"User"> | number
   provider?: Prisma.EnumAuthProviderFilter<"User"> | $Enums.AuthProvider
   providerId?: Prisma.StringNullableFilter<"User"> | string | null
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
@@ -293,6 +329,9 @@ export type UserOrderByWithRelationInput = {
   password?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  avatarFocusX?: Prisma.SortOrder
+  avatarFocusY?: Prisma.SortOrder
+  avatarZoom?: Prisma.SortOrder
   provider?: Prisma.SortOrder
   providerId?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrder
@@ -309,14 +348,17 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   id?: number
   username?: string
   email?: string
+  phone?: string
   provider_providerId?: Prisma.UserProviderProviderIdCompoundUniqueInput
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   fullName?: Prisma.StringFilter<"User"> | string
   password?: Prisma.StringNullableFilter<"User"> | string | null
-  phone?: Prisma.StringNullableFilter<"User"> | string | null
   avatarUrl?: Prisma.StringNullableFilter<"User"> | string | null
+  avatarFocusX?: Prisma.FloatFilter<"User"> | number
+  avatarFocusY?: Prisma.FloatFilter<"User"> | number
+  avatarZoom?: Prisma.FloatFilter<"User"> | number
   provider?: Prisma.EnumAuthProviderFilter<"User"> | $Enums.AuthProvider
   providerId?: Prisma.StringNullableFilter<"User"> | string | null
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
@@ -326,7 +368,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   reviews?: Prisma.ReviewListRelationFilter
   favorites?: Prisma.FavoriteListRelationFilter
   visitHistory?: Prisma.VisitHistoryListRelationFilter
-}, "id" | "username" | "email" | "provider_providerId">
+}, "id" | "username" | "email" | "phone" | "provider_providerId">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -336,6 +378,9 @@ export type UserOrderByWithAggregationInput = {
   password?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  avatarFocusX?: Prisma.SortOrder
+  avatarFocusY?: Prisma.SortOrder
+  avatarZoom?: Prisma.SortOrder
   provider?: Prisma.SortOrder
   providerId?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrder
@@ -360,6 +405,9 @@ export type UserScalarWhereWithAggregatesInput = {
   password?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   phone?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   avatarUrl?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  avatarFocusX?: Prisma.FloatWithAggregatesFilter<"User"> | number
+  avatarFocusY?: Prisma.FloatWithAggregatesFilter<"User"> | number
+  avatarZoom?: Prisma.FloatWithAggregatesFilter<"User"> | number
   provider?: Prisma.EnumAuthProviderWithAggregatesFilter<"User"> | $Enums.AuthProvider
   providerId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   role?: Prisma.EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
@@ -375,6 +423,9 @@ export type UserCreateInput = {
   password?: string | null
   phone?: string | null
   avatarUrl?: string | null
+  avatarFocusX?: number
+  avatarFocusY?: number
+  avatarZoom?: number
   provider?: $Enums.AuthProvider
   providerId?: string | null
   role?: $Enums.UserRole
@@ -394,6 +445,9 @@ export type UserUncheckedCreateInput = {
   password?: string | null
   phone?: string | null
   avatarUrl?: string | null
+  avatarFocusX?: number
+  avatarFocusY?: number
+  avatarZoom?: number
   provider?: $Enums.AuthProvider
   providerId?: string | null
   role?: $Enums.UserRole
@@ -412,6 +466,9 @@ export type UserUpdateInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  avatarFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  avatarZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   provider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -431,6 +488,9 @@ export type UserUncheckedUpdateInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  avatarFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  avatarZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   provider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -450,6 +510,9 @@ export type UserCreateManyInput = {
   password?: string | null
   phone?: string | null
   avatarUrl?: string | null
+  avatarFocusX?: number
+  avatarFocusY?: number
+  avatarZoom?: number
   provider?: $Enums.AuthProvider
   providerId?: string | null
   role?: $Enums.UserRole
@@ -465,6 +528,9 @@ export type UserUpdateManyMutationInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  avatarFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  avatarZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   provider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -481,6 +547,9 @@ export type UserUncheckedUpdateManyInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  avatarFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  avatarZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   provider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -508,6 +577,9 @@ export type UserCountOrderByAggregateInput = {
   password?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
+  avatarFocusX?: Prisma.SortOrder
+  avatarFocusY?: Prisma.SortOrder
+  avatarZoom?: Prisma.SortOrder
   provider?: Prisma.SortOrder
   providerId?: Prisma.SortOrder
   role?: Prisma.SortOrder
@@ -518,6 +590,9 @@ export type UserCountOrderByAggregateInput = {
 
 export type UserAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  avatarFocusX?: Prisma.SortOrder
+  avatarFocusY?: Prisma.SortOrder
+  avatarZoom?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -528,6 +603,9 @@ export type UserMaxOrderByAggregateInput = {
   password?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
+  avatarFocusX?: Prisma.SortOrder
+  avatarFocusY?: Prisma.SortOrder
+  avatarZoom?: Prisma.SortOrder
   provider?: Prisma.SortOrder
   providerId?: Prisma.SortOrder
   role?: Prisma.SortOrder
@@ -544,6 +622,9 @@ export type UserMinOrderByAggregateInput = {
   password?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   avatarUrl?: Prisma.SortOrder
+  avatarFocusX?: Prisma.SortOrder
+  avatarFocusY?: Prisma.SortOrder
+  avatarZoom?: Prisma.SortOrder
   provider?: Prisma.SortOrder
   providerId?: Prisma.SortOrder
   role?: Prisma.SortOrder
@@ -554,6 +635,9 @@ export type UserMinOrderByAggregateInput = {
 
 export type UserSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  avatarFocusX?: Prisma.SortOrder
+  avatarFocusY?: Prisma.SortOrder
+  avatarZoom?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -572,6 +656,14 @@ export type NullableStringFieldUpdateOperationsInput = {
 
 export type StringFieldUpdateOperationsInput = {
   set?: string
+}
+
+export type FloatFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type EnumAuthProviderFieldUpdateOperationsInput = {
@@ -649,6 +741,9 @@ export type UserCreateWithoutReviewsInput = {
   password?: string | null
   phone?: string | null
   avatarUrl?: string | null
+  avatarFocusX?: number
+  avatarFocusY?: number
+  avatarZoom?: number
   provider?: $Enums.AuthProvider
   providerId?: string | null
   role?: $Enums.UserRole
@@ -667,6 +762,9 @@ export type UserUncheckedCreateWithoutReviewsInput = {
   password?: string | null
   phone?: string | null
   avatarUrl?: string | null
+  avatarFocusX?: number
+  avatarFocusY?: number
+  avatarZoom?: number
   provider?: $Enums.AuthProvider
   providerId?: string | null
   role?: $Enums.UserRole
@@ -700,6 +798,9 @@ export type UserUpdateWithoutReviewsInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  avatarFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  avatarZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   provider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -718,6 +819,9 @@ export type UserUncheckedUpdateWithoutReviewsInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  avatarFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  avatarZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   provider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -735,6 +839,9 @@ export type UserCreateWithoutFavoritesInput = {
   password?: string | null
   phone?: string | null
   avatarUrl?: string | null
+  avatarFocusX?: number
+  avatarFocusY?: number
+  avatarZoom?: number
   provider?: $Enums.AuthProvider
   providerId?: string | null
   role?: $Enums.UserRole
@@ -753,6 +860,9 @@ export type UserUncheckedCreateWithoutFavoritesInput = {
   password?: string | null
   phone?: string | null
   avatarUrl?: string | null
+  avatarFocusX?: number
+  avatarFocusY?: number
+  avatarZoom?: number
   provider?: $Enums.AuthProvider
   providerId?: string | null
   role?: $Enums.UserRole
@@ -786,6 +896,9 @@ export type UserUpdateWithoutFavoritesInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  avatarFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  avatarZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   provider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -804,6 +917,9 @@ export type UserUncheckedUpdateWithoutFavoritesInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  avatarFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  avatarZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   provider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -821,6 +937,9 @@ export type UserCreateWithoutVisitHistoryInput = {
   password?: string | null
   phone?: string | null
   avatarUrl?: string | null
+  avatarFocusX?: number
+  avatarFocusY?: number
+  avatarZoom?: number
   provider?: $Enums.AuthProvider
   providerId?: string | null
   role?: $Enums.UserRole
@@ -839,6 +958,9 @@ export type UserUncheckedCreateWithoutVisitHistoryInput = {
   password?: string | null
   phone?: string | null
   avatarUrl?: string | null
+  avatarFocusX?: number
+  avatarFocusY?: number
+  avatarZoom?: number
   provider?: $Enums.AuthProvider
   providerId?: string | null
   role?: $Enums.UserRole
@@ -872,6 +994,9 @@ export type UserUpdateWithoutVisitHistoryInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  avatarFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  avatarZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   provider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -890,6 +1015,9 @@ export type UserUncheckedUpdateWithoutVisitHistoryInput = {
   password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  avatarFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  avatarZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   provider?: Prisma.EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
   providerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
@@ -957,6 +1085,9 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   password?: boolean
   phone?: boolean
   avatarUrl?: boolean
+  avatarFocusX?: boolean
+  avatarFocusY?: boolean
+  avatarZoom?: boolean
   provider?: boolean
   providerId?: boolean
   role?: boolean
@@ -979,6 +1110,9 @@ export type UserSelectScalar = {
   password?: boolean
   phone?: boolean
   avatarUrl?: boolean
+  avatarFocusX?: boolean
+  avatarFocusY?: boolean
+  avatarZoom?: boolean
   provider?: boolean
   providerId?: boolean
   role?: boolean
@@ -987,7 +1121,7 @@ export type UserSelectScalar = {
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "fullName" | "email" | "password" | "phone" | "avatarUrl" | "provider" | "providerId" | "role" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "fullName" | "email" | "password" | "phone" | "avatarUrl" | "avatarFocusX" | "avatarFocusY" | "avatarZoom" | "provider" | "providerId" | "role" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   reviews?: boolean | Prisma.User$reviewsArgs<ExtArgs>
   favorites?: boolean | Prisma.User$favoritesArgs<ExtArgs>
@@ -1010,6 +1144,9 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     password: string | null
     phone: string | null
     avatarUrl: string | null
+    avatarFocusX: number
+    avatarFocusY: number
+    avatarZoom: number
     provider: $Enums.AuthProvider
     providerId: string | null
     role: $Enums.UserRole
@@ -1395,6 +1532,9 @@ export interface UserFieldRefs {
   readonly password: Prisma.FieldRef<"User", 'String'>
   readonly phone: Prisma.FieldRef<"User", 'String'>
   readonly avatarUrl: Prisma.FieldRef<"User", 'String'>
+  readonly avatarFocusX: Prisma.FieldRef<"User", 'Float'>
+  readonly avatarFocusY: Prisma.FieldRef<"User", 'Float'>
+  readonly avatarZoom: Prisma.FieldRef<"User", 'Float'>
   readonly provider: Prisma.FieldRef<"User", 'AuthProvider'>
   readonly providerId: Prisma.FieldRef<"User", 'String'>
   readonly role: Prisma.FieldRef<"User", 'UserRole'>

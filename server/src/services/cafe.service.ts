@@ -8,7 +8,13 @@ type GetCafesParams = {
   limit?: number;
 };
 
-type CreateCafeParams = {
+type CoverFocusParams = {
+  coverFocusX?: number | string | null;
+  coverFocusY?: number | string | null;
+  coverZoom?: number | string | null;
+};
+
+type CreateCafeParams = CoverFocusParams & {
   name: string;
   description?: string | null;
   address: string;
@@ -26,6 +32,49 @@ type CreateCafeParams = {
   categoryId: number;
   districtId: number;
   tagIds?: number[];
+};
+
+type UpdateCafeParams = Partial<CreateCafeParams>;
+
+const clampNumber = (
+  value: unknown,
+  defaultValue: number,
+  min: number,
+  max: number
+) => {
+  const numberValue = Number(value);
+
+  if (Number.isNaN(numberValue)) {
+    return defaultValue;
+  }
+
+  return Math.min(Math.max(numberValue, min), max);
+};
+
+const normalizeCoverFocusForCreate = (params: CoverFocusParams) => {
+  return {
+    coverFocusX: clampNumber(params.coverFocusX, 50, 0, 100),
+    coverFocusY: clampNumber(params.coverFocusY, 50, 0, 100),
+    coverZoom: clampNumber(params.coverZoom, 1, 1, 3),
+  };
+};
+
+const normalizeCoverFocusForUpdate = (params: CoverFocusParams) => {
+  const coverFocus: CoverFocusParams = {};
+
+  if (params.coverFocusX !== undefined) {
+    coverFocus.coverFocusX = clampNumber(params.coverFocusX, 50, 0, 100);
+  }
+
+  if (params.coverFocusY !== undefined) {
+    coverFocus.coverFocusY = clampNumber(params.coverFocusY, 50, 0, 100);
+  }
+
+  if (params.coverZoom !== undefined) {
+    coverFocus.coverZoom = clampNumber(params.coverZoom, 1, 1, 3);
+  }
+
+  return coverFocus;
 };
 
 const calculateDistanceKm = (
@@ -125,21 +174,28 @@ export const cafeService = {
 
   createCafe: async (params: CreateCafeParams) => {
     const slug = createSlug(params.name);
+    const coverFocus = normalizeCoverFocusForCreate(params);
 
     return cafeRepository.create({
       ...params,
+      ...coverFocus,
       slug,
     });
   },
 
-  updateCafe: async (id: number, params: CreateCafeParams) => {
+  updateCafe: async (id: number, params: UpdateCafeParams) => {
     const cafe = await cafeRepository.findById(id);
 
     if (!cafe) {
       throw new Error("Cafe not found");
     }
 
-    return cafeRepository.update(id, params);
+    const coverFocus = normalizeCoverFocusForUpdate(params);
+
+    return cafeRepository.update(id, {
+      ...params,
+      ...coverFocus,
+    } as any);
   },
 
   deactivateCafe: async (id: number) => {

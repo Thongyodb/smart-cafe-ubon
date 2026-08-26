@@ -3,6 +3,24 @@ import { FaSearch, FaUserShield, FaUsers } from "react-icons/fa";
 import { userService } from "../../services/userService";
 import type { AdminUserItem, UserStatus } from "../../services/userService";
 
+const API_BASE_URL = "http://localhost:5000";
+
+const getImageUrl = (imageUrl?: string | null) => {
+  if (!imageUrl) {
+    return "";
+  }
+
+  if (
+    imageUrl.startsWith("http://") ||
+    imageUrl.startsWith("https://") ||
+    imageUrl.startsWith("data:")
+  ) {
+    return imageUrl;
+  }
+
+  return `${API_BASE_URL}${imageUrl}`;
+};
+
 function AdminUsersPage() {
   const [users, setUsers] = useState<AdminUserItem[]>([]);
   const [search, setSearch] = useState("");
@@ -61,7 +79,7 @@ function AdminUsersPage() {
       return;
     }
 
-    if (user.role === "ADMIN") {
+    if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
       alert("เพื่อความปลอดภัย ไม่ควรเปลี่ยนสถานะบัญชี Admin จากหน้านี้");
       return;
     }
@@ -133,69 +151,90 @@ function AdminUsersPage() {
             </thead>
 
             <tbody>
-              {filteredUsers.map((user) => (
-                <tr key={user.id}>
-                  <td>
-                    <div className="admin-user-cell">
-                      {user.avatarUrl ? (
-                        <img src={user.avatarUrl} alt={user.fullName} />
-                      ) : (
-                        <span>{user.fullName.charAt(0).toUpperCase()}</span>
-                      )}
+              {filteredUsers.map((user) => {
+                const avatarUrl = getImageUrl(user.avatarUrl);
 
-                      <div>
-                        <strong>{user.fullName}</strong>
-                        <small>
-                          @{user.username ?? "-"}
-                          {user.email ? ` • ${user.email}` : ""}
-                        </small>
+                return (
+                  <tr key={user.id}>
+                    <td>
+                      <div className="admin-user-cell">
+                        <div className="admin-user-avatar-crop">
+  {avatarUrl ? (
+    <img
+      src={avatarUrl}
+      alt={user.fullName}
+      style={{
+        objectPosition: `${user.avatarFocusX ?? 50}% ${
+          user.avatarFocusY ?? 50
+        }%`,
+        transform: `scale(${user.avatarZoom ?? 1})`,
+        transformOrigin: `${user.avatarFocusX ?? 50}% ${
+          user.avatarFocusY ?? 50
+        }%`,
+      }}
+    />
+  ) : (
+    <span>{user.fullName.charAt(0).toUpperCase()}</span>
+  )}
+</div>
+
+                        <div>
+                          <strong>{user.fullName}</strong>
+                          <small>
+                            @{user.username ?? "-"}
+                            {user.email ? ` • ${user.email}` : ""}
+                          </small>
+                        </div>
                       </div>
-                    </div>
-                  </td>
+                    </td>
 
-                  <td>
-                    <span className="provider-pill">{user.provider}</span>
-                  </td>
+                    <td>
+                      <span className="provider-pill">{user.provider}</span>
+                    </td>
 
-                  <td>
-                    <span
-                      className={
-                        user.role === "ADMIN"
-                          ? "role-pill role-admin"
-                          : "role-pill role-user"
-                      }
-                    >
-                      {user.role === "ADMIN" && <FaUserShield />}
-                      {user.role}
-                    </span>
-                  </td>
+                    <td>
+                      <span
+                        className={
+                          user.role === "ADMIN" || user.role === "SUPER_ADMIN"
+                            ? "role-pill role-admin"
+                            : "role-pill role-user"
+                        }
+                      >
+                        {(user.role === "ADMIN" ||
+                          user.role === "SUPER_ADMIN") && <FaUserShield />}
+                        {user.role}
+                      </span>
+                    </td>
 
-                  <td>
-                    <span
-                      className={`status-pill status-${user.status.toLowerCase()}`}
-                    >
-                      {user.status}
-                    </span>
-                  </td>
+                    <td>
+                      <span
+                        className={`status-pill status-${user.status.toLowerCase()}`}
+                      >
+                        {user.status}
+                      </span>
+                    </td>
 
-                  <td>{formatDate(user.createdAt)}</td>
+                    <td>{formatDate(user.createdAt)}</td>
 
-                  <td>
-                    <select
-                      className="admin-status-select"
-                      value={user.status}
-                      disabled={user.role === "ADMIN"}
-                      onChange={(event) =>
-                        handleStatusChange(user, event.target.value as UserStatus)
-                      }
-                    >
-                      <option value="ACTIVE">ACTIVE</option>
-                      <option value="INACTIVE">INACTIVE</option>
-                      <option value="BANNED">BANNED</option>
-                    </select>
-                  </td>
-                </tr>
-              ))}
+                    <td>
+                      <select
+                        className="admin-status-select"
+                        value={user.status}
+                        disabled={
+                          user.role === "ADMIN" || user.role === "SUPER_ADMIN"
+                        }
+                        onChange={(event) =>
+                          handleStatusChange(user, event.target.value as UserStatus)
+                        }
+                      >
+                        <option value="ACTIVE">ACTIVE</option>
+                        <option value="INACTIVE">INACTIVE</option>
+                        <option value="BANNED">BANNED</option>
+                      </select>
+                    </td>
+                  </tr>
+                );
+              })}
 
               {filteredUsers.length === 0 && (
                 <tr>

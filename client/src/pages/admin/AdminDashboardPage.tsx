@@ -15,55 +15,77 @@ import {
   type DashboardReview,
 } from "../../services/adminDashboardService";
 
+const API_BASE_URL = "http://localhost:5000";
+
+const FALLBACK_CAFE_IMAGE =
+  "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb";
+
+const getImageUrl = (imageUrl?: string | null) => {
+  if (!imageUrl) {
+    return "";
+  }
+
+  if (
+    imageUrl.startsWith("http://") ||
+    imageUrl.startsWith("https://") ||
+    imageUrl.startsWith("data:") ||
+    imageUrl.startsWith("blob:")
+  ) {
+    return imageUrl;
+  }
+
+  return `${API_BASE_URL}${imageUrl}`;
+};
+
 function AdminDashboardPage() {
   const [stats, setStats] = useState<AdminDashboardStats | null>(null);
-const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
-const fetchDashboardStats = async () => {
-  const result = await adminDashboardService.getStats();
-  return result.data;
-};
+  const fetchDashboardStats = async () => {
+    const result = await adminDashboardService.getStats();
+    return result.data;
+  };
 
-const loadDashboard = async () => {
-  try {
-    setLoading(true);
-
-    const dashboardStats = await fetchDashboardStats();
-    setStats(dashboardStats);
-  } catch {
-    alert("โหลดข้อมูล Dashboard ไม่สำเร็จ");
-  } finally {
-    setLoading(false);
-  }
-};
-
-useEffect(() => {
-  let isMounted = true;
-
-  const loadInitialDashboard = async () => {
+  const loadDashboard = async () => {
     try {
-      const dashboardStats = await fetchDashboardStats();
+      setLoading(true);
 
-      if (isMounted) {
-        setStats(dashboardStats);
-      }
+      const dashboardStats = await fetchDashboardStats();
+      setStats(dashboardStats);
     } catch {
-      if (isMounted) {
-        alert("โหลดข้อมูล Dashboard ไม่สำเร็จ");
-      }
+      alert("โหลดข้อมูล Dashboard ไม่สำเร็จ");
     } finally {
-      if (isMounted) {
-        setLoading(false);
-      }
+      setLoading(false);
     }
   };
 
-  void loadInitialDashboard();
+  useEffect(() => {
+    let isMounted = true;
 
-  return () => {
-    isMounted = false;
-  };
-}, []);
+    const loadInitialDashboard = async () => {
+      try {
+        const dashboardStats = await fetchDashboardStats();
+
+        if (isMounted) {
+          setStats(dashboardStats);
+        }
+      } catch {
+        if (isMounted) {
+          alert("โหลดข้อมูล Dashboard ไม่สำเร็จ");
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadInitialDashboard();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const latestReviewStats = useMemo(() => {
     if (!stats) {
@@ -215,16 +237,26 @@ useEffect(() => {
 
             {stats.latestReviews.map((review) => {
               const imageUrls = getReviewImageUrls(review);
+              const userAvatarUrl = getImageUrl(review.user.avatarUrl);
 
               return (
                 <article className="admin-dashboard-review-item" key={review.id}>
                   <div className="admin-dashboard-review-header">
                     <div className="admin-dashboard-review-user">
-                      <div className="admin-dashboard-avatar">
-                        {review.user.avatarUrl ? (
+                      <div className="admin-dashboard-avatar admin-dashboard-avatar-crop">
+                        {userAvatarUrl ? (
                           <img
-                            src={review.user.avatarUrl}
+                            src={userAvatarUrl}
                             alt={review.user.fullName}
+                            style={{
+                              objectPosition: `${review.user.avatarFocusX ?? 50}% ${
+                                review.user.avatarFocusY ?? 50
+                              }%`,
+                              transform: `scale(${review.user.avatarZoom ?? 1})`,
+                              transformOrigin: `${
+                                review.user.avatarFocusX ?? 50
+                              }% ${review.user.avatarFocusY ?? 50}%`,
+                            }}
                           />
                         ) : (
                           <FaUser />
@@ -255,9 +287,17 @@ useEffect(() => {
 
                   {imageUrls.length > 0 && (
                     <div className="admin-dashboard-review-images">
-                      {imageUrls.slice(0, 5).map((imageUrl) => (
-                        <img src={imageUrl} alt="review" key={imageUrl} />
-                      ))}
+                      {imageUrls.slice(0, 5).map((imageUrl) => {
+                        const reviewImageUrl = getImageUrl(imageUrl);
+
+                        return (
+                          <img
+                            src={reviewImageUrl}
+                            alt="review"
+                            key={imageUrl}
+                          />
+                        );
+                      })}
                     </div>
                   )}
                 </article>
@@ -280,29 +320,28 @@ useEffect(() => {
               <div className="admin-empty-row">ยังไม่มีข้อมูลคาเฟ่</div>
             )}
 
-            {stats.popularCafes.map((cafe) => (
-              <article className="admin-dashboard-cafe-item" key={cafe.id}>
-                <img
-                  src={
-                    cafe.coverImageUrl ||
-                    "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb"
-                  }
-                  alt={cafe.name}
-                />
+            {stats.popularCafes.map((cafe) => {
+              const cafeImageUrl =
+                getImageUrl(cafe.coverImageUrl) || FALLBACK_CAFE_IMAGE;
 
-                <div>
-                  <h3>{cafe.name}</h3>
-                  <p>
-                    {cafe.district.name} · {cafe.category.name}
-                  </p>
-                </div>
+              return (
+                <article className="admin-dashboard-cafe-item" key={cafe.id}>
+                  <img src={cafeImageUrl} alt={cafe.name} />
 
-                <strong>
-                  <FaEye />
-                  {cafe.totalViews}
-                </strong>
-              </article>
-            ))}
+                  <div>
+                    <h3>{cafe.name}</h3>
+                    <p>
+                      {cafe.district.name} · {cafe.category.name}
+                    </p>
+                  </div>
+
+                  <strong>
+                    <FaEye />
+                    {cafe.totalViews}
+                  </strong>
+                </article>
+              );
+            })}
           </div>
         </section>
       </div>
@@ -321,33 +360,32 @@ useEffect(() => {
             <div className="admin-empty-row">ยังไม่มีข้อมูลคาเฟ่</div>
           )}
 
-          {stats.latestCafes.map((cafe) => (
-            <article className="admin-dashboard-latest-cafe" key={cafe.id}>
-              <img
-                src={
-                  cafe.coverImageUrl ||
-                  "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb"
-                }
-                alt={cafe.name}
-              />
+          {stats.latestCafes.map((cafe) => {
+            const cafeImageUrl =
+              getImageUrl(cafe.coverImageUrl) || FALLBACK_CAFE_IMAGE;
 
-              <div>
-                <h3>{cafe.name}</h3>
-                <p>
-                  {cafe.district.name} · {cafe.category.name}
-                </p>
-              </div>
+            return (
+              <article className="admin-dashboard-latest-cafe" key={cafe.id}>
+                <img src={cafeImageUrl} alt={cafe.name} />
 
-              <div className="admin-dashboard-stars">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <FaStar
-                    key={star}
-                    className={cafe.averageRating >= star ? "active" : ""}
-                  />
-                ))}
-              </div>
-            </article>
-          ))}
+                <div>
+                  <h3>{cafe.name}</h3>
+                  <p>
+                    {cafe.district.name} · {cafe.category.name}
+                  </p>
+                </div>
+
+                <div className="admin-dashboard-stars">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <FaStar
+                      key={star}
+                      className={cafe.averageRating >= star ? "active" : ""}
+                    />
+                  ))}
+                </div>
+              </article>
+            );
+          })}
         </div>
       </section>
     </div>

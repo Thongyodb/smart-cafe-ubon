@@ -30,6 +30,9 @@ export type CafeAvgAggregateOutputType = {
   id: number | null
   latitude: number | null
   longitude: number | null
+  coverFocusX: number | null
+  coverFocusY: number | null
+  coverZoom: number | null
   priceMin: number | null
   priceMax: number | null
   averageRating: number | null
@@ -43,6 +46,9 @@ export type CafeSumAggregateOutputType = {
   id: number | null
   latitude: number | null
   longitude: number | null
+  coverFocusX: number | null
+  coverFocusY: number | null
+  coverZoom: number | null
   priceMin: number | null
   priceMax: number | null
   averageRating: number | null
@@ -67,6 +73,9 @@ export type CafeMinAggregateOutputType = {
   instagramUrl: string | null
   websiteUrl: string | null
   coverImageUrl: string | null
+  coverFocusX: number | null
+  coverFocusY: number | null
+  coverZoom: number | null
   priceMin: number | null
   priceMax: number | null
   averageRating: number | null
@@ -94,6 +103,9 @@ export type CafeMaxAggregateOutputType = {
   instagramUrl: string | null
   websiteUrl: string | null
   coverImageUrl: string | null
+  coverFocusX: number | null
+  coverFocusY: number | null
+  coverZoom: number | null
   priceMin: number | null
   priceMax: number | null
   averageRating: number | null
@@ -121,6 +133,9 @@ export type CafeCountAggregateOutputType = {
   instagramUrl: number
   websiteUrl: number
   coverImageUrl: number
+  coverFocusX: number
+  coverFocusY: number
+  coverZoom: number
   priceMin: number
   priceMax: number
   averageRating: number
@@ -139,6 +154,9 @@ export type CafeAvgAggregateInputType = {
   id?: true
   latitude?: true
   longitude?: true
+  coverFocusX?: true
+  coverFocusY?: true
+  coverZoom?: true
   priceMin?: true
   priceMax?: true
   averageRating?: true
@@ -152,6 +170,9 @@ export type CafeSumAggregateInputType = {
   id?: true
   latitude?: true
   longitude?: true
+  coverFocusX?: true
+  coverFocusY?: true
+  coverZoom?: true
   priceMin?: true
   priceMax?: true
   averageRating?: true
@@ -176,6 +197,9 @@ export type CafeMinAggregateInputType = {
   instagramUrl?: true
   websiteUrl?: true
   coverImageUrl?: true
+  coverFocusX?: true
+  coverFocusY?: true
+  coverZoom?: true
   priceMin?: true
   priceMax?: true
   averageRating?: true
@@ -203,6 +227,9 @@ export type CafeMaxAggregateInputType = {
   instagramUrl?: true
   websiteUrl?: true
   coverImageUrl?: true
+  coverFocusX?: true
+  coverFocusY?: true
+  coverZoom?: true
   priceMin?: true
   priceMax?: true
   averageRating?: true
@@ -230,6 +257,9 @@ export type CafeCountAggregateInputType = {
   instagramUrl?: true
   websiteUrl?: true
   coverImageUrl?: true
+  coverFocusX?: true
+  coverFocusY?: true
+  coverZoom?: true
   priceMin?: true
   priceMax?: true
   averageRating?: true
@@ -344,6 +374,9 @@ export type CafeGroupByOutputType = {
   instagramUrl: string | null
   websiteUrl: string | null
   coverImageUrl: string | null
+  coverFocusX: number
+  coverFocusY: number
+  coverZoom: number
   priceMin: number | null
   priceMax: number | null
   averageRating: number
@@ -394,6 +427,9 @@ export type CafeWhereInput = {
   instagramUrl?: Prisma.StringNullableFilter<"Cafe"> | string | null
   websiteUrl?: Prisma.StringNullableFilter<"Cafe"> | string | null
   coverImageUrl?: Prisma.StringNullableFilter<"Cafe"> | string | null
+  coverFocusX?: Prisma.FloatFilter<"Cafe"> | number
+  coverFocusY?: Prisma.FloatFilter<"Cafe"> | number
+  coverZoom?: Prisma.FloatFilter<"Cafe"> | number
   priceMin?: Prisma.IntNullableFilter<"Cafe"> | number | null
   priceMax?: Prisma.IntNullableFilter<"Cafe"> | number | null
   averageRating?: Prisma.FloatFilter<"Cafe"> | number
@@ -429,6 +465,9 @@ export type CafeOrderByWithRelationInput = {
   instagramUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   websiteUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   coverImageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  coverFocusX?: Prisma.SortOrder
+  coverFocusY?: Prisma.SortOrder
+  coverZoom?: Prisma.SortOrder
   priceMin?: Prisma.SortOrderInput | Prisma.SortOrder
   priceMax?: Prisma.SortOrderInput | Prisma.SortOrder
   averageRating?: Prisma.SortOrder
@@ -468,6 +507,9 @@ export type CafeWhereUniqueInput = Prisma.AtLeast<{
   instagramUrl?: Prisma.StringNullableFilter<"Cafe"> | string | null
   websiteUrl?: Prisma.StringNullableFilter<"Cafe"> | string | null
   coverImageUrl?: Prisma.StringNullableFilter<"Cafe"> | string | null
+  coverFocusX?: Prisma.FloatFilter<"Cafe"> | number
+  coverFocusY?: Prisma.FloatFilter<"Cafe"> | number
+  coverZoom?: Prisma.FloatFilter<"Cafe"> | number
   priceMin?: Prisma.IntNullableFilter<"Cafe"> | number | null
   priceMax?: Prisma.IntNullableFilter<"Cafe"> | number | null
   averageRating?: Prisma.FloatFilter<"Cafe"> | number
@@ -503,6 +545,9 @@ export type CafeOrderByWithAggregationInput = {
   instagramUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   websiteUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   coverImageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  coverFocusX?: Prisma.SortOrder
+  coverFocusY?: Prisma.SortOrder
+  coverZoom?: Prisma.SortOrder
   priceMin?: Prisma.SortOrderInput | Prisma.SortOrder
   priceMax?: Prisma.SortOrderInput | Prisma.SortOrder
   averageRating?: Prisma.SortOrder
@@ -538,6 +583,9 @@ export type CafeScalarWhereWithAggregatesInput = {
   instagramUrl?: Prisma.StringNullableWithAggregatesFilter<"Cafe"> | string | null
   websiteUrl?: Prisma.StringNullableWithAggregatesFilter<"Cafe"> | string | null
   coverImageUrl?: Prisma.StringNullableWithAggregatesFilter<"Cafe"> | string | null
+  coverFocusX?: Prisma.FloatWithAggregatesFilter<"Cafe"> | number
+  coverFocusY?: Prisma.FloatWithAggregatesFilter<"Cafe"> | number
+  coverZoom?: Prisma.FloatWithAggregatesFilter<"Cafe"> | number
   priceMin?: Prisma.IntNullableWithAggregatesFilter<"Cafe"> | number | null
   priceMax?: Prisma.IntNullableWithAggregatesFilter<"Cafe"> | number | null
   averageRating?: Prisma.FloatWithAggregatesFilter<"Cafe"> | number
@@ -564,6 +612,9 @@ export type CafeCreateInput = {
   instagramUrl?: string | null
   websiteUrl?: string | null
   coverImageUrl?: string | null
+  coverFocusX?: number
+  coverFocusY?: number
+  coverZoom?: number
   priceMin?: number | null
   priceMax?: number | null
   averageRating?: number
@@ -597,6 +648,9 @@ export type CafeUncheckedCreateInput = {
   instagramUrl?: string | null
   websiteUrl?: string | null
   coverImageUrl?: string | null
+  coverFocusX?: number
+  coverFocusY?: number
+  coverZoom?: number
   priceMin?: number | null
   priceMax?: number | null
   averageRating?: number
@@ -629,6 +683,9 @@ export type CafeUpdateInput = {
   instagramUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   priceMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -662,6 +719,9 @@ export type CafeUncheckedUpdateInput = {
   instagramUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   priceMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -695,6 +755,9 @@ export type CafeCreateManyInput = {
   instagramUrl?: string | null
   websiteUrl?: string | null
   coverImageUrl?: string | null
+  coverFocusX?: number
+  coverFocusY?: number
+  coverZoom?: number
   priceMin?: number | null
   priceMax?: number | null
   averageRating?: number
@@ -721,6 +784,9 @@ export type CafeUpdateManyMutationInput = {
   instagramUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   priceMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -746,6 +812,9 @@ export type CafeUncheckedUpdateManyInput = {
   instagramUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   priceMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -789,6 +858,9 @@ export type CafeCountOrderByAggregateInput = {
   instagramUrl?: Prisma.SortOrder
   websiteUrl?: Prisma.SortOrder
   coverImageUrl?: Prisma.SortOrder
+  coverFocusX?: Prisma.SortOrder
+  coverFocusY?: Prisma.SortOrder
+  coverZoom?: Prisma.SortOrder
   priceMin?: Prisma.SortOrder
   priceMax?: Prisma.SortOrder
   averageRating?: Prisma.SortOrder
@@ -805,6 +877,9 @@ export type CafeAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
+  coverFocusX?: Prisma.SortOrder
+  coverFocusY?: Prisma.SortOrder
+  coverZoom?: Prisma.SortOrder
   priceMin?: Prisma.SortOrder
   priceMax?: Prisma.SortOrder
   averageRating?: Prisma.SortOrder
@@ -829,6 +904,9 @@ export type CafeMaxOrderByAggregateInput = {
   instagramUrl?: Prisma.SortOrder
   websiteUrl?: Prisma.SortOrder
   coverImageUrl?: Prisma.SortOrder
+  coverFocusX?: Prisma.SortOrder
+  coverFocusY?: Prisma.SortOrder
+  coverZoom?: Prisma.SortOrder
   priceMin?: Prisma.SortOrder
   priceMax?: Prisma.SortOrder
   averageRating?: Prisma.SortOrder
@@ -856,6 +934,9 @@ export type CafeMinOrderByAggregateInput = {
   instagramUrl?: Prisma.SortOrder
   websiteUrl?: Prisma.SortOrder
   coverImageUrl?: Prisma.SortOrder
+  coverFocusX?: Prisma.SortOrder
+  coverFocusY?: Prisma.SortOrder
+  coverZoom?: Prisma.SortOrder
   priceMin?: Prisma.SortOrder
   priceMax?: Prisma.SortOrder
   averageRating?: Prisma.SortOrder
@@ -872,6 +953,9 @@ export type CafeSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
+  coverFocusX?: Prisma.SortOrder
+  coverFocusY?: Prisma.SortOrder
+  coverZoom?: Prisma.SortOrder
   priceMin?: Prisma.SortOrder
   priceMax?: Prisma.SortOrder
   averageRating?: Prisma.SortOrder
@@ -968,14 +1052,6 @@ export type CafeUncheckedUpdateManyWithoutDistrictNestedInput = {
   update?: Prisma.CafeUpdateWithWhereUniqueWithoutDistrictInput | Prisma.CafeUpdateWithWhereUniqueWithoutDistrictInput[]
   updateMany?: Prisma.CafeUpdateManyWithWhereWithoutDistrictInput | Prisma.CafeUpdateManyWithWhereWithoutDistrictInput[]
   deleteMany?: Prisma.CafeScalarWhereInput | Prisma.CafeScalarWhereInput[]
-}
-
-export type FloatFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
 }
 
 export type NullableIntFieldUpdateOperationsInput = {
@@ -1088,6 +1164,9 @@ export type CafeCreateWithoutCategoryInput = {
   instagramUrl?: string | null
   websiteUrl?: string | null
   coverImageUrl?: string | null
+  coverFocusX?: number
+  coverFocusY?: number
+  coverZoom?: number
   priceMin?: number | null
   priceMax?: number | null
   averageRating?: number
@@ -1120,6 +1199,9 @@ export type CafeUncheckedCreateWithoutCategoryInput = {
   instagramUrl?: string | null
   websiteUrl?: string | null
   coverImageUrl?: string | null
+  coverFocusX?: number
+  coverFocusY?: number
+  coverZoom?: number
   priceMin?: number | null
   priceMax?: number | null
   averageRating?: number
@@ -1181,6 +1263,9 @@ export type CafeScalarWhereInput = {
   instagramUrl?: Prisma.StringNullableFilter<"Cafe"> | string | null
   websiteUrl?: Prisma.StringNullableFilter<"Cafe"> | string | null
   coverImageUrl?: Prisma.StringNullableFilter<"Cafe"> | string | null
+  coverFocusX?: Prisma.FloatFilter<"Cafe"> | number
+  coverFocusY?: Prisma.FloatFilter<"Cafe"> | number
+  coverZoom?: Prisma.FloatFilter<"Cafe"> | number
   priceMin?: Prisma.IntNullableFilter<"Cafe"> | number | null
   priceMax?: Prisma.IntNullableFilter<"Cafe"> | number | null
   averageRating?: Prisma.FloatFilter<"Cafe"> | number
@@ -1207,6 +1292,9 @@ export type CafeCreateWithoutDistrictInput = {
   instagramUrl?: string | null
   websiteUrl?: string | null
   coverImageUrl?: string | null
+  coverFocusX?: number
+  coverFocusY?: number
+  coverZoom?: number
   priceMin?: number | null
   priceMax?: number | null
   averageRating?: number
@@ -1239,6 +1327,9 @@ export type CafeUncheckedCreateWithoutDistrictInput = {
   instagramUrl?: string | null
   websiteUrl?: string | null
   coverImageUrl?: string | null
+  coverFocusX?: number
+  coverFocusY?: number
+  coverZoom?: number
   priceMin?: number | null
   priceMax?: number | null
   averageRating?: number
@@ -1296,6 +1387,9 @@ export type CafeCreateWithoutImagesInput = {
   instagramUrl?: string | null
   websiteUrl?: string | null
   coverImageUrl?: string | null
+  coverFocusX?: number
+  coverFocusY?: number
+  coverZoom?: number
   priceMin?: number | null
   priceMax?: number | null
   averageRating?: number
@@ -1328,6 +1422,9 @@ export type CafeUncheckedCreateWithoutImagesInput = {
   instagramUrl?: string | null
   websiteUrl?: string | null
   coverImageUrl?: string | null
+  coverFocusX?: number
+  coverFocusY?: number
+  coverZoom?: number
   priceMin?: number | null
   priceMax?: number | null
   averageRating?: number
@@ -1375,6 +1472,9 @@ export type CafeUpdateWithoutImagesInput = {
   instagramUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   priceMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1407,6 +1507,9 @@ export type CafeUncheckedUpdateWithoutImagesInput = {
   instagramUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   priceMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1438,6 +1541,9 @@ export type CafeCreateWithoutPhotoSpotsInput = {
   instagramUrl?: string | null
   websiteUrl?: string | null
   coverImageUrl?: string | null
+  coverFocusX?: number
+  coverFocusY?: number
+  coverZoom?: number
   priceMin?: number | null
   priceMax?: number | null
   averageRating?: number
@@ -1470,6 +1576,9 @@ export type CafeUncheckedCreateWithoutPhotoSpotsInput = {
   instagramUrl?: string | null
   websiteUrl?: string | null
   coverImageUrl?: string | null
+  coverFocusX?: number
+  coverFocusY?: number
+  coverZoom?: number
   priceMin?: number | null
   priceMax?: number | null
   averageRating?: number
@@ -1517,6 +1626,9 @@ export type CafeUpdateWithoutPhotoSpotsInput = {
   instagramUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   priceMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1549,6 +1661,9 @@ export type CafeUncheckedUpdateWithoutPhotoSpotsInput = {
   instagramUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   priceMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1580,6 +1695,9 @@ export type CafeCreateWithoutReviewsInput = {
   instagramUrl?: string | null
   websiteUrl?: string | null
   coverImageUrl?: string | null
+  coverFocusX?: number
+  coverFocusY?: number
+  coverZoom?: number
   priceMin?: number | null
   priceMax?: number | null
   averageRating?: number
@@ -1612,6 +1730,9 @@ export type CafeUncheckedCreateWithoutReviewsInput = {
   instagramUrl?: string | null
   websiteUrl?: string | null
   coverImageUrl?: string | null
+  coverFocusX?: number
+  coverFocusY?: number
+  coverZoom?: number
   priceMin?: number | null
   priceMax?: number | null
   averageRating?: number
@@ -1659,6 +1780,9 @@ export type CafeUpdateWithoutReviewsInput = {
   instagramUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   priceMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1691,6 +1815,9 @@ export type CafeUncheckedUpdateWithoutReviewsInput = {
   instagramUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   priceMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1722,6 +1849,9 @@ export type CafeCreateWithoutFavoritesInput = {
   instagramUrl?: string | null
   websiteUrl?: string | null
   coverImageUrl?: string | null
+  coverFocusX?: number
+  coverFocusY?: number
+  coverZoom?: number
   priceMin?: number | null
   priceMax?: number | null
   averageRating?: number
@@ -1754,6 +1884,9 @@ export type CafeUncheckedCreateWithoutFavoritesInput = {
   instagramUrl?: string | null
   websiteUrl?: string | null
   coverImageUrl?: string | null
+  coverFocusX?: number
+  coverFocusY?: number
+  coverZoom?: number
   priceMin?: number | null
   priceMax?: number | null
   averageRating?: number
@@ -1801,6 +1934,9 @@ export type CafeUpdateWithoutFavoritesInput = {
   instagramUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   priceMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1833,6 +1969,9 @@ export type CafeUncheckedUpdateWithoutFavoritesInput = {
   instagramUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   priceMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1864,6 +2003,9 @@ export type CafeCreateWithoutCafeTagsInput = {
   instagramUrl?: string | null
   websiteUrl?: string | null
   coverImageUrl?: string | null
+  coverFocusX?: number
+  coverFocusY?: number
+  coverZoom?: number
   priceMin?: number | null
   priceMax?: number | null
   averageRating?: number
@@ -1896,6 +2038,9 @@ export type CafeUncheckedCreateWithoutCafeTagsInput = {
   instagramUrl?: string | null
   websiteUrl?: string | null
   coverImageUrl?: string | null
+  coverFocusX?: number
+  coverFocusY?: number
+  coverZoom?: number
   priceMin?: number | null
   priceMax?: number | null
   averageRating?: number
@@ -1943,6 +2088,9 @@ export type CafeUpdateWithoutCafeTagsInput = {
   instagramUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   priceMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1975,6 +2123,9 @@ export type CafeUncheckedUpdateWithoutCafeTagsInput = {
   instagramUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   priceMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -2006,6 +2157,9 @@ export type CafeCreateWithoutVisitHistoryInput = {
   instagramUrl?: string | null
   websiteUrl?: string | null
   coverImageUrl?: string | null
+  coverFocusX?: number
+  coverFocusY?: number
+  coverZoom?: number
   priceMin?: number | null
   priceMax?: number | null
   averageRating?: number
@@ -2038,6 +2192,9 @@ export type CafeUncheckedCreateWithoutVisitHistoryInput = {
   instagramUrl?: string | null
   websiteUrl?: string | null
   coverImageUrl?: string | null
+  coverFocusX?: number
+  coverFocusY?: number
+  coverZoom?: number
   priceMin?: number | null
   priceMax?: number | null
   averageRating?: number
@@ -2085,6 +2242,9 @@ export type CafeUpdateWithoutVisitHistoryInput = {
   instagramUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   priceMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -2117,6 +2277,9 @@ export type CafeUncheckedUpdateWithoutVisitHistoryInput = {
   instagramUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   priceMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -2149,6 +2312,9 @@ export type CafeCreateManyCategoryInput = {
   instagramUrl?: string | null
   websiteUrl?: string | null
   coverImageUrl?: string | null
+  coverFocusX?: number
+  coverFocusY?: number
+  coverZoom?: number
   priceMin?: number | null
   priceMax?: number | null
   averageRating?: number
@@ -2174,6 +2340,9 @@ export type CafeUpdateWithoutCategoryInput = {
   instagramUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   priceMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -2206,6 +2375,9 @@ export type CafeUncheckedUpdateWithoutCategoryInput = {
   instagramUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   priceMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -2238,6 +2410,9 @@ export type CafeUncheckedUpdateManyWithoutCategoryInput = {
   instagramUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   priceMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -2264,6 +2439,9 @@ export type CafeCreateManyDistrictInput = {
   instagramUrl?: string | null
   websiteUrl?: string | null
   coverImageUrl?: string | null
+  coverFocusX?: number
+  coverFocusY?: number
+  coverZoom?: number
   priceMin?: number | null
   priceMax?: number | null
   averageRating?: number
@@ -2289,6 +2467,9 @@ export type CafeUpdateWithoutDistrictInput = {
   instagramUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   priceMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -2321,6 +2502,9 @@ export type CafeUncheckedUpdateWithoutDistrictInput = {
   instagramUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   priceMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -2353,6 +2537,9 @@ export type CafeUncheckedUpdateManyWithoutDistrictInput = {
   instagramUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverFocusX?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverFocusY?: Prisma.FloatFieldUpdateOperationsInput | number
+  coverZoom?: Prisma.FloatFieldUpdateOperationsInput | number
   priceMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceMax?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   averageRating?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -2455,6 +2642,9 @@ export type CafeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   instagramUrl?: boolean
   websiteUrl?: boolean
   coverImageUrl?: boolean
+  coverFocusX?: boolean
+  coverFocusY?: boolean
+  coverZoom?: boolean
   priceMin?: boolean
   priceMax?: boolean
   averageRating?: boolean
@@ -2493,6 +2683,9 @@ export type CafeSelectScalar = {
   instagramUrl?: boolean
   websiteUrl?: boolean
   coverImageUrl?: boolean
+  coverFocusX?: boolean
+  coverFocusY?: boolean
+  coverZoom?: boolean
   priceMin?: boolean
   priceMax?: boolean
   averageRating?: boolean
@@ -2505,7 +2698,7 @@ export type CafeSelectScalar = {
   districtId?: boolean
 }
 
-export type CafeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "description" | "address" | "latitude" | "longitude" | "openTime" | "closeTime" | "phone" | "facebookUrl" | "instagramUrl" | "websiteUrl" | "coverImageUrl" | "priceMin" | "priceMax" | "averageRating" | "totalReviews" | "totalViews" | "isActive" | "createdAt" | "updatedAt" | "categoryId" | "districtId", ExtArgs["result"]["cafe"]>
+export type CafeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "description" | "address" | "latitude" | "longitude" | "openTime" | "closeTime" | "phone" | "facebookUrl" | "instagramUrl" | "websiteUrl" | "coverImageUrl" | "coverFocusX" | "coverFocusY" | "coverZoom" | "priceMin" | "priceMax" | "averageRating" | "totalReviews" | "totalViews" | "isActive" | "createdAt" | "updatedAt" | "categoryId" | "districtId", ExtArgs["result"]["cafe"]>
 export type CafeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
   district?: boolean | Prisma.DistrictDefaultArgs<ExtArgs>
@@ -2545,6 +2738,9 @@ export type $CafePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     instagramUrl: string | null
     websiteUrl: string | null
     coverImageUrl: string | null
+    coverFocusX: number
+    coverFocusY: number
+    coverZoom: number
     priceMin: number | null
     priceMax: number | null
     averageRating: number
@@ -2946,6 +3142,9 @@ export interface CafeFieldRefs {
   readonly instagramUrl: Prisma.FieldRef<"Cafe", 'String'>
   readonly websiteUrl: Prisma.FieldRef<"Cafe", 'String'>
   readonly coverImageUrl: Prisma.FieldRef<"Cafe", 'String'>
+  readonly coverFocusX: Prisma.FieldRef<"Cafe", 'Float'>
+  readonly coverFocusY: Prisma.FieldRef<"Cafe", 'Float'>
+  readonly coverZoom: Prisma.FieldRef<"Cafe", 'Float'>
   readonly priceMin: Prisma.FieldRef<"Cafe", 'Int'>
   readonly priceMax: Prisma.FieldRef<"Cafe", 'Int'>
   readonly averageRating: Prisma.FieldRef<"Cafe", 'Float'>

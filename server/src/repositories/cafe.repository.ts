@@ -22,6 +22,11 @@ type CreateCafeData = {
   instagramUrl?: string | null;
   websiteUrl?: string | null;
   coverImageUrl?: string | null;
+
+  coverFocusX?: number | string | null;
+  coverFocusY?: number | string | null;
+  coverZoom?: number | string | null;
+
   priceMin?: number | null;
   priceMax?: number | null;
   categoryId: number;
@@ -29,7 +34,7 @@ type CreateCafeData = {
   tagIds?: number[];
 };
 
-type UpdateCafeData = Omit<CreateCafeData, "slug">;
+type UpdateCafeData = Partial<Omit<CreateCafeData, "slug">>;
 
 const cafeInclude = {
   category: true,
@@ -57,6 +62,7 @@ const cafeDetailInclude = {
           avatarUrl: true,
         },
       },
+      images: true,
     },
     orderBy: {
       createdAt: "desc" as const,
@@ -67,6 +73,16 @@ const cafeDetailInclude = {
       tag: true,
     },
   },
+};
+
+const toNumberOrUndefined = (value: unknown) => {
+  if (value === undefined || value === null || value === "") {
+    return undefined;
+  }
+
+  const numberValue = Number(value);
+
+  return Number.isNaN(numberValue) ? undefined : numberValue;
 };
 
 export const cafeRepository = {
@@ -177,6 +193,11 @@ export const cafeRepository = {
         instagramUrl: data.instagramUrl,
         websiteUrl: data.websiteUrl,
         coverImageUrl: data.coverImageUrl,
+
+        coverFocusX: Number(data.coverFocusX ?? 50),
+        coverFocusY: Number(data.coverFocusY ?? 50),
+        coverZoom: Number(data.coverZoom ?? 1),
+
         priceMin: data.priceMin,
         priceMax: data.priceMax,
         categoryId: data.categoryId,
@@ -202,43 +223,68 @@ export const cafeRepository = {
   },
 
   update: async (id: number, data: UpdateCafeData) => {
+    const updateData: any = {
+      name: data.name,
+      description: data.description,
+      address: data.address,
+      latitude: data.latitude,
+      longitude: data.longitude,
+      openTime: data.openTime,
+      closeTime: data.closeTime,
+      phone: data.phone,
+      facebookUrl: data.facebookUrl,
+      instagramUrl: data.instagramUrl,
+      websiteUrl: data.websiteUrl,
+      coverImageUrl: data.coverImageUrl,
+      priceMin: data.priceMin,
+      priceMax: data.priceMax,
+      categoryId: data.categoryId,
+      districtId: data.districtId,
+    };
+
+    const coverFocusX = toNumberOrUndefined(data.coverFocusX);
+    const coverFocusY = toNumberOrUndefined(data.coverFocusY);
+    const coverZoom = toNumberOrUndefined(data.coverZoom);
+
+    if (coverFocusX !== undefined) {
+      updateData.coverFocusX = coverFocusX;
+    }
+
+    if (coverFocusY !== undefined) {
+      updateData.coverFocusY = coverFocusY;
+    }
+
+    if (coverZoom !== undefined) {
+      updateData.coverZoom = coverZoom;
+    }
+
     await prisma.cafe.update({
       where: {
         id,
       },
-      data: {
-        name: data.name,
-        description: data.description,
-        address: data.address,
-        latitude: data.latitude,
-        longitude: data.longitude,
-        openTime: data.openTime,
-        closeTime: data.closeTime,
-        phone: data.phone,
-        facebookUrl: data.facebookUrl,
-        instagramUrl: data.instagramUrl,
-        websiteUrl: data.websiteUrl,
-        coverImageUrl: data.coverImageUrl,
-        priceMin: data.priceMin,
-        priceMax: data.priceMax,
-        categoryId: data.categoryId,
-        districtId: data.districtId,
-      },
+      data: updateData,
     });
 
-    await prisma.cafeTag.deleteMany({
-      where: {
-        cafeId: id,
-      },
-    });
-
-    if (data.tagIds && data.tagIds.length > 0) {
-      await prisma.cafeTag.createMany({
-        data: data.tagIds.map((tagId) => ({
+    /*
+      สำคัญ:
+      ลบ/สร้าง tag ใหม่ เฉพาะตอนที่ frontend ส่ง tagIds มาเท่านั้น
+      ถ้าแค่อัปเดต coverFocusX/Y/Zoom จะไม่ลบ tag เดิมของร้าน
+    */
+    if (data.tagIds !== undefined) {
+      await prisma.cafeTag.deleteMany({
+        where: {
           cafeId: id,
-          tagId,
-        })),
+        },
       });
+
+      if (data.tagIds.length > 0) {
+        await prisma.cafeTag.createMany({
+          data: data.tagIds.map((tagId) => ({
+            cafeId: id,
+            tagId,
+          })),
+        });
+      }
     }
 
     return prisma.cafe.findUnique({

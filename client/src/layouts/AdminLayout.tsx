@@ -1,4 +1,5 @@
 import {
+  FaArrowLeft,
   FaChartLine,
   FaComments,
   FaMapMarkedAlt,
@@ -9,11 +10,9 @@ import {
 } from "react-icons/fa";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { authService } from "../services/authService";
-import { authStorage } from "../utils/authStorage";
 
 function AdminLayout() {
   const navigate = useNavigate();
-  const adminUser = authStorage.getUser();
 
   const handleLogout = () => {
     authService.logout();
@@ -66,12 +65,7 @@ function AdminLayout() {
           </NavLink>
         </nav>
 
-        <div className="admin-sidebar-footer">
-          <div className="admin-profile-mini">
-            <strong>{adminUser?.fullName ?? "Smart Cafe Admin"}</strong>
-            <span>@{adminUser?.username ?? "admin"}</span>
-          </div>
-
+        <div className="admin-sidebar-footer admin-sidebar-actions">
           <button
             className="admin-logout-btn"
             type="button"
@@ -81,7 +75,8 @@ function AdminLayout() {
             ออกจากระบบ
           </button>
 
-          <Link to="/" className="admin-back-site">
+          <Link to="/" className="admin-back-site admin-back-site-btn">
+            <FaArrowLeft />
             กลับหน้าเว็บไซต์
           </Link>
         </div>

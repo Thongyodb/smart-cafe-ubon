@@ -9,6 +9,12 @@ export type CafeQueryParams = {
   limit?: number;
 };
 
+export type CoverFocusPayload = {
+  coverFocusX: number;
+  coverFocusY: number;
+  coverZoom: number;
+};
+
 export type CreateCafePayload = {
   name: string;
   description?: string;
@@ -22,6 +28,11 @@ export type CreateCafePayload = {
   instagramUrl?: string;
   websiteUrl?: string;
   coverImageUrl?: string;
+
+  coverFocusX?: number;
+  coverFocusY?: number;
+  coverZoom?: number;
+
   priceMin?: number | null;
   priceMax?: number | null;
   categoryId: number;
@@ -44,8 +55,8 @@ export const cafeService = {
   },
 
   getById: async (id: number) => {
-  const response = await axiosClient.get(`/cafes/${id}`);
-  return response.data;
+    const response = await axiosClient.get<CafeDetailResponse>(`/cafes/${id}`);
+    return response.data;
   },
 
   createCafe: async (data: CreateCafePayload) => {
@@ -56,6 +67,15 @@ export const cafeService = {
   updateCafe: async (id: number, data: CreateCafePayload) => {
     const response = await axiosClient.put<CafeDetailResponse>(
       `/cafes/${id}`,
+      data
+    );
+
+    return response.data;
+  },
+
+  updateCoverFocus: async (id: number, data: CoverFocusPayload) => {
+    const response = await axiosClient.patch<CafeDetailResponse>(
+      `/cafes/${id}/cover-focus`,
       data
     );
 

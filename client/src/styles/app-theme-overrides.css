@@ -51,9 +51,6 @@
 }
 
 /* Nav active */
-.app-desktop-nav a:hover,
-.app-desktop-nav a.active,
-.desktop-menu a.active,
 .admin-menu a.active,
 .admin-nav a:hover,
 .admin-nav a.active,
@@ -61,6 +58,34 @@
 .filter-tag-btn.active {
   color: #ffffff !important;
   background: var(--app-coffee) !important;
+}
+
+/* App top navbar ให้เหมือนหน้า Home */
+.app-desktop-nav a,
+.desktop-menu a {
+  background: transparent !important;
+  color: #171717 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border-bottom: 3px solid transparent !important;
+}
+
+.app-desktop-nav a:hover,
+.app-desktop-nav a.active,
+.desktop-menu a:hover,
+.desktop-menu a.active {
+  color: var(--app-coffee) !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border-bottom: 3px solid var(--app-coffee) !important;
+}
+
+.app-desktop-nav a:hover svg,
+.app-desktop-nav a.active svg,
+.desktop-menu a:hover svg,
+.desktop-menu a.active svg {
+  color: var(--app-coffee) !important;
 }
 
 .app-login-link {
@@ -241,4 +266,4378 @@ select:focus {
 .app-bottom-nav a.active {
   color: #ffffff !important;
   background: var(--app-coffee) !important;
+}
+/* =========================================================
+   Cafe Detail Page - Match sample layout
+   Based on reference: max 1200px, hero 614px, overlay card
+   ========================================================= */
+
+.cafe-detail-redesign {
+  min-height: 100vh !important;
+  background: #f4fafd !important;
+  color: #161d1f !important;
+  padding-bottom: 80px !important;
+}
+
+/* Top bar เหมือนตัวอย่าง */
+.cafe-detail-topbar {
+  height: 64px !important;
+  padding: 0 40px !important;
+  background: rgba(244, 250, 253, 0.86) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  border-bottom: 1px solid rgba(190, 201, 200, 0.45) !important;
+  box-shadow: 0 4px 12px rgba(0, 102, 102, 0.08) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 50 !important;
+}
+
+.cafe-detail-title-link {
+  color: #006666 !important;
+  font-weight: 800 !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.cafe-detail-user-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.cafe-detail-user-pill img,
+.cafe-detail-user-pill span {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 999px !important;
+  overflow: hidden !important;
+  border: 2px solid #fff !important;
+  box-shadow: 0 4px 12px rgba(0, 102, 102, 0.12) !important;
+}
+
+.cafe-detail-user-pill span {
+  display: grid !important;
+  place-items: center !important;
+  background: #006666 !important;
+  color: #fff !important;
+  font-weight: 800 !important;
+}
+
+.cafe-detail-user-pill strong {
+  background: #004c4c !important;
+  color: #fff !important;
+  padding: 10px 24px !important;
+  border-radius: 12px !important;
+  font-size: 14px !important;
+}
+
+/* รูปปกใหญ่ด้านบน */
+.cafe-detail-cover {
+  width: min(1200px, 100%) !important;
+  height: 614px !important;
+  margin: 0 auto !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
+  position: relative !important;
+  background: #e8eff1 !important;
+  box-shadow: none !important;
+}
+
+/* การ์ดลอยทับรูป */
+.cafe-detail-content-section {
+  position: relative !important;
+  z-index: 10 !important;
+  margin-top: -160px !important;
+  padding-top: 0 !important;
+}
+
+/* layout หลัก */
+.cafe-detail-layout {
+  width: min(1200px, 100%) !important;
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  padding: 0 40px !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 320px !important;
+  gap: 24px !important;
+  align-items: start !important;
+}
+
+/* การ์ดข้อมูลร้านฝั่งซ้าย */
+.cafe-detail-info-card {
+  background: rgba(244, 250, 253, 0.86) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(190, 201, 200, 0.45) !important;
+  border-radius: 12px !important;
+  padding: 32px !important;
+  box-shadow: 0 4px 12px rgba(0, 102, 102, 0.08) !important;
+}
+
+.cafe-detail-card-head {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 24px !important;
+}
+
+.cafe-detail-rating-inline {
+  color: #f59e0b !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin-bottom: 8px !important;
+}
+
+.cafe-detail-info-card h1 {
+  color: #161d1f !important;
+  font-size: 48px !important;
+  line-height: 1.08 !important;
+  letter-spacing: -0.03em !important;
+  font-weight: 900 !important;
+  margin: 0 0 16px !important;
+}
+
+.cafe-detail-info-card p {
+  color: #3f4948 !important;
+  font-size: 14px !important;
+  line-height: 1.75 !important;
+  font-weight: 500 !important;
+}
+
+.cafe-detail-heart-btn {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(190, 201, 200, 0.45) !important;
+  background: #fff !important;
+  color: #ef4444 !important;
+  box-shadow: 0 4px 12px rgba(0, 102, 102, 0.08) !important;
+  font-size: 22px !important;
+}
+
+.cafe-detail-divider {
+  margin: 18px 0 22px !important;
+  border-top: 1px solid rgba(190, 201, 200, 0.5) !important;
+}
+
+/* info grid */
+.cafe-detail-info-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+}
+
+.cafe-detail-info-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.cafe-detail-info-item > div {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 999px !important;
+  background: #e8eff1 !important;
+  color: #006666 !important;
+  display: grid !important;
+  place-items: center !important;
+  flex-shrink: 0 !important;
+}
+
+.cafe-detail-info-item span {
+  display: block !important;
+  font-size: 12px !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.04em !important;
+  font-weight: 800 !important;
+  color: #3f4948 !important;
+}
+
+.cafe-detail-info-item strong {
+  display: block !important;
+  margin-top: 3px !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+  font-weight: 800 !important;
+  color: #161d1f !important;
+}
+
+.cafe-detail-tags {
+  margin-top: 20px !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+}
+
+.cafe-detail-tags .tag {
+  padding: 7px 12px !important;
+  border-radius: 6px !important;
+  border: 1px solid rgba(190, 201, 200, 0.8) !important;
+  background: #f4fafd !important;
+  color: #3f4948 !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+}
+
+/* sidebar ขวา */
+.cafe-detail-sidebar {
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  position: sticky !important;
+  top: 88px !important;
+}
+
+.detail-map-button {
+  width: 100% !important;
+  min-height: 56px !important;
+  padding: 14px 24px !important;
+  border-radius: 8px !important;
+  background: #006666 !important;
+  color: #fff !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  text-decoration: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  box-shadow: 0 4px 12px rgba(0, 102, 102, 0.18) !important;
+}
+
+.detail-map-button:hover {
+  background: #096969 !important;
+  transform: translateY(-1px) !important;
+}
+
+/* รูปเล็ก sidebar */
+.detail-gallery-slider {
+  width: 100% !important;
+  height: 180px !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(190, 201, 200, 0.35) !important;
+  box-shadow: 0 4px 12px rgba(0, 102, 102, 0.08) !important;
+  background: #e8eff1 !important;
+  position: relative !important;
+}
+
+.detail-gallery-slider img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+/* กล่องคะแนน */
+.detail-side-card {
+  background: #eef5f7 !important;
+  border: 1px solid rgba(190, 201, 200, 0.45) !important;
+  border-radius: 12px !important;
+  padding: 24px !important;
+  text-align: center !important;
+  box-shadow: 0 4px 12px rgba(0, 102, 102, 0.08) !important;
+}
+
+.detail-side-card h3 {
+  color: #161d1f !important;
+  font-size: 20px !important;
+  font-weight: 800 !important;
+  margin: 0 0 12px !important;
+}
+
+.detail-side-card > strong {
+  display: block !important;
+  color: #006666 !important;
+  font-size: 48px !important;
+  line-height: 1.1 !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.03em !important;
+}
+
+.detail-rating-stars {
+  color: #f59e0b !important;
+  display: flex !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  margin: 8px 0 !important;
+}
+
+.detail-side-card p {
+  color: #3f4948 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.detail-write-review-btn {
+  width: 100% !important;
+  min-height: 42px !important;
+  margin-top: 10px !important;
+  border-radius: 8px !important;
+  border: 1px solid #006666 !important;
+  color: #006666 !important;
+  background: transparent !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-decoration: none !important;
+  font-size: 12px !important;
+  letter-spacing: 0.04em !important;
+  font-weight: 800 !important;
+}
+
+/* section ด้านล่างให้กว้างเท่าตัวอย่าง */
+.photo-spot-section,
+.review-section {
+  width: min(1200px, 100%) !important;
+  max-width: 1200px !important;
+  margin: 64px auto 0 !important;
+  padding: 0 40px !important;
+}
+
+/* tablet */
+@media (max-width: 1024px) {
+  .cafe-detail-cover {
+    height: 460px !important;
+  }
+
+  .cafe-detail-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .cafe-detail-sidebar {
+    position: static !important;
+  }
+
+  .detail-gallery-slider {
+    height: 240px !important;
+  }
+}
+
+/* mobile */
+@media (max-width: 640px) {
+  .cafe-detail-topbar {
+    padding: 0 16px !important;
+  }
+
+  .cafe-detail-user-pill strong {
+    display: none !important;
+  }
+
+  .cafe-detail-cover {
+    height: 409px !important;
+  }
+
+  .cafe-detail-content-section {
+    margin-top: -160px !important;
+  }
+
+  .cafe-detail-layout,
+  .photo-spot-section,
+  .review-section {
+    padding: 0 16px !important;
+  }
+
+  .cafe-detail-info-card {
+    padding: 24px !important;
+  }
+
+  .cafe-detail-info-card h1 {
+    font-size: 34px !important;
+  }
+
+  .cafe-detail-info-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+/* =========================================================
+   Cafe Detail - Photo Spot Section Exact Reference Style
+   ========================================================= */
+
+.cafe-detail-redesign .photo-spot-section {
+  width: min(1200px, calc(100% - 80px)) !important;
+  max-width: 1200px !important;
+  margin: 28px auto 0 !important;
+  padding: 0 !important;
+}
+
+.cafe-detail-redesign .photo-spot-header {
+  margin: 0 0 28px !important;
+  padding: 0 !important;
+}
+
+.cafe-detail-redesign .photo-spot-heading {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  color: #161d1f !important;
+  font-size: 32px !important;
+  line-height: 1.3 !important;
+  font-weight: 900 !important;
+  margin: 0 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.cafe-detail-redesign .photo-spot-heading svg {
+  color: #006666 !important;
+  font-size: 28px !important;
+  flex-shrink: 0 !important;
+}
+
+/* 3 รูปบน 2 รูปล่าง เหมือนตัวอย่าง */
+.cafe-detail-redesign .spot-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 24px !important;
+  width: 100% !important;
+  margin: 0 !important;
+  align-items: stretch !important;
+}
+
+/* ขนาดการ์ดเท่าตัวอย่าง */
+.cafe-detail-redesign .spot-card {
+  position: relative !important;
+  height: 280px !important;
+  min-height: 280px !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  background: #dde4e6 !important;
+  box-shadow: 0 4px 12px rgba(0, 102, 102, 0.08) !important;
+  cursor: pointer !important;
+  isolation: isolate !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.cafe-detail-redesign .spot-card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(0, 102, 102, 0.12) !important;
+}
+
+/* รูปเต็มกล่อง */
+.cafe-detail-redesign .spot-image {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  border-radius: 0 !important;
+  background: #dde4e6 !important;
+}
+
+.cafe-detail-redesign .spot-image img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+  transition: transform 0.7s ease !important;
+}
+
+.cafe-detail-redesign .spot-card:hover .spot-image img {
+  transform: scale(1.05) !important;
+}
+
+/* เงาดำไล่จากล่างขึ้นบน */
+.cafe-detail-redesign .spot-card::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+  background:
+    linear-gradient(
+      to top,
+      rgba(43, 50, 52, 0.86) 0%,
+      rgba(43, 50, 52, 0.45) 42%,
+      rgba(43, 50, 52, 0.12) 70%,
+      transparent 100%
+    ) !important;
+  pointer-events: none !important;
+}
+
+/* ข้อความทับรูป */
+.cafe-detail-redesign .spot-content {
+  position: absolute !important;
+  left: 16px !important;
+  right: 16px !important;
+  bottom: 16px !important;
+  z-index: 2 !important;
+  padding: 0 !important;
+  color: #fff !important;
+}
+
+/* เลขลำดับวงกลมสีเขียว */
+.cafe-detail-redesign .spot-number {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 999px !important;
+  background: #006666 !important;
+  color: #fff !important;
+  display: grid !important;
+  place-items: center !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  margin-bottom: 10px !important;
+  box-shadow: 0 4px 12px rgba(0, 102, 102, 0.32) !important;
+}
+
+.cafe-detail-redesign .spot-content h3 {
+  color: #fff !important;
+  font-size: 17px !important;
+  line-height: 1.25 !important;
+  font-weight: 900 !important;
+  margin: 0 0 6px !important;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35) !important;
+}
+
+.cafe-detail-redesign .spot-content p {
+  color: rgba(255, 255, 255, 0.86) !important;
+  font-size: 13px !important;
+  line-height: 1.45 !important;
+  font-weight: 700 !important;
+  margin: 0 !important;
+
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+/* ซ่อนเวลาแนะนำ/มุมกล้อง เพื่อให้เหมือนตัวอย่าง */
+.cafe-detail-redesign .spot-meta {
+  display: none !important;
+}
+
+/* ดัน Reviews ให้เหมือนตัวอย่าง */
+.cafe-detail-redesign .review-section {
+  width: min(1200px, calc(100% - 80px)) !important;
+  max-width: 1200px !important;
+  margin: 64px auto 0 !important;
+  padding: 0 !important;
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .cafe-detail-redesign .photo-spot-section,
+  .cafe-detail-redesign .review-section {
+    width: calc(100% - 48px) !important;
+  }
+
+  .cafe-detail-redesign .spot-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .cafe-detail-redesign .spot-card {
+    height: 260px !important;
+    min-height: 260px !important;
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .cafe-detail-redesign .photo-spot-section,
+  .cafe-detail-redesign .review-section {
+    width: calc(100% - 32px) !important;
+    margin-top: 48px !important;
+  }
+
+  .cafe-detail-redesign .photo-spot-heading {
+    font-size: 26px !important;
+  }
+
+  .cafe-detail-redesign .photo-spot-heading svg {
+    font-size: 24px !important;
+  }
+
+  .cafe-detail-redesign .spot-grid {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+
+  .cafe-detail-redesign .spot-card {
+    height: 250px !important;
+    min-height: 250px !important;
+  }
+}
+/* =========================================================
+   FIX: Pull Photo Spots closer to cafe detail card
+   ========================================================= */
+
+.cafe-detail-redesign .photo-spot-section {
+  margin-top: -90px !important;
+}
+
+/* ให้ Reviews ไม่โดนดึงขึ้นตามมากเกินไป */
+.cafe-detail-redesign .review-section {
+  margin-top: 48px !important;
+}
+
+/* ถ้าจอเล็กไม่ต้องดึงแรง */
+@media (max-width: 1024px) {
+  .cafe-detail-redesign .photo-spot-section {
+    margin-top: 32px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .cafe-detail-redesign .photo-spot-section {
+    margin-top: 28px !important;
+  }
+}
+/* =========================================================
+   FINAL TUNE: Photo Spots full width like red lines
+   ========================================================= */
+
+/* ขยาย section จุดถ่ายรูปให้ชิดซ้าย-ขวาตามเส้นแดง */
+.cafe-detail-redesign .photo-spot-section {
+  width: min(1420px, calc(100% - 150px)) !important;
+  max-width: 1420px !important;
+  margin: -45px auto 0 !important;
+  padding: 0 !important;
+}
+
+/* หัวข้อ + ไอคอนกล้อง ให้ชิดซ้ายตามรูป */
+.cafe-detail-redesign .photo-spot-header {
+  margin: 0 0 26px !important;
+  padding: 0 !important;
+}
+
+.cafe-detail-redesign .photo-spot-heading {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  margin: 0 !important;
+  color: #161d1f !important;
+  font-size: 34px !important;
+  font-weight: 900 !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.cafe-detail-redesign .photo-spot-heading svg {
+  color: #006666 !important;
+  font-size: 30px !important;
+  flex-shrink: 0 !important;
+}
+
+/* รูป 3 ใบให้ขยายเต็มแนวซ้าย-ขวา */
+.cafe-detail-redesign .spot-grid {
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 22px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* ขยายขนาดรูปให้ใหญ่ขึ้น */
+.cafe-detail-redesign .spot-card {
+  height: 285px !important;
+  min-height: 285px !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  position: relative !important;
+  background: #dde4e6 !important;
+  box-shadow: 0 10px 28px rgba(0, 102, 102, 0.12) !important;
+}
+
+/* รูปเต็มกล่อง */
+.cafe-detail-redesign .spot-image {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.cafe-detail-redesign .spot-image img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+/* overlay ข้อความ */
+.cafe-detail-redesign .spot-card::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+  background: linear-gradient(
+    to top,
+    rgba(22, 29, 31, 0.86) 0%,
+    rgba(22, 29, 31, 0.48) 42%,
+    rgba(22, 29, 31, 0.1) 72%,
+    transparent 100%
+  ) !important;
+  pointer-events: none !important;
+}
+
+.cafe-detail-redesign .spot-content {
+  position: absolute !important;
+  left: 18px !important;
+  right: 18px !important;
+  bottom: 16px !important;
+  z-index: 2 !important;
+  padding: 0 !important;
+  color: #fff !important;
+}
+
+.cafe-detail-redesign .spot-number {
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 999px !important;
+  background: #006666 !important;
+  color: #fff !important;
+  display: grid !important;
+  place-items: center !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  margin-bottom: 10px !important;
+}
+
+.cafe-detail-redesign .spot-content h3 {
+  color: #fff !important;
+  font-size: 19px !important;
+  line-height: 1.25 !important;
+  font-weight: 900 !important;
+  margin: 0 0 6px !important;
+}
+
+.cafe-detail-redesign .spot-content p {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+  font-weight: 700 !important;
+  margin: 0 !important;
+
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+/* ซ่อน meta เพื่อไม่ให้การ์ดรก */
+.cafe-detail-redesign .spot-meta {
+  display: none !important;
+}
+
+/* Reviews ให้ตามขึ้นมา แต่ไม่บังรูป */
+.cafe-detail-redesign .review-section {
+  width: min(1420px, calc(100% - 150px)) !important;
+  max-width: 1420px !important;
+  margin: 42px auto 0 !important;
+  padding: 0 !important;
+  clear: both !important;
+}
+
+/* ลดความสูง/ระยะของกล่องเขียนรีวิวไม่ให้กินพื้นที่เกิน */
+.cafe-detail-redesign .review-form-card {
+  margin-top: 18px !important;
+  padding: 28px !important;
+}
+
+/* กัน sidebar ด้านขวาบังรูปจุดถ่าย */
+.cafe-detail-redesign .cafe-detail-sidebar {
+  z-index: 3 !important;
+}
+
+.cafe-detail-redesign .photo-spot-section {
+  z-index: 1 !important;
+  position: relative !important;
+}
+
+/* จอขนาดกลาง */
+@media (max-width: 1200px) {
+  .cafe-detail-redesign .photo-spot-section,
+  .cafe-detail-redesign .review-section {
+    width: calc(100% - 70px) !important;
+  }
+
+  .cafe-detail-redesign .spot-card {
+    height: 260px !important;
+    min-height: 260px !important;
+  }
+}
+
+/* tablet */
+@media (max-width: 1024px) {
+  .cafe-detail-redesign .photo-spot-section {
+    margin-top: 36px !important;
+  }
+
+  .cafe-detail-redesign .spot-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+/* mobile */
+@media (max-width: 640px) {
+  .cafe-detail-redesign .photo-spot-section,
+  .cafe-detail-redesign .review-section {
+    width: calc(100% - 32px) !important;
+  }
+
+  .cafe-detail-redesign .spot-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .cafe-detail-redesign .spot-card {
+    height: 250px !important;
+    min-height: 250px !important;
+  }
+
+  .cafe-detail-redesign .photo-spot-heading {
+    font-size: 26px !important;
+  }
+}
+/* =========================================================
+   TUNE: Move only white cafe info card down
+   ========================================================= */
+
+/* อย่าขยับทั้ง section แล้ว ให้ section อยู่ตำแหน่งเดิม */
+.cafe-detail-redesign > .detail-content-section.cafe-detail-content-section {
+  margin-top: -160px !important;
+}
+
+/* ขยับเฉพาะแท็บ/การ์ดสีขาวฝั่งซ้ายลง */
+.cafe-detail-redesign .cafe-detail-info-card {
+  transform: translateY(28px) !important;
+}
+
+/* กัน hover/transition อื่นมากวน */
+.cafe-detail-redesign .cafe-detail-info-card:hover {
+  transform: translateY(28px) !important;
+}
+/* =========================================================
+   Cafe Detail - Favorite Button
+   ========================================================= */
+
+.cafe-detail-redesign .cafe-detail-heart-btn {
+  display: grid !important;
+  place-items: center !important;
+  color: #006666 !important;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease !important;
+}
+
+.cafe-detail-redesign .cafe-detail-heart-btn svg {
+  font-size: 20px !important;
+}
+
+.cafe-detail-redesign .cafe-detail-heart-btn:hover {
+  transform: translateY(-1px) scale(1.04) !important;
+}
+
+.cafe-detail-redesign .cafe-detail-heart-btn.active {
+  color: #ef4444 !important;
+  background: #fff5f5 !important;
+  border-color: rgba(239, 68, 68, 0.28) !important;
+}
+
+.cafe-detail-redesign .cafe-detail-heart-btn:disabled {
+  opacity: 0.65 !important;
+  cursor: wait !important;
+}
+/* =========================================================
+   Image Lightbox Preview
+   ========================================================= */
+
+.clickable-detail-image,
+.cafe-detail-redesign .spot-card,
+.cafe-detail-cover img {
+  cursor: zoom-in !important;
+}
+
+.image-lightbox-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  padding: 28px !important;
+  background: rgba(8, 18, 24, 0.78) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.image-lightbox-panel {
+  max-width: min(1100px, calc(100vw - 56px)) !important;
+  max-height: calc(100vh - 80px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.image-lightbox-panel img {
+  max-width: 100% !important;
+  max-height: calc(100vh - 130px) !important;
+  object-fit: contain !important;
+  border-radius: 18px !important;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.45) !important;
+  background: #111 !important;
+}
+
+.image-lightbox-panel p {
+  color: #fff !important;
+  font-weight: 800 !important;
+  text-align: center !important;
+  margin: 0 !important;
+}
+
+.image-lightbox-close {
+  position: fixed !important;
+  top: 22px !important;
+  right: 22px !important;
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #fff !important;
+  display: grid !important;
+  place-items: center !important;
+  cursor: pointer !important;
+  font-size: 20px !important;
+  transition: transform 0.2s ease, background 0.2s ease !important;
+}
+
+.image-lightbox-close:hover {
+  background: rgba(255, 255, 255, 0.22) !important;
+  transform: scale(1.04) !important;
+}
+
+@media (max-width: 640px) {
+  .image-lightbox-backdrop {
+    padding: 16px !important;
+  }
+
+  .image-lightbox-close {
+    top: 14px !important;
+    right: 14px !important;
+  }
+
+  .image-lightbox-panel {
+    max-width: calc(100vw - 24px) !important;
+  }
+
+  .image-lightbox-panel img {
+    max-height: calc(100vh - 120px) !important;
+  }
+}
+/* =========================================================
+   FINAL: Social links inside cafe white info card
+   ========================================================= */
+
+.cafe-detail-redesign .cafe-detail-info-card {
+  position: relative !important;
+}
+
+/* วางลิงก์ไว้ในกรอบขาว ตรงมุมขวาล่าง */
+.cafe-detail-redesign .cafe-detail-social-box {
+  position: absolute !important;
+  right: 42px !important;
+  bottom: 38px !important;
+  width: 280px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  z-index: 5 !important;
+}
+
+.cafe-detail-redesign .cafe-detail-social-label {
+  color: #667275 !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+}
+
+.cafe-detail-redesign .cafe-detail-social-links {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+.cafe-detail-redesign .cafe-detail-social-link {
+  min-height: 42px !important;
+  padding: 0 16px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(13, 118, 117, 0.14) !important;
+  background: #ffffff !important;
+  color: #006666 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 9px !important;
+  text-decoration: none !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  box-shadow: 0 8px 18px rgba(0, 102, 102, 0.06) !important;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease !important;
+}
+
+.cafe-detail-redesign .cafe-detail-social-link svg {
+  font-size: 15px !important;
+}
+
+.cafe-detail-redesign .cafe-detail-social-link:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 26px rgba(0, 102, 102, 0.13) !important;
+}
+
+.cafe-detail-redesign .cafe-detail-social-link.facebook:hover {
+  background: #1877f2 !important;
+  color: #ffffff !important;
+  border-color: #1877f2 !important;
+}
+
+.cafe-detail-redesign .cafe-detail-social-link.instagram:hover {
+  background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+
+.cafe-detail-redesign .cafe-detail-social-link.website:hover {
+  background: #006666 !important;
+  color: #ffffff !important;
+  border-color: #006666 !important;
+}
+
+/* จอเล็กให้กลับมาเรียงใต้ tags ไม่ลอยทับ */
+@media (max-width: 900px) {
+  .cafe-detail-redesign .cafe-detail-social-box {
+    position: static !important;
+    width: 100% !important;
+    margin-top: 22px !important;
+    padding-top: 18px !important;
+    border-top: 1px solid rgba(13, 118, 117, 0.1) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .cafe-detail-redesign .cafe-detail-social-link {
+    width: 100% !important;
+  }
+}
+
+
+.cafe-detail-redesign .photo-spot-wide-wrap {
+  margin-top: 86px !important;
+}
+
+.cafe-detail-redesign .photo-spot-section {
+  margin-top: 0 !important;
+}
+
+/* ถ้าจอเล็ก ให้เว้นพอดี ไม่เยอะเกิน */
+@media (max-width: 1024px) {
+  .cafe-detail-redesign .photo-spot-wide-wrap {
+    margin-top: 64px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .cafe-detail-redesign .photo-spot-wide-wrap {
+    margin-top: 44px !important;
+  }
+}
+.cafe-detail-redesign .cafe-detail-address {
+  display: block !important;
+  max-width: 420px !important;
+  line-height: 1.5 !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+
+.cafe-detail-redesign .cafe-detail-social-box {
+  right: 42px !important;
+  bottom: 38px !important;
+  width: 360px !important;
+  align-items: stretch !important;
+}
+
+/* ให้ปุ่มทั้งหมดอยู่ฝั่งขวา */
+.cafe-detail-redesign .cafe-detail-social-links {
+  width: 100% !important;
+  justify-content: flex-end !important;
+}
+
+/* ถ้ามี Facebook ปุ่มเดียว มันจะไปอยู่ขวาเอง */
+.cafe-detail-redesign .cafe-detail-social-link {
+  flex-shrink: 0 !important;
+}
+
+/* ซ่อนคำว่า ช่องทางเพิ่มเติม ถ้าอยากให้ดูโล่งกว่า */
+.cafe-detail-redesign .cafe-detail-social-label {
+  display: none !important;
+}
+/* =========================================================
+   FINAL FIX: App navbar font ให้เหมือนหน้า Home
+   ========================================================= */
+
+.app-desktop-nav a,
+.desktop-menu a {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+  color: #171717 !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border-bottom: 3px solid transparent !important;
+}
+
+/* เมนู active เหมือนหน้า Home */
+.app-desktop-nav a.active,
+.desktop-menu a.active,
+.app-desktop-nav a:hover,
+.desktop-menu a:hover {
+  color: #087b76 !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border-bottom: 3px solid #087b76 !important;
+  font-weight: 600 !important;
+}
+
+/* ไอคอน active เป็นสีเขียวเหมือน Home */
+.app-desktop-nav a.active svg,
+.desktop-menu a.active svg,
+.app-desktop-nav a:hover svg,
+.desktop-menu a:hover svg {
+  color: #087b76 !important;
+}
+
+/* ปุ่ม Admin ยังเป็นปุ่มแดงเหมือนเดิม */
+.app-desktop-nav a[href*="admin"],
+.desktop-menu a[href*="admin"],
+/* =========================================================
+   FINAL FIX: Dashboard ไม่ให้ตัวหนากว่าเมนูอื่น
+   ========================================================= */
+
+/* เมนูหลักทุกตัวให้หนาเท่ากัน */
+.app-desktop-nav a,
+.desktop-menu a {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+}
+
+/* Dashboard เป็นเมนูธรรมดา ไม่ใช่ปุ่ม Admin */
+.app-desktop-nav a[href="/admin"],
+.desktop-menu a[href="/admin"],
+.app-desktop-nav a[href*="/admin"],
+.desktop-menu a[href*="/admin"] {
+  font-weight: 600 !important;
+  color: #171717 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* ถ้า Dashboard active ค่อยเป็นสีเขียวเหมือนเมนูอื่น */
+.app-desktop-nav a[href="/admin"].active,
+.desktop-menu a[href="/admin"].active,
+.app-desktop-nav a[href*="/admin"].active,
+.desktop-menu a[href*="/admin"].active {
+  color: #087b76 !important;
+  font-weight: 600 !important;
+  border-bottom: 3px solid #087b76 !important;
+}
+
+/* ปุ่ม Admin จริง ๆ ให้แดงเฉพาะ class ปุ่ม ไม่จับจาก href admin แล้ว */
+.app-login-link,
+.admin-btn,
+.admin-button,
+.admin-link {
+  font-weight: 800 !important;
+}
+/* =========================================================
+   FINAL FIX: Admin button size ให้เท่าหน้า Home
+   ========================================================= */
+
+/* ปุ่ม Admin ด้านขวาสุด ให้ขนาดพอดีเหมือนหน้า Home */
+.app-topbar > a:last-child,
+.desktop-nav > a:last-child,
+.app-header > a:last-child,
+header > a:last-child,
+.app-login-link,
+.admin-link,
+.admin-button,
+.admin-btn {
+  min-width: auto !important;
+  width: auto !important;
+  height: 44px !important;
+  padding: 0 32px !important;
+  border-radius: 8px !important;
+  background: #ff3f46 !important;
+  color: #ffffff !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-decoration: none !important;
+  box-shadow: 0 8px 20px rgba(255, 63, 70, 0.22) !important;
+  border: 0 !important;
+}
+
+/* hover ปุ่ม Admin */
+.app-topbar > a:last-child:hover,
+.desktop-nav > a:last-child:hover,
+.app-header > a:last-child:hover,
+header > a:last-child:hover,
+.app-login-link:hover,
+.admin-link:hover,
+.admin-button:hover,
+.admin-btn:hover {
+  background: #ef343b !important;
+  color: #ffffff !important;
+  text-decoration: none !important;
+}
+
+/* Dashboard ยังเป็นเมนูธรรมดา ไม่ใช่ปุ่มแดง */
+.app-desktop-nav a[href="/admin"],
+.desktop-menu a[href="/admin"],
+.app-topbar nav a[href="/admin"],
+.desktop-nav nav a[href="/admin"],
+.app-header nav a[href="/admin"],
+header nav a[href="/admin"] {
+  min-width: auto !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 0 2px !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: #171717 !important;
+  box-shadow: none !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  border-bottom: 3px solid transparent !important;
+}
+
+/* Dashboard active */
+.app-desktop-nav a[href="/admin"].active,
+.desktop-menu a[href="/admin"].active,
+.app-topbar nav a[href="/admin"].active,
+.desktop-nav nav a[href="/admin"].active,
+.app-header nav a[href="/admin"].active,
+header nav a[href="/admin"].active {
+  color: #087b76 !important;
+  background: transparent !important;
+  border-bottom: 3px solid #087b76 !important;
+}
+/* =========================================================
+   FINAL: User navbar profile เหมือนตัวอย่าง
+   ========================================================= */
+
+.app-nav-right {
+  min-width: 220px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 16px !important;
+}
+
+/* กล่องโปรไฟล์คนทั่วไปด้านขวา */
+.app-user-mini {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  background: transparent !important;
+  color: #171717 !important;
+  text-decoration: none !important;
+  padding: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  transition: color 0.2s ease !important;
+}
+
+.app-user-mini:hover {
+  color: #087b76 !important;
+  background: transparent !important;
+}
+
+/* รูปโปรไฟล์ */
+.app-user-mini img,
+.app-user-mini span {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 999px !important;
+  overflow: hidden !important;
+  border: 1px solid #e5e7eb !important;
+  background: #e7f6f5 !important;
+  color: #087b76 !important;
+  display: grid !important;
+  place-items: center !important;
+  object-fit: cover !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  flex-shrink: 0 !important;
+}
+
+.app-user-mini strong {
+  color: inherit !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+}
+
+/* เมนูคนทั่วไปให้เป็น Home / Explore / Favorite / Profile */
+.app-desktop-nav {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 32px !important;
+  flex: 1 !important;
+}
+
+.app-desktop-nav a {
+  color: #171717 !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  border-bottom: 2px solid transparent !important;
+  padding: 0 0 6px !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  transition: color 0.2s ease, border-color 0.2s ease !important;
+}
+
+.app-desktop-nav a.active,
+.app-desktop-nav a:hover {
+  color: #087b76 !important;
+  background: transparent !important;
+  border-bottom-color: #087b76 !important;
+  font-weight: 500 !important;
+}
+
+.app-desktop-nav a.active svg,
+.app-desktop-nav a:hover svg {
+  color: #087b76 !important;
+}
+
+/* ปุ่ม Admin เฉพาะแอดมิน */
+.admin-top-button {
+  height: 44px !important;
+  padding: 0 32px !important;
+  border-radius: 8px !important;
+  background: #ff3f46 !important;
+  color: #ffffff !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-decoration: none !important;
+  box-shadow: 0 8px 20px rgba(255, 63, 70, 0.22) !important;
+  border: 0 !important;
+}
+
+.admin-top-button:hover {
+  background: #ef343b !important;
+  color: #ffffff !important;
+}
+/* =========================================================
+   FINAL CLEAN: Top navbar user profile
+   ใช้กับ Home / Explore / Favorite / Profile
+   ========================================================= */
+
+/* พื้นที่ขวาของ navbar */
+.app-topbar .app-nav-right {
+  min-width: 180px !important;
+  width: 180px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 12px !important;
+  flex-shrink: 0 !important;
+}
+
+/* ลิงก์โปรไฟล์ผู้ใช้ */
+.app-topbar .app-user-mini,
+.app-topbar .app-user-profile-mini {
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+
+  color: #171717 !important;
+  text-decoration: none !important;
+  overflow: visible !important;
+}
+
+/* hover ห้ามเปลี่ยนเป็นปุ่มเขียว */
+.app-topbar .app-user-mini:hover,
+.app-topbar .app-user-profile-mini:hover {
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+  color: #087b76 !important;
+}
+
+/* วงกลม avatar */
+.app-topbar .app-user-avatar {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  max-width: 32px !important;
+
+  border-radius: 999px !important;
+  overflow: hidden !important;
+  flex-shrink: 0 !important;
+
+  background: #087b76 !important;
+  color: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: none !important;
+
+  display: grid !important;
+  place-items: center !important;
+}
+
+/* hover avatar ห้ามขยายเป็น pill */
+.app-topbar .app-user-profile-mini:hover .app-user-avatar,
+.app-topbar .app-user-mini:hover .app-user-avatar {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  max-width: 32px !important;
+  border-radius: 999px !important;
+  background: #087b76 !important;
+  transform: none !important;
+}
+
+/* รูปจริง */
+.app-topbar .app-user-avatar img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+/* ตัวอักษรใน avatar */
+.app-topbar .app-user-avatar > span {
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+
+  display: inline !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+}
+
+/* ชื่อผู้ใช้ */
+.app-topbar .app-user-name,
+.app-topbar .app-user-mini > strong,
+.app-topbar .app-user-profile-mini > strong {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+
+  color: #171717 !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  margin: 0 !important;
+}
+
+/* hover เฉพาะชื่อเปลี่ยนสี */
+.app-topbar .app-user-mini:hover > strong,
+.app-topbar .app-user-profile-mini:hover > strong,
+.app-topbar .app-user-profile-mini:hover .app-user-name {
+  color: #087b76 !important;
+}
+
+/* ไม่ให้ small / Member โผล่ */
+.app-topbar .app-user-mini small,
+.app-topbar .app-user-profile-mini small {
+  display: none !important;
+}
+/* =========================================================
+   FINAL: Home hero image slide animation
+   รูปปกเลื่อนไปทางซ้ายเวลาเปลี่ยนร้าน
+   ========================================================= */
+
+.home-redesign .home-hero-slide-track {
+  backface-visibility: hidden !important;
+}
+
+.home-redesign .home-hero-slide {
+  flex: 0 0 100% !important;
+}
+
+.home-redesign .home-hero-slide img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+/* ทำให้จุด slide อยู่เหนือรูป */
+.home-redesign .home-slide-dots {
+  position: absolute !important;
+  z-index: 5 !important;
+}
+/* =========================================================
+   FINAL: Explore page full width
+   ขยายหน้า Explore ให้เต็ม ไม่เหลือพื้นหลังเยอะ
+   ========================================================= */
+
+.explore-page {
+  min-height: calc(100vh - 78px) !important;
+  background: #ffffff !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+/* พื้นหลังแผนที่ให้เต็มหน้า */
+.explore-page .explore-map-background {
+  position: fixed !important;
+  inset: 78px 0 0 0 !important;
+  width: 100vw !important;
+  height: calc(100vh - 78px) !important;
+  background: #ffffff !important;
+  z-index: 1 !important;
+}
+
+/* ให้ตัวแผนที่เต็มพื้นที่ */
+.explore-page .explore-map-background .leaflet-container {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 0 !important;
+}
+
+/* กล่องซ้ายรายการคาเฟ่ */
+.explore-page .explore-panel {
+  position: relative !important;
+  z-index: 5 !important;
+  width: 420px !important;
+  max-width: 420px !important;
+  height: calc(100vh - 118px) !important;
+  margin: 20px 0 20px 32px !important;
+  padding: 26px 26px 28px !important;
+  border-radius: 24px !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18) !important;
+  overflow-y: auto !important;
+}
+
+/* ลดหัวข้อไม่ให้กินพื้นที่เกิน */
+.explore-page .explore-header h1 {
+  font-size: 52px !important;
+  line-height: 0.95 !important;
+  margin: 8px 0 22px !important;
+}
+
+/* ช่องค้นหา */
+.explore-page .app-search {
+  width: 100% !important;
+  min-height: 54px !important;
+  border-radius: 999px !important;
+}
+
+/* ปุ่มสำรวจใกล้ฉันด้านขวาล่าง */
+.explore-page .explore-nearby-btn,
+.explore-page .map-nearby-floating-btn {
+  position: fixed !important;
+  right: 38px !important;
+  bottom: 38px !important;
+  z-index: 10 !important;
+}
+
+/* รายการคาเฟ่ */
+.explore-page .explore-result-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 18px !important;
+  padding-bottom: 20px !important;
+}
+
+/* การ์ดคาเฟ่ใน Explore ไม่ให้ใหญ่เกิน */
+.explore-page .app-cafe-card {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+/* รูปในการ์ด */
+.explore-page .app-cafe-card img {
+  max-height: 210px !important;
+  object-fit: cover !important;
+}
+
+/* ซ่อน scrollbar ให้ดูสะอาด แต่ยังเลื่อนได้ */
+.explore-page .explore-panel::-webkit-scrollbar {
+  width: 6px !important;
+}
+
+.explore-page .explore-panel::-webkit-scrollbar-thumb {
+  background: rgba(8, 123, 118, 0.25) !important;
+  border-radius: 999px !important;
+}
+
+/* จอเล็ก */
+@media (max-width: 900px) {
+  .explore-page {
+    overflow: auto !important;
+  }
+
+  .explore-page .explore-map-background {
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: 420px !important;
+  }
+
+  .explore-page .explore-panel {
+    width: calc(100% - 32px) !important;
+    max-width: none !important;
+    height: auto !important;
+    margin: -40px auto 24px !important;
+  }
+
+  .explore-page .explore-header h1 {
+    font-size: 42px !important;
+  }
+
+  .explore-page .explore-nearby-btn,
+  .explore-page .map-nearby-floating-btn {
+    right: 20px !important;
+    bottom: 24px !important;
+  }
+}
+/* =========================================================
+   FORCE FINAL: Explore panel ชิดขอบซ้ายจริง
+   ========================================================= */
+
+@media (min-width: 901px) {
+  .explore-page {
+    position: relative !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .explore-page .explore-panel {
+    position: fixed !important;
+    top: 98px !important;
+    left: 0 !important;
+    right: auto !important;
+    bottom: auto !important;
+
+    transform: none !important;
+    translate: none !important;
+
+    margin: 0 !important;
+    width: 420px !important;
+    max-width: 420px !important;
+    height: calc(100vh - 118px) !important;
+
+    border-radius: 0 24px 24px 0 !important;
+    z-index: 999 !important;
+  }
+}
+/* =========================================================
+   FINAL FIX: Explore panel ล่างชิดเต็ม ไม่เว้ามุมล่าง
+   ========================================================= */
+
+@media (min-width: 901px) {
+  .explore-page .explore-panel {
+    position: fixed !important;
+
+    top: 78px !important;
+    left: 0 !important;
+    right: auto !important;
+    bottom: 0 !important;
+
+    width: 400px !important;
+    max-width: 400px !important;
+
+    /* ใช้ 100dvh กันปัญหาความสูง viewport */
+    height: calc(100dvh - 78px) !important;
+    min-height: calc(100dvh - 78px) !important;
+
+    margin: 0 !important;
+    padding: 30px 24px 32px !important;
+
+    /* แก้จุดสำคัญ: ไม่ให้มุมล่างเว้า */
+    border-radius: 0 !important;
+
+    background: rgba(255, 255, 255, 0.97) !important;
+    box-shadow: 18px 0 48px rgba(15, 23, 42, 0.16) !important;
+
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+
+    z-index: 20 !important;
+    transform: none !important;
+    translate: none !important;
+  }
+
+  .explore-page .explore-map-background {
+    position: fixed !important;
+    top: 78px !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+
+    width: 100vw !important;
+    height: calc(100dvh - 78px) !important;
+    z-index: 1 !important;
+  }
+
+  .explore-page .explore-map-background .leaflet-container {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 0 !important;
+  }
+}
+/* =========================================================
+   FINAL TUNE: Explore cafe list compact cards
+   แสดงรายการคาเฟ่แบบเล็ก เห็นหลายร้านเหมือนตัวอย่าง
+   ========================================================= */
+
+@media (min-width: 901px) {
+  /* ลดช่องว่างใน panel */
+  .explore-page .explore-panel {
+    width: 400px !important;
+    max-width: 400px !important;
+    padding: 26px 22px 24px !important;
+  }
+
+  /* ลดขนาดหัวข้อ */
+  .explore-page .explore-header h1 {
+    font-size: 42px !important;
+    line-height: 1.05 !important;
+    margin: 6px 0 22px !important;
+  }
+
+  .explore-page .explore-result-title {
+    font-size: 28px !important;
+    line-height: 1.15 !important;
+    margin: 26px 0 14px !important;
+  }
+
+  /* รายการให้เรียงชิดขึ้น */
+  .explore-page .explore-result-list {
+    gap: 12px !important;
+    padding-bottom: 28px !important;
+  }
+
+  /* เปลี่ยนการ์ดคาเฟ่ใน Explore เป็นแนวนอนเล็ก */
+  .explore-page .app-cafe-card {
+    display: grid !important;
+    grid-template-columns: 110px minmax(0, 1fr) !important;
+    gap: 12px !important;
+
+    width: 100% !important;
+    min-height: 118px !important;
+    padding: 12px !important;
+
+    border-radius: 16px !important;
+    background: #ffffff !important;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08) !important;
+    overflow: hidden !important;
+  }
+
+  /* รูปคาเฟ่ให้เป็นรูปเล็กด้านซ้าย */
+  .explore-page .app-cafe-card img {
+    width: 110px !important;
+    height: 94px !important;
+    max-height: 94px !important;
+    border-radius: 12px !important;
+    object-fit: cover !important;
+  }
+
+  /* กันกล่องรูปเดิมกินพื้นที่ */
+  .explore-page .app-cafe-card > div:first-child {
+    width: 110px !important;
+    height: 94px !important;
+    min-width: 110px !important;
+  }
+
+  /* เนื้อหาการ์ด */
+  .explore-page .app-cafe-card h3,
+  .explore-page .app-cafe-card h2 {
+    font-size: 17px !important;
+    line-height: 1.25 !important;
+    margin: 0 0 5px !important;
+
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+
+  .explore-page .app-cafe-card p {
+    font-size: 13px !important;
+    line-height: 1.35 !important;
+    margin: 0 0 6px !important;
+
+    display: -webkit-box !important;
+    -webkit-line-clamp: 1 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+
+  /* ลด tag ให้เล็กลง */
+  .explore-page .app-cafe-card .tag,
+  .explore-page .app-cafe-card span {
+    font-size: 12px !important;
+  }
+
+  /* ปุ่มหัวใจให้เล็กและอยู่มุมขวาบน */
+  .explore-page .app-cafe-card .app-heart-btn,
+  .explore-page .app-cafe-card .favorite-btn {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    font-size: 15px !important;
+  }
+
+  /* ซ่อน tag ที่เยอะเกินในการ์ด Explore เพื่อให้เห็นหลายร้าน */
+  .explore-page .app-cafe-card .tag:nth-of-type(n + 4) {
+    display: none !important;
+  }
+
+  /* ลดขนาดราคาและคะแนน */
+  .explore-page .app-cafe-card strong {
+    font-size: 14px !important;
+  }
+}
+/* =========================================================
+   FINAL TUNE: Explore compact card ซ่อน tags + ย้ายหัวใจขวาบน
+   ========================================================= */
+
+@media (min-width: 901px) {
+  /* การ์ดคาเฟ่ใน Explore */
+  .explore-page .app-cafe-card {
+    position: relative !important;
+    display: grid !important;
+    grid-template-columns: 120px minmax(0, 1fr) !important;
+    gap: 16px !important;
+
+    min-height: 132px !important;
+    padding: 14px !important;
+    border-radius: 18px !important;
+    overflow: hidden !important;
+  }
+
+  /* รูปคาเฟ่ด้านซ้าย */
+  .explore-page .app-cafe-card img {
+    width: 120px !important;
+    height: 100px !important;
+    max-height: 100px !important;
+    border-radius: 12px !important;
+    object-fit: cover !important;
+  }
+
+  .explore-page .app-cafe-card > div:first-child {
+    width: 120px !important;
+    height: 100px !important;
+    min-width: 120px !important;
+  }
+
+  /* ซ่อน tag ทั้งหมดในหน้า Explore */
+  .explore-page .app-cafe-card .tag,
+  .explore-page .app-cafe-card .cafe-tag,
+  .explore-page .app-cafe-card .tag-list,
+  .explore-page .app-cafe-card .cafe-tags,
+  .explore-page .app-cafe-card [class*="tag"],
+  .explore-page .app-cafe-card [class*="Tag"] {
+    display: none !important;
+  }
+
+  /* ปุ่มหัวใจให้อยู่มุมขวาบนของการ์ด */
+  .explore-page .app-cafe-card .app-heart-btn,
+  .explore-page .app-cafe-card .favorite-btn {
+    position: absolute !important;
+    top: 12px !important;
+    right: 12px !important;
+
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+
+    border-radius: 999px !important;
+    background: #ffffff !important;
+    color: #9ca3af !important;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.14) !important;
+    z-index: 10 !important;
+  }
+
+  .explore-page .app-cafe-card .app-heart-btn.active,
+  .explore-page .app-cafe-card .favorite-btn.active {
+    color: #ef4444 !important;
+    background: #fff5f5 !important;
+  }
+
+  /* เว้นที่ด้านขวาให้ชื่อร้าน ไม่ชนปุ่มหัวใจ */
+  .explore-page .app-cafe-card h2,
+  .explore-page .app-cafe-card h3 {
+    padding-right: 42px !important;
+    font-size: 18px !important;
+    line-height: 1.25 !important;
+    margin-bottom: 6px !important;
+  }
+
+  /* ลดระยะข้อมูลในการ์ดให้เห็นหลายร้าน */
+  .explore-page .app-cafe-card p {
+    font-size: 13px !important;
+    line-height: 1.35 !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* ราคา/คะแนนด้านล่าง */
+  .explore-page .app-cafe-card strong {
+    font-size: 14px !important;
+  }
+}
+/* =========================================================
+   FINAL: Explore compact cafe card
+   ซ่อน tags + หัวใจมุมขวาบน + เห็นหลายร้าน
+   ========================================================= */
+
+@media (min-width: 901px) {
+  .explore-page .app-cafe-card-compact {
+    position: relative !important;
+    display: grid !important;
+    grid-template-columns: 118px minmax(0, 1fr) !important;
+    gap: 14px !important;
+
+    width: 100% !important;
+    min-height: 122px !important;
+    padding: 12px !important;
+
+    border-radius: 16px !important;
+    background: #ffffff !important;
+    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08) !important;
+    overflow: hidden !important;
+  }
+
+  .explore-page .app-cafe-card-compact .app-cafe-image {
+    width: 118px !important;
+    height: 96px !important;
+    min-width: 118px !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+  }
+
+  .explore-page .app-cafe-card-compact .app-cafe-image img {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    object-fit: cover !important;
+    display: block !important;
+  }
+
+  .explore-page .app-cafe-card-compact .app-heart-btn {
+    position: absolute !important;
+    top: 12px !important;
+    right: 12px !important;
+
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+
+    border-radius: 999px !important;
+    background: #ffffff !important;
+    color: #9ca3af !important;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.14) !important;
+    z-index: 10 !important;
+  }
+
+  .explore-page .app-cafe-card-compact .app-heart-btn.active {
+    color: #ef4444 !important;
+    background: #fff5f5 !important;
+  }
+
+  .explore-page .app-cafe-card-compact .app-cafe-body {
+    min-width: 0 !important;
+    padding: 4px 42px 4px 0 !important;
+  }
+
+  .explore-page .app-cafe-card-compact h3 {
+    font-size: 17px !important;
+    line-height: 1.25 !important;
+    margin: 0 0 6px !important;
+
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+
+  .explore-page .app-cafe-card-compact .app-cafe-location {
+    font-size: 13px !important;
+    line-height: 1.3 !important;
+    margin: 0 0 10px !important;
+  }
+
+  .explore-page .app-cafe-card-compact .app-cafe-tags {
+    display: none !important;
+  }
+
+  .explore-page .app-cafe-card-compact .app-cafe-divider {
+    margin: 8px 0 !important;
+  }
+
+  .explore-page .app-cafe-card-compact .app-cafe-bottom {
+    font-size: 13px !important;
+  }
+
+  .explore-page .app-cafe-card-compact .app-cafe-bottom strong {
+    font-size: 14px !important;
+  }
+
+  .explore-page .app-cafe-card-compact .app-cafe-bottom span {
+    font-size: 14px !important;
+  }
+}
+/* =========================================================
+   FINAL: Explore card detail link
+   กดการ์ด = ซูมแผนที่ / กดปุ่มนี้ = ไปหน้ารายละเอียด
+   ========================================================= */
+
+.explore-page .app-cafe-card-compact {
+  cursor: pointer !important;
+}
+
+.explore-page .app-cafe-card-compact .app-cafe-detail-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  margin-top: 8px !important;
+  min-height: 30px !important;
+  padding: 0 12px !important;
+
+  border-radius: 999px !important;
+  background: #e7f6f5 !important;
+  color: #087b76 !important;
+
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  text-decoration: none !important;
+}
+
+.explore-page .app-cafe-card-compact .app-cafe-detail-link:hover {
+  background: #087b76 !important;
+  color: #ffffff !important;
+}
+/* =========================================================
+   FINAL TUNE: Explore search + style filter + Top 10
+   ========================================================= */
+
+@media (min-width: 901px) {
+  /* ขยับช่องค้นหาขึ้นนิดหนึ่ง */
+  .explore-page .explore-search-form {
+    margin-top: -8px !important;
+    margin-bottom: 16px !important;
+  }
+
+  /* แถว filter ใหม่ */
+  .explore-page .explore-filter-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    margin: 0 0 22px !important;
+  }
+
+  /* Select Style */
+  .explore-page .explore-style-select {
+    flex: 1 !important;
+    height: 44px !important;
+    padding: 0 12px !important;
+    border-radius: 999px !important;
+    background: #e7f6f5 !important;
+    color: #087b76 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+
+    font-size: 13px !important;
+    font-weight: 900 !important;
+    overflow: hidden !important;
+  }
+
+  .explore-page .explore-style-select select {
+    flex: 1 !important;
+    min-width: 0 !important;
+    border: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    color: #087b76 !important;
+    font-size: 13px !important;
+    font-weight: 900 !important;
+    padding: 0 !important;
+    appearance: none !important;
+    cursor: pointer !important;
+  }
+
+  .explore-page .explore-style-select svg {
+    flex-shrink: 0 !important;
+    color: #087b76 !important;
+  }
+
+  /* ปุ่ม Top 10 */
+  .explore-page .explore-top10-btn {
+    height: 44px !important;
+    padding: 0 16px !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    background: #fff7df !important;
+    color: #b77900 !important;
+
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 7px !important;
+
+    font-size: 13px !important;
+    font-weight: 900 !important;
+    cursor: pointer !important;
+    box-shadow: 0 8px 20px rgba(180, 120, 0, 0.12) !important;
+  }
+
+  .explore-page .explore-top10-btn:hover,
+  .explore-page .explore-top10-btn.active {
+    background: #f6b900 !important;
+    color: #ffffff !important;
+  }
+
+  .explore-page .explore-top10-btn svg {
+    font-size: 13px !important;
+  }
+
+  /* ลบผลกระทบของ filter-chips เดิมถ้ายังมี CSS ค้าง */
+  .explore-page .filter-chips {
+    display: none !important;
+  }
+
+  /* ลดระยะหัวข้อรายการหลัง filter */
+  .explore-page .explore-result-title {
+    margin-top: 18px !important;
+  }
+}
+/* =========================================================
+   FINAL TUNE: Explore close button จัดกากบาทให้อยู่กลางสวยๆ
+   ========================================================= */
+
+@media (min-width: 901px) {
+  .explore-page .explore-header {
+    position: relative !important;
+    padding-right: 64px !important;
+  }
+
+  .explore-page .explore-header .round-icon-btn {
+    position: absolute !important;
+
+    /* จัดตำแหน่งปุ่มให้อยู่กลางมุมขวาบน */
+    top: 18px !important;
+    right: 16px !important;
+
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    min-height: 48px !important;
+
+    border-radius: 999px !important;
+    background: #087b76 !important;
+    color: #ffffff !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+
+    font-size: 18px !important;
+    line-height: 1 !important;
+
+    box-shadow: 0 12px 28px rgba(8, 123, 118, 0.22) !important;
+    z-index: 40 !important;
+  }
+
+  .explore-page .explore-header .round-icon-btn svg {
+    width: 16px !important;
+    height: 16px !important;
+    display: block !important;
+  }
+
+  .explore-page .explore-header .round-icon-btn:hover {
+    background: #066b67 !important;
+    transform: translateY(-1px) !important;
+  }
+}
+/* =========================================================
+   FINAL FIX: Navbar ตอนยังไม่ได้เข้าสู่ระบบ ให้ชิดขวา
+   Home / Sign In อยู่มุมขวา
+   ========================================================= */
+
+/* เมื่อในเมนูมีปุ่ม Sign In ให้ดันเมนูไปขวา */
+.app-topbar .app-desktop-nav:has(.app-login-link) {
+  justify-content: flex-end !important;
+  flex: 1 !important;
+  gap: 32px !important;
+  padding-right: 42px !important;
+}
+
+/* พื้นที่ขวาที่ว่างตอนยังไม่ Login ไม่ต้องกินที่ */
+.app-topbar .top-nav-right-area:empty,
+.app-topbar .app-nav-right:empty {
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  display: none !important;
+}
+
+/* ปรับ Sign In ให้เป็นเมนูธรรมดา ไม่ใช่ปุ่ม */
+.app-topbar .app-desktop-nav .app-login-link {
+  height: 78px !important;
+  padding: 0 0 6px !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: #171717 !important;
+  border-bottom: 3px solid transparent !important;
+  box-shadow: none !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  text-decoration: none !important;
+}
+
+/* hover Sign In */
+.app-topbar .app-desktop-nav .app-login-link:hover {
+  color: #087b76 !important;
+  background: transparent !important;
+  border-bottom-color: #087b76 !important;
+}
+/* =========================================================
+   FINAL: Favorite page redesign
+   หน้า Favorite / รายการโปรด แบบ Saved Spots
+   ========================================================= */
+
+.favorite-page-redesign {
+  min-height: calc(100dvh - 78px);
+  padding: 64px 24px 90px;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(8, 123, 118, 0.08), transparent 28%),
+    linear-gradient(135deg, #f6fbfb 0%, #eef8f8 45%, #f9fbfb 100%);
+  color: #111827;
+}
+
+.favorite-page-container {
+  width: min(1160px, 100%);
+  margin: 0 auto;
+}
+
+.favorite-page-header {
+  margin-bottom: 42px;
+}
+
+.favorite-page-header span {
+  display: block;
+  margin-bottom: 12px;
+  color: #006b67;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.favorite-page-header h1 {
+  margin: 0 0 10px;
+  color: #111827;
+  font-size: clamp(42px, 5vw, 64px);
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+}
+
+.favorite-page-header p {
+  margin: 0;
+  color: #374151;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.favorite-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 34px;
+}
+
+.favorite-cafe-card {
+  min-height: 100%;
+  padding: 18px;
+  border-radius: 32px;
+  background: #ffffff;
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.07);
+  display: flex;
+  flex-direction: column;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.favorite-cafe-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 58px rgba(15, 23, 42, 0.1);
+}
+
+.favorite-cafe-image {
+  width: 100%;
+  height: 190px;
+  border-radius: 22px;
+  overflow: hidden;
+  display: block;
+  background: #eef5f5;
+  text-decoration: none;
+}
+
+.favorite-cafe-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.favorite-cafe-card:hover .favorite-cafe-image img {
+  transform: scale(1.04);
+}
+
+.favorite-cafe-content {
+  flex: 1;
+  padding: 18px 4px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.favorite-cafe-title {
+  margin: 0 0 8px;
+  color: #111827;
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.25;
+  text-decoration: none;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.favorite-cafe-title:hover {
+  color: #087b76;
+}
+
+.favorite-cafe-location {
+  margin: 0 0 18px;
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.favorite-cafe-location svg {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.favorite-cafe-tags {
+  min-height: 72px;
+  margin-bottom: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 10px;
+}
+
+.favorite-cafe-tags span {
+  padding: 8px 12px;
+  border-radius: 9px;
+  background: #f1f4f4;
+  color: #4b5563;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.favorite-cafe-bottom {
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px solid #edf0f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.favorite-cafe-bottom strong {
+  color: #111827;
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.favorite-cafe-bottom span {
+  color: #f5b400;
+  font-size: 17px;
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.favorite-cafe-bottom span svg {
+  color: #f5b400;
+  font-size: 15px;
+}
+
+.favorite-remove-btn {
+  width: 100%;
+  min-height: 52px;
+  margin-top: 22px;
+  border: 0;
+  border-radius: 16px;
+  background: #b8dcdc;
+  color: #006b67;
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.favorite-remove-btn:hover {
+  background: #087b76;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.favorite-status-text {
+  color: #087b76;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.favorite-empty-card {
+  max-width: 560px;
+  padding: 42px;
+  border-radius: 30px;
+  background: #ffffff;
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.07);
+}
+
+.favorite-empty-card h2 {
+  margin: 0 0 10px;
+  color: #111827;
+  font-size: 30px;
+  font-weight: 900;
+}
+
+.favorite-empty-card p {
+  margin: 0 0 24px;
+  color: #6b7280;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.favorite-empty-card a {
+  min-height: 46px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: #087b76;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+@media (max-width: 1180px) {
+  .favorite-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .favorite-page-redesign {
+    padding: 42px 16px 92px;
+  }
+
+  .favorite-grid {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .favorite-page-header {
+    text-align: left;
+    margin-bottom: 28px;
+  }
+
+  .favorite-page-header h1 {
+    font-size: 44px;
+  }
+
+  .favorite-cafe-image {
+    height: 210px;
+  }
+}
+/* =========================================================
+   FINAL FIX: Favorite page match reference layout
+   ขยายหน้า Favorite ให้เต็ม กว้างขึ้น และขยับขึ้น
+   ========================================================= */
+
+/* กัน CSS ของ app-content เดิมมาบีบหน้า Favorite */
+.app-content:has(.favorite-page-redesign) {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* พื้นหลังหน้า */
+.favorite-page-redesign {
+  width: 100% !important;
+  min-height: calc(100dvh - 78px) !important;
+  padding: 42px 0 90px !important;
+  margin: 0 !important;
+  background: #f6fbfb !important;
+  background-image: linear-gradient(135deg, #f7fbfb 0%, #eef8f8 48%, #f9fbfb 100%) !important;
+}
+
+/* กล่องเนื้อหาให้กว้างแบบภาพตัวอย่าง */
+.favorite-page-container {
+  width: calc(100vw - 150px) !important;
+  max-width: 1360px !important;
+  min-width: 0 !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+}
+
+/* หัวข้อขยับขึ้นและชิดซ้าย */
+.favorite-page-header {
+  margin: 0 0 40px !important;
+  padding: 0 !important;
+  text-align: left !important;
+}
+
+.favorite-page-header span {
+  margin-bottom: 10px !important;
+  color: #006b67 !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.08em !important;
+}
+
+.favorite-page-header h1 {
+  margin: 0 0 10px !important;
+  color: #111827 !important;
+  font-size: clamp(48px, 4.4vw, 64px) !important;
+  line-height: 0.95 !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.05em !important;
+}
+
+.favorite-page-header p {
+  margin: 0 !important;
+  color: #374151 !important;
+  font-size: 17px !important;
+  font-weight: 500 !important;
+}
+
+/* การ์ด 3 คอลัมน์เต็มพื้นที่ */
+.favorite-grid {
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 42px !important;
+  align-items: stretch !important;
+}
+
+/* ขนาดการ์ดให้คล้ายต้นแบบ */
+.favorite-cafe-card {
+  width: 100% !important;
+  min-height: 0 !important;
+  padding: 16px !important;
+  border-radius: 28px !important;
+  background: #ffffff !important;
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.055) !important;
+}
+
+.favorite-cafe-image {
+  width: 100% !important;
+  height: 185px !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+}
+
+.favorite-cafe-image img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+.favorite-cafe-content {
+  padding: 16px 4px 0 !important;
+}
+
+.favorite-cafe-title {
+  min-height: 50px !important;
+  margin-bottom: 6px !important;
+  font-size: 20px !important;
+  line-height: 1.22 !important;
+  font-weight: 900 !important;
+}
+
+.favorite-cafe-location {
+  margin-bottom: 16px !important;
+  font-size: 13px !important;
+}
+
+.favorite-cafe-tags {
+  min-height: 74px !important;
+  margin-bottom: 16px !important;
+  gap: 9px !important;
+}
+
+.favorite-cafe-tags span {
+  padding: 7px 11px !important;
+  border-radius: 9px !important;
+  font-size: 12px !important;
+}
+
+.favorite-cafe-bottom {
+  padding-top: 17px !important;
+}
+
+.favorite-remove-btn {
+  min-height: 48px !important;
+  margin-top: 20px !important;
+  border-radius: 14px !important;
+}
+
+/* จอใหญ่พิเศษให้เต็มขึ้นอีก */
+@media (min-width: 1500px) {
+  .favorite-page-container {
+    width: calc(100vw - 170px) !important;
+    max-width: 1400px !important;
+  }
+
+  .favorite-grid {
+    gap: 44px !important;
+  }
+}
+
+/* จอกลาง */
+@media (max-width: 1180px) {
+  .favorite-page-container {
+    width: calc(100vw - 80px) !important;
+  }
+
+  .favorite-grid {
+    gap: 28px !important;
+  }
+}
+
+/* tablet */
+@media (max-width: 980px) {
+  .favorite-page-container {
+    width: calc(100vw - 44px) !important;
+  }
+
+  .favorite-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+/* mobile */
+@media (max-width: 680px) {
+  .favorite-page-redesign {
+    padding: 34px 0 92px !important;
+  }
+
+  .favorite-page-container {
+    width: calc(100vw - 32px) !important;
+  }
+
+  .favorite-grid {
+    grid-template-columns: 1fr !important;
+    gap: 22px !important;
+  }
+
+  .favorite-page-header h1 {
+    font-size: 42px !important;
+  }
+
+  .favorite-cafe-image {
+    height: 210px !important;
+  }
+}
+/* =========================================================
+   FINAL FIX: Cafe Detail topbar user pill like other pages
+   แก้มุมขวาบนหน้า Detail ให้เป็น avatar + ชื่อ แบบหน้าอื่น
+   ========================================================= */
+
+/* ให้แถบ Cafe Details ติดตามตอนเลื่อน */
+.cafe-detail-redesign .cafe-detail-topbar {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+
+  width: 100% !important;
+  height: 78px !important;
+  z-index: 99999 !important;
+
+  padding: 0 38px !important;
+  margin: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+
+  background: rgba(255, 255, 255, 0.98) !important;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08) !important;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.05) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+}
+
+/* ดันเนื้อหาไม่ให้โดน topbar ทับ */
+.cafe-detail-redesign {
+  padding-top: 78px !important;
+}
+
+/* ปุ่มกลับซ้าย */
+.cafe-detail-redesign .cafe-detail-title-link {
+  min-height: 44px !important;
+  padding: 0 16px !important;
+  border-radius: 999px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+
+  background: #e7f6f5 !important;
+  color: #087b76 !important;
+  text-decoration: none !important;
+
+  font-size: 15px !important;
+  font-weight: 900 !important;
+}
+
+.cafe-detail-redesign .cafe-detail-title-link:hover {
+  background: #087b76 !important;
+  color: #ffffff !important;
+}
+
+/* มุมขวาให้เหมือนหน้าอื่น: วงกลมตัวอักษร + ชื่อธรรมดา */
+.cafe-detail-redesign .cafe-detail-user-pill {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: auto !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: #171717 !important;
+}
+
+/* avatar */
+.cafe-detail-redesign .cafe-detail-user-pill > span,
+.cafe-detail-redesign .cafe-detail-user-pill > img {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+
+  border-radius: 999px !important;
+  overflow: hidden !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  background: #087b76 !important;
+  color: #ffffff !important;
+
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* ชื่อผู้ใช้ ห้ามเป็นปุ่มเขียว */
+.cafe-detail-redesign .cafe-detail-user-pill strong {
+  display: inline-block !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  background: transparent !important;
+  color: #171717 !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+}
+
+/* ทำให้รูปปกกดได้ทั้งกรอบ */
+.cafe-detail-redesign .cafe-detail-cover {
+  cursor: zoom-in !important;
+}
+
+/* lightbox ให้อยู่บนสุด */
+.cafe-detail-redesign .image-lightbox-backdrop {
+  position: fixed !important;
+  z-index: 100000 !important;
+}
+
+/* มือถือ */
+@media (max-width: 720px) {
+  .cafe-detail-redesign .cafe-detail-topbar {
+    height: 70px !important;
+    padding: 0 16px !important;
+  }
+
+  .cafe-detail-redesign {
+    padding-top: 70px !important;
+  }
+
+  .cafe-detail-redesign .cafe-detail-user-pill strong {
+    display: none !important;
+  }
+}
+/* =========================================================
+   FINAL TUNE: Cafe Detail user profile same as other pages
+   ปรับรูปโปรไฟล์ + ชื่อด้านขวาบน ให้เหมือน Navbar หน้าอื่น
+   ========================================================= */
+
+.cafe-detail-redesign .cafe-detail-user-pill {
+  width: auto !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* รูปโปร / ตัวอักษรในวงกลม */
+.cafe-detail-redesign .cafe-detail-user-pill > span,
+.cafe-detail-redesign .cafe-detail-user-pill > img {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  max-width: 34px !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  border-radius: 999px !important;
+  overflow: hidden !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  background: #087b76 !important;
+  color: #ffffff !important;
+
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* ถ้าเป็นรูปจริง */
+.cafe-detail-redesign .cafe-detail-user-pill > img {
+  object-fit: cover !important;
+}
+
+/* ชื่อผู้ใช้ */
+.cafe-detail-redesign .cafe-detail-user-pill > strong {
+  width: auto !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  display: inline-block !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  color: #171717 !important;
+
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+/* กัน CSS ปุ่มเก่าไปโดนชื่อ */
+.cafe-detail-redesign .cafe-detail-user-pill strong::before,
+.cafe-detail-redesign .cafe-detail-user-pill strong::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* จัดตำแหน่งขวาให้เหมือนหน้าอื่น */
+.cafe-detail-redesign .cafe-detail-topbar {
+  padding-left: 38px !important;
+  padding-right: 42px !important;
+}
+/* =========================================================
+   FINAL FIX: Cafe Detail username normal weight
+   ลดความหนาชื่อผู้ใช้มุมขวาบนให้เหมือนหน้าอื่น
+   ========================================================= */
+
+.cafe-detail-redesign .cafe-detail-user-pill > strong,
+.cafe-detail-redesign .cafe-detail-user-pill strong {
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+
+  color: #171717 !important;
+  background: transparent !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+
+  text-decoration: none !important;
+  white-space: nowrap !important;
+}
+
+/* ลดความหนาของ avatar ตัวอักษร O ด้วย */
+.cafe-detail-redesign .cafe-detail-user-pill > span {
+  font-weight: 800 !important;
+}
+/* =========================================================
+   FINAL TUNE: Admin sidebar footer buttons
+   จัดปุ่มออกจากระบบ + กลับหน้าเว็บไซต์ ให้สวยขึ้น
+   ========================================================= */
+
+.admin-sidebar .admin-sidebar-footer.admin-sidebar-actions {
+  width: 100% !important;
+  margin-top: auto !important;
+  padding: 18px 18px 24px !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* ลบ/ซ่อน profile mini เก่าถ้ายังมี CSS ค้าง */
+.admin-sidebar .admin-profile-mini {
+  display: none !important;
+}
+
+/* ปุ่มออกจากระบบ */
+.admin-sidebar .admin-logout-btn {
+  width: 100% !important;
+  min-height: 50px !important;
+
+  border: 0 !important;
+  border-radius: 16px !important;
+
+  background: #ef4444 !important;
+  color: #ffffff !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+
+  box-shadow: 0 14px 28px rgba(239, 68, 68, 0.22) !important;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease !important;
+}
+
+.admin-sidebar .admin-logout-btn:hover {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 18px 34px rgba(220, 38, 38, 0.26) !important;
+}
+
+.admin-sidebar .admin-logout-btn svg {
+  font-size: 15px !important;
+}
+
+/* ปุ่มกลับหน้าเว็บไซต์ */
+.admin-sidebar .admin-back-site,
+.admin-sidebar .admin-back-site-btn {
+  width: 100% !important;
+  min-height: 46px !important;
+
+  border-radius: 15px !important;
+
+  background: #e7f6f5 !important;
+  color: #087b76 !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 9px !important;
+
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  text-decoration: none !important;
+
+  border: 1px solid rgba(8, 123, 118, 0.12) !important;
+  box-shadow: none !important;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease !important;
+}
+
+.admin-sidebar .admin-back-site:hover,
+.admin-sidebar .admin-back-site-btn:hover {
+  background: #087b76 !important;
+  color: #ffffff !important;
+  transform: translateY(-1px) !important;
+}
+
+.admin-sidebar .admin-back-site svg,
+.admin-sidebar .admin-back-site-btn svg {
+  font-size: 13px !important;
+}
+/* =========================================================
+   FINAL: Admin cafe cover image upload
+   เปลี่ยนรูปหน้าปก URL เป็นอัปโหลดรูปภาพ
+   ========================================================= */
+
+.cafe-cover-upload-field {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+
+.admin-upload-label {
+  color: #087b76 !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+}
+
+.admin-cover-upload-box {
+  padding: 16px !important;
+  border: 1px solid #dceaea !important;
+  border-radius: 18px !important;
+  background: #f8fcfc !important;
+
+  display: grid !important;
+  grid-template-columns: 260px minmax(0, 1fr) !important;
+  gap: 18px !important;
+  align-items: center !important;
+}
+
+.admin-cover-preview {
+  width: 260px !important;
+  height: 160px !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  background: #e7f6f5 !important;
+
+  display: grid !important;
+  place-items: center !important;
+}
+
+.admin-cover-preview img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+.admin-cover-preview div {
+  color: #087b76 !important;
+  display: grid !important;
+  place-items: center !important;
+  gap: 8px !important;
+  font-weight: 900 !important;
+}
+
+.admin-cover-preview svg {
+  font-size: 28px !important;
+}
+
+.admin-cover-upload-button,
+.admin-cover-remove-button {
+  width: fit-content !important;
+  min-height: 44px !important;
+  padding: 0 18px !important;
+  border-radius: 999px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 9px !important;
+
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  cursor: pointer !important;
+}
+
+.admin-cover-upload-button {
+  background: #087b76 !important;
+  color: #ffffff !important;
+  border: 0 !important;
+}
+
+.admin-cover-upload-button input {
+  display: none !important;
+}
+
+.admin-cover-remove-button {
+  margin-top: 10px !important;
+  background: #fff1f2 !important;
+  color: #e11d48 !important;
+  border: 1px solid rgba(225, 29, 72, 0.12) !important;
+}
+
+.admin-cover-upload-box small {
+  display: block !important;
+  margin-top: 10px !important;
+  color: #6b7280 !important;
+  font-weight: 700 !important;
+}
+
+@media (max-width: 760px) {
+  .admin-cover-upload-box {
+    grid-template-columns: 1fr !important;
+  }
+
+  .admin-cover-preview {
+    width: 100% !important;
+    height: 210px !important;
+  }
+}
+/* =========================================================
+   FINAL: Profile page redesign
+   หน้าโปรไฟล์แบบใหม่
+   ========================================================= */
+
+.profile-redesign-page {
+  min-height: calc(100dvh - 78px);
+  padding: 64px 24px 96px;
+  background: #f6fbfb;
+  color: #111827;
+}
+
+.profile-redesign-container {
+  width: min(1360px, 100%);
+  margin: 0 auto;
+}
+
+.profile-redesign-hero {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr) auto;
+  gap: 48px;
+  align-items: center;
+  margin-bottom: 72px;
+}
+
+.profile-avatar-zone {
+  position: relative;
+  width: 190px;
+  height: 190px;
+}
+
+.profile-large-avatar {
+  width: 190px;
+  height: 190px;
+  padding: 6px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #dff3f1, #087b76);
+  box-shadow: 0 18px 42px rgba(8, 123, 118, 0.18);
+}
+
+.profile-large-avatar img,
+.profile-large-avatar span {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  border: 5px solid #ffffff;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: #087b76;
+  color: #ffffff;
+  object-fit: cover;
+  font-size: 76px;
+  font-weight: 900;
+}
+
+.profile-avatar-edit-btn {
+  position: absolute;
+  right: -4px;
+  bottom: 24px;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #087b76;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16);
+}
+
+.profile-user-info h1 {
+  margin: 0 0 24px;
+  color: #111827;
+  font-size: clamp(48px, 5vw, 72px);
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+}
+
+.profile-contact-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  color: #5f6f83;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.profile-contact-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-contact-row svg {
+  color: #718096;
+}
+
+.profile-action-buttons {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.profile-edit-btn,
+.profile-signout-btn,
+.profile-primary-btn,
+.profile-save-btn {
+  min-height: 56px;
+  padding: 0 26px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 17px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.profile-edit-btn,
+.profile-primary-btn,
+.profile-save-btn {
+  border: 0;
+  background: #087b76;
+  color: #ffffff;
+  box-shadow: 0 12px 26px rgba(8, 123, 118, 0.18);
+}
+
+.profile-signout-btn {
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #4b5563;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.07);
+}
+
+.profile-edit-btn:hover,
+.profile-primary-btn:hover,
+.profile-save-btn:hover {
+  background: #066b67;
+}
+
+.profile-signout-btn:hover {
+  background: #f9fafb;
+  color: #111827;
+}
+
+.profile-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+  margin-bottom: 56px;
+}
+
+.profile-stat-card {
+  min-height: 190px;
+  padding: 34px;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.055);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-stat-card div {
+  width: 58px;
+  height: 58px;
+  margin-bottom: 22px;
+  border-radius: 999px;
+  background: #e7f6f5;
+  color: #087b76;
+  display: grid;
+  place-items: center;
+  font-size: 26px;
+}
+
+.profile-stat-card strong {
+  margin-bottom: 8px;
+  color: #111827;
+  font-size: 44px;
+  line-height: 1;
+  font-weight: 900;
+}
+
+.profile-stat-card span {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.profile-membership-card {
+  padding: 28px;
+  border-radius: 20px;
+  background: #deeeee;
+  border: 1px solid rgba(8, 123, 118, 0.18);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.profile-membership-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 999px;
+  background: rgba(8, 123, 118, 0.1);
+  color: #087b76;
+  display: grid;
+  place-items: center;
+  font-size: 26px;
+  flex-shrink: 0;
+}
+
+.profile-membership-card span {
+  display: block;
+  margin-bottom: 8px;
+  color: #087b76;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.profile-membership-card p {
+  margin: 0;
+  color: #111827;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.profile-empty-card {
+  width: min(520px, 100%);
+  margin: 80px auto;
+  padding: 42px;
+  border-radius: 28px;
+  background: #ffffff;
+  text-align: center;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.07);
+}
+
+.profile-empty-card h1 {
+  margin: 0 0 12px;
+  font-size: 36px;
+  font-weight: 900;
+}
+
+.profile-empty-card p {
+  margin: 0 0 24px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.profile-edit-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.45);
+  display: grid;
+  place-items: center;
+}
+
+.profile-edit-modal {
+  width: min(560px, 100%);
+  padding: 28px;
+  border-radius: 26px;
+  background: #ffffff;
+  box-shadow: 0 28px 80px rgba(15, 23, 42, 0.25);
+  display: grid;
+  gap: 18px;
+}
+
+.profile-edit-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.profile-edit-modal-header span {
+  color: #087b76;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.profile-edit-modal-header h2 {
+  margin: 4px 0 0;
+  font-size: 32px;
+  font-weight: 900;
+}
+
+.profile-edit-modal-header button {
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #111827;
+  cursor: pointer;
+}
+
+.profile-edit-avatar-preview {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.profile-edit-avatar-preview > div {
+  width: 96px;
+  height: 96px;
+  border-radius: 999px;
+  background: #087b76;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  font-size: 36px;
+  font-weight: 900;
+}
+
+.profile-edit-avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-edit-avatar-preview label {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: #e7f6f5;
+  color: #087b76;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.profile-edit-avatar-preview input {
+  display: none;
+}
+
+.profile-edit-modal > label {
+  display: grid;
+  gap: 8px;
+  color: #087b76;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.profile-edit-modal input {
+  width: 100%;
+  min-height: 50px;
+  padding: 0 16px;
+  border-radius: 14px;
+  border: 1px solid #dceaea;
+  background: #ffffff;
+  color: #111827;
+  font-size: 15px;
+  font-weight: 700;
+  outline: none;
+}
+
+.profile-edit-modal input:focus {
+  border-color: #087b76;
+  box-shadow: 0 0 0 4px rgba(8, 123, 118, 0.1);
+}
+
+.profile-save-btn {
+  width: 100%;
+  border: 0;
+}
+
+@media (max-width: 980px) {
+  .profile-redesign-hero {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    text-align: center;
+    justify-items: center;
+  }
+
+  .profile-action-buttons {
+    justify-content: center;
+  }
+
+  .profile-contact-row {
+    justify-content: center;
+  }
+
+  .profile-stat-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .profile-redesign-page {
+    padding: 40px 16px 92px;
+  }
+
+  .profile-avatar-zone,
+  .profile-large-avatar {
+    width: 160px;
+    height: 160px;
+  }
+
+  .profile-user-info h1 {
+    font-size: 46px;
+  }
+
+  .profile-contact-row {
+    font-size: 16px;
+  }
+
+  .profile-action-buttons {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .profile-edit-btn,
+  .profile-signout-btn {
+    width: 100%;
+  }
+}
+/* =========================================================
+   FINAL FIX: Profile page fit full screen
+   ขยายบน-ล่างให้เต็มจอ และลดการเลื่อนหน้า Profile
+   ========================================================= */
+
+.app-content:has(.profile-redesign-page) {
+  width: 100% !important;
+  max-width: none !important;
+  min-height: calc(100dvh - 78px) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+.profile-redesign-page {
+  width: 100% !important;
+  height: calc(100dvh - 78px) !important;
+  min-height: calc(100dvh - 78px) !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  overflow: hidden !important;
+
+  background: linear-gradient(
+    135deg,
+    #f7fbfb 0%,
+    #eef8f8 48%,
+    #f9fbfb 100%
+  ) !important;
+}
+
+.profile-redesign-container {
+  width: calc(100vw - 140px) !important;
+  max-width: 1480px !important;
+
+  height: calc(100dvh - 118px) !important;
+  max-height: calc(100dvh - 118px) !important;
+
+  margin: 0 auto !important;
+  padding: 0 !important;
+
+  display: grid !important;
+  grid-template-rows: auto auto auto !important;
+  align-content: center !important;
+  row-gap: 42px !important;
+
+  overflow: hidden !important;
+}
+
+/* ส่วนบน โปรไฟล์ */
+.profile-redesign-hero {
+  width: 100% !important;
+
+  display: grid !important;
+  grid-template-columns: 220px minmax(0, 1fr) auto !important;
+  gap: 58px !important;
+  align-items: center !important;
+
+  margin: 0 !important;
+}
+
+/* ลดขนาดรูปนิดหนึ่งให้พอดีจอ */
+.profile-avatar-zone,
+.profile-large-avatar {
+  width: 170px !important;
+  height: 170px !important;
+}
+
+.profile-large-avatar {
+  padding: 6px !important;
+}
+
+.profile-large-avatar img,
+.profile-large-avatar span {
+  font-size: 68px !important;
+}
+
+.profile-avatar-edit-btn {
+  right: -2px !important;
+  bottom: 20px !important;
+}
+
+/* ชื่อและข้อมูล */
+.profile-user-info h1 {
+  margin: 0 0 18px !important;
+  font-size: clamp(52px, 5vw, 76px) !important;
+  line-height: 0.95 !important;
+}
+
+.profile-contact-row {
+  gap: 24px !important;
+  font-size: 19px !important;
+}
+
+/* ปุ่มด้านขวา */
+.profile-action-buttons {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 14px !important;
+}
+
+.profile-edit-btn,
+.profile-signout-btn {
+  min-height: 54px !important;
+  padding: 0 24px !important;
+}
+
+/* การ์ดสถิติ */
+.profile-stat-grid {
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 34px !important;
+
+  margin: 0 !important;
+}
+
+.profile-stat-card {
+  min-height: 178px !important;
+  padding: 28px !important;
+  border-radius: 24px !important;
+}
+
+.profile-stat-card div {
+  width: 56px !important;
+  height: 56px !important;
+  margin-bottom: 20px !important;
+}
+
+.profile-stat-card strong {
+  font-size: 42px !important;
+}
+
+/* กล่อง Membership ด้านล่าง */
+.profile-membership-card {
+  width: 100% !important;
+  min-height: 104px !important;
+
+  margin: 0 !important;
+  padding: 24px 28px !important;
+
+  border-radius: 20px !important;
+}
+
+/* จอเล็กให้กลับมาเลื่อนได้ ไม่งั้นจะอัดเกิน */
+@media (max-width: 980px) {
+  .app-content:has(.profile-redesign-page),
+  .profile-redesign-page {
+    height: auto !important;
+    min-height: calc(100dvh - 78px) !important;
+    overflow: visible !important;
+  }
+
+  .profile-redesign-page {
+    padding: 40px 0 92px !important;
+  }
+
+  .profile-redesign-container {
+    width: calc(100vw - 44px) !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    row-gap: 28px !important;
+  }
+
+  .profile-redesign-hero {
+    grid-template-columns: 1fr !important;
+    justify-items: center !important;
+    text-align: center !important;
+    gap: 24px !important;
+  }
+
+  .profile-action-buttons,
+  .profile-contact-row {
+    justify-content: center !important;
+  }
+
+  .profile-stat-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-height: 820px) and (min-width: 981px) {
+  .profile-redesign-container {
+    row-gap: 28px !important;
+    height: calc(100dvh - 96px) !important;
+    max-height: calc(100dvh - 96px) !important;
+  }
+
+  .profile-avatar-zone,
+  .profile-large-avatar {
+    width: 150px !important;
+    height: 150px !important;
+  }
+
+  .profile-user-info h1 {
+    font-size: clamp(46px, 4.5vw, 64px) !important;
+    margin-bottom: 14px !important;
+  }
+
+  .profile-contact-row {
+    font-size: 17px !important;
+  }
+
+  .profile-stat-card {
+    min-height: 150px !important;
+    padding: 22px !important;
+  }
+
+  .profile-stat-card div {
+    width: 48px !important;
+    height: 48px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .profile-stat-card strong {
+    font-size: 36px !important;
+  }
+
+  .profile-membership-card {
+    min-height: 88px !important;
+    padding: 20px 24px !important;
+  }
+}
+/* =========================================================
+   FINAL: Profile avatar crop editor
+   ปรับตำแหน่งรูปโปรไฟล์แบบวงกลม
+   ========================================================= */
+
+.profile-edit-modal-wide {
+  width: min(880px, 100%) !important;
+}
+
+.profile-edit-layout {
+  display: grid !important;
+  grid-template-columns: 300px minmax(0, 1fr) !important;
+  gap: 28px !important;
+  align-items: start !important;
+}
+
+.profile-avatar-crop-area {
+  display: grid !important;
+  gap: 16px !important;
+  justify-items: center !important;
+}
+
+.profile-avatar-crop-preview {
+  width: 230px !important;
+  height: 230px !important;
+  border-radius: 999px !important;
+  overflow: hidden !important;
+  background: #087b76 !important;
+  color: #ffffff !important;
+  display: grid !important;
+  place-items: center !important;
+  font-size: 72px !important;
+  font-weight: 900 !important;
+  box-shadow: 0 18px 42px rgba(8, 123, 118, 0.18) !important;
+}
+
+.profile-avatar-crop-preview img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+.profile-avatar-upload-btn {
+  min-height: 44px !important;
+  padding: 0 18px !important;
+  border-radius: 999px !important;
+  background: #e7f6f5 !important;
+  color: #087b76 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 9px !important;
+  font-weight: 900 !important;
+  cursor: pointer !important;
+}
+
+.profile-avatar-upload-btn input {
+  display: none !important;
+}
+
+.profile-crop-controls {
+  width: 100% !important;
+  display: grid !important;
+  gap: 14px !important;
+}
+
+.profile-crop-controls label {
+  display: grid !important;
+  gap: 8px !important;
+  color: #087b76 !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+}
+
+.profile-crop-controls input[type="range"] {
+  width: 100% !important;
+  accent-color: #087b76 !important;
+}
+
+.profile-edit-fields {
+  display: grid !important;
+  gap: 16px !important;
+}
+
+.profile-edit-fields label {
+  display: grid !important;
+  gap: 8px !important;
+  color: #087b76 !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+}
+
+.profile-edit-fields input {
+  width: 100% !important;
+  min-height: 50px !important;
+  padding: 0 16px !important;
+  border-radius: 14px !important;
+  border: 1px solid #dceaea !important;
+  background: #ffffff !important;
+  color: #111827 !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  outline: none !important;
+}
+
+.profile-edit-fields input:focus {
+  border-color: #087b76 !important;
+  box-shadow: 0 0 0 4px rgba(8, 123, 118, 0.1) !important;
+}
+
+@media (max-width: 760px) {
+  .profile-edit-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .profile-avatar-crop-preview {
+    width: 190px !important;
+    height: 190px !important;
+  }
+}
+/* =========================================================
+   FIX: Navbar avatar show uploaded profile image
+   ========================================================= */
+
+.top-user-avatar {
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+.top-user-avatar img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+/* =========================================================
+   FIX: Navbar profile avatar image
+   ========================================================= */
+
+.top-user-avatar {
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+.top-user-avatar img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+/* =========================================================
+   FIX: Profile page full width / remove cut frame feeling
+   ========================================================= */
+
+html,
+body,
+#root {
+  width: 100% !important;
+  min-height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #f6fbfb !important;
+}
+
+body {
+  overflow-x: hidden !important;
+}
+
+.app-layout,
+.app-content {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.app-content:has(.profile-redesign-page) {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: #f6fbfb !important;
+  overflow-x: hidden !important;
+}
+
+.profile-redesign-page {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  background: linear-gradient(
+    135deg,
+    #f7fbfb 0%,
+    #eef8f8 48%,
+    #f9fbfb 100%
+  ) !important;
+}
+
+.profile-large-avatar {
+  overflow: hidden !important;
+}
+
+.profile-large-avatar img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+/* =========================================================
+   FINAL FIX: Profile full width left-right
+   ให้หน้าโปรไฟล์กินพื้นที่ซ้ายขวาเต็มขึ้น
+   ========================================================= */
+
+.app-content:has(.profile-redesign-page) {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow-x: hidden !important;
+}
+
+.profile-redesign-page {
+  width: 100% !important;
+  max-width: none !important;
+  min-height: calc(100dvh - 78px) !important;
+  padding: 90px 64px 70px !important;
+  margin: 0 !important;
+
+  display: block !important;
+  background: linear-gradient(
+    135deg,
+    #f7fbfb 0%,
+    #eef8f8 48%,
+    #f9fbfb 100%
+  ) !important;
+}
+
+.profile-redesign-container {
+  width: 100% !important;
+  max-width: none !important;
+  height: auto !important;
+  max-height: none !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: block !important;
+  overflow: visible !important;
+}
+
+.profile-redesign-hero {
+  width: 100% !important;
+  margin: 0 0 48px !important;
+
+  display: grid !important;
+  grid-template-columns: 210px minmax(0, 1fr) auto !important;
+  gap: 58px !important;
+  align-items: center !important;
+}
+
+.profile-stat-grid {
+  width: 100% !important;
+  margin: 0 0 44px !important;
+
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 34px !important;
+}
+
+.profile-membership-card {
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+@media (max-width: 980px) {
+  .profile-redesign-page {
+    padding: 48px 22px 96px !important;
+  }
+
+  .profile-redesign-hero {
+    grid-template-columns: 1fr !important;
+    justify-items: center !important;
+    text-align: center !important;
+    gap: 24px !important;
+  }
+
+  .profile-action-buttons,
+  .profile-contact-row {
+    justify-content: center !important;
+  }
+
+  .profile-stat-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+/* =========================================================
+   FIX: Cafe detail user/review avatar uploaded image
+   ========================================================= */
+
+.cafe-detail-user-pill {
+  overflow: hidden !important;
+}
+
+.cafe-detail-user-pill img,
+.review-user-avatar img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+.review-user-avatar {
+  overflow: hidden !important;
+}
+/* =========================================================
+   FINAL FIX: Cafe Details avatar same as main navbar
+   ========================================================= */
+
+.cafe-detail-redesign .cafe-detail-topbar {
+  height: 78px !important;
+  padding: 0 42px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.cafe-detail-redesign .cafe-detail-user-pill {
+  height: 42px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+.cafe-detail-redesign .cafe-detail-user-pill img,
+.cafe-detail-redesign .cafe-detail-user-pill > span {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  max-width: 32px !important;
+  max-height: 32px !important;
+
+  border-radius: 999px !important;
+  overflow: hidden !important;
+
+  display: block !important;
+
+  background: #087b76 !important;
+  color: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: none !important;
+}
+
+.cafe-detail-redesign .cafe-detail-user-pill img {
+  object-fit: cover !important;
+}
+
+.cafe-detail-redesign .cafe-detail-user-pill strong {
+  display: inline-block !important;
+  color: #171717 !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+/* =========================================================
+   FIX: Admin users avatar crop position
+   ใช้ตำแหน่งรูปโปรไฟล์ตามที่ผู้ใช้ตั้งไว้
+   ========================================================= */
+
+.admin-user-cell .admin-user-avatar-crop {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+
+  border-radius: 999px !important;
+  overflow: hidden !important;
+
+  background: #087b76 !important;
+  color: #ffffff !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  font-size: 18px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+}
+
+.admin-user-cell .admin-user-avatar-crop img {
+  width: 100% !important;
+  height: 100% !important;
+
+  object-fit: cover !important;
+  display: block !important;
+}
+
+.admin-user-cell .admin-user-avatar-crop span {
+  width: 100% !important;
+  height: 100% !important;
+
+  display: grid !important;
+  place-items: center !important;
+}
+/* =========================================================
+   FIX: Admin reviews avatar and review image paths/crop
+   ========================================================= */
+
+.admin-review-avatar-crop {
+  overflow: hidden !important;
+  border-radius: 999px !important;
+}
+
+.admin-review-avatar-crop img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+.admin-review-image-item img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+/* =========================================================
+   FIX: Admin dashboard user avatar and images
+   ========================================================= */
+
+.admin-dashboard-avatar-crop {
+  overflow: hidden !important;
+  border-radius: 999px !important;
+}
+
+.admin-dashboard-avatar-crop img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+.admin-dashboard-review-images img,
+.admin-dashboard-cafe-item img,
+.admin-dashboard-latest-cafe img {
+  object-fit: cover !important;
+  display: block !important;
 }

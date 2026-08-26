@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import type { MouseEvent } from "react";
+import type { KeyboardEvent, MouseEvent } from "react";
 import { Link } from "react-router-dom";
 import { FaHeart, FaMapMarkerAlt, FaRegHeart, FaStar } from "react-icons/fa";
 import type { Cafe } from "../../types/cafe";
@@ -8,12 +8,14 @@ import { authStorage } from "../../utils/authStorage";
 
 type Props = {
   cafe: Cafe;
+  compact?: boolean;
+  onSelect?: (cafe: Cafe) => void;
 };
 
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=900&q=80";
 
-function AppCafeCard({ cafe }: Props) {
+function AppCafeCard({ cafe, compact = false, onSelect }: Props) {
   const isLoggedIn = authStorage.isLoggedIn();
 
   const [isFavorite, setIsFavorite] = useState(false);
@@ -63,6 +65,23 @@ function AppCafeCard({ cafe }: Props) {
     }
   };
 
+  const handleSelectCafe = () => {
+    if (compact && onSelect) {
+      onSelect(cafe);
+    }
+  };
+
+  const handleCardKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+    if (!compact || !onSelect) {
+      return;
+    }
+
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onSelect(cafe);
+    }
+  };
+
   useEffect(() => {
     let isMounted = true;
 
@@ -94,21 +113,21 @@ function AppCafeCard({ cafe }: Props) {
     };
   }, [cafe.id, isLoggedIn]);
 
-  return (
-    <Link to={`/cafes/${cafe.id}`} className="app-cafe-card">
+  const cardContent = (
+    <>
       <div className="app-cafe-image">
         <img src={imageUrl} alt={cafe.name} />
-
-        <button
-          type="button"
-          className={`app-heart-btn ${isFavorite ? "active" : ""}`}
-          onClick={handleToggleFavorite}
-          disabled={loadingFavorite}
-          aria-label="favorite"
-        >
-          {isFavorite ? <FaHeart /> : <FaRegHeart />}
-        </button>
       </div>
+
+      <button
+        type="button"
+        className={`app-heart-btn ${isFavorite ? "active" : ""}`}
+        onClick={handleToggleFavorite}
+        disabled={loadingFavorite}
+        aria-label="favorite"
+      >
+        {isFavorite ? <FaHeart /> : <FaRegHeart />}
+      </button>
 
       <div className="app-cafe-body">
         <h3>{cafe.name}</h3>
@@ -118,13 +137,15 @@ function AppCafeCard({ cafe }: Props) {
           {cafe.district?.name ?? "อุบลราชธานี"}
         </p>
 
-        <div className="app-cafe-tags">
-          {tags.length > 0 ? (
-            tags.map((tag) => <span key={`${cafe.id}-${tag}`}>{tag}</span>)
-          ) : (
-            <span>{cafe.category?.name ?? "Cafe"}</span>
-          )}
-        </div>
+        {!compact && (
+          <div className="app-cafe-tags">
+            {tags.length > 0 ? (
+              tags.map((tag) => <span key={`${cafe.id}-${tag}`}>{tag}</span>)
+            ) : (
+              <span>{cafe.category?.name ?? "Cafe"}</span>
+            )}
+          </div>
+        )}
 
         <div className="app-cafe-divider" />
 
@@ -136,7 +157,37 @@ function AppCafeCard({ cafe }: Props) {
             <FaStar />
           </span>
         </div>
+
+        {compact && (
+          <Link
+            to={`/cafes/${cafe.id}`}
+            className="app-cafe-detail-link"
+            onClick={(event) => event.stopPropagation()}
+          >
+            ดูรายละเอียดร้าน
+          </Link>
+        )}
       </div>
+    </>
+  );
+
+  if (compact) {
+    return (
+      <article
+        className="app-cafe-card app-cafe-card-compact"
+        role="button"
+        tabIndex={0}
+        onClick={handleSelectCafe}
+        onKeyDown={handleCardKeyDown}
+      >
+        {cardContent}
+      </article>
+    );
+  }
+
+  return (
+    <Link to={`/cafes/${cafe.id}`} className="app-cafe-card">
+      {cardContent}
     </Link>
   );
 }

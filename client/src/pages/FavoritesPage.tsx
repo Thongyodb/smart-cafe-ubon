@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
-import AppCafeCard from "../components/app/AppCafeCard";
+import { Link } from "react-router-dom";
+import { FaLocationDot, FaStar } from "react-icons/fa6";
 import { favoriteService } from "../services/favoriteService";
 import type { Cafe } from "../types/cafe";
+
+const FALLBACK_IMAGE =
+  "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=900&q=80";
 
 function FavoritesPage() {
   const [cafes, setCafes] = useState<Cafe[]>([]);
@@ -52,40 +56,111 @@ function FavoritesPage() {
   };
 
   return (
-    <main className="app-page simple-page">
-      <div className="simple-header">
-        <span className="eyebrow">Saved Spots</span>
-        <h1>รายการโปรด</h1>
-        <p>คาเฟ่ที่คุณบันทึกไว้ในบัญชีของคุณ</p>
-      </div>
-
-      {loading && <p className="status-text">กำลังโหลดรายการโปรด...</p>}
-
-      {!loading && cafes.length === 0 && (
-        <div className="empty-favorite-card">
-          <h2>ยังไม่มีรายการโปรด</h2>
-          <p>กดหัวใจที่คาเฟ่ที่ชอบ เพื่อบันทึกไว้ดูภายหลัง</p>
+    <main className="favorite-page-redesign">
+      <section className="favorite-page-container">
+        <div className="favorite-page-header">
+          <span>SAVED SPOTS</span>
+          <h1>รายการโปรด</h1>
+          <p>คาเฟ่ที่คุณบันทึกไว้ในบัญชีของคุณ</p>
         </div>
-      )}
 
-      {!loading && cafes.length > 0 && (
-        <div className="favorite-layout">
-          {cafes.map((cafe) => (
-            <div className="favorite-card" key={cafe.id}>
-              <AppCafeCard cafe={cafe} showFavorite={false} />
+        {loading && (
+          <p className="favorite-status-text">กำลังโหลดรายการโปรด...</p>
+        )}
 
-              <button
-                className="remove-favorite-btn"
-                type="button"
-                onClick={() => handleRemoveFavorite(cafe.id)}
-              >
-                ลบออกจากรายการโปรด
-              </button>
-            </div>
+        {!loading && cafes.length === 0 && (
+          <div className="favorite-empty-card">
+            <h2>ยังไม่มีรายการโปรด</h2>
+            <p>กดหัวใจที่คาเฟ่ที่ชอบ เพื่อบันทึกไว้ดูภายหลัง</p>
+
+            <Link to="/explore">ไปสำรวจคาเฟ่</Link>
+          </div>
+        )}
+
+        {!loading && cafes.length > 0 && (
+          <div className="favorite-grid">
+            {cafes.map((cafe) => (
+              <FavoriteCafeCard
+                cafe={cafe}
+                key={cafe.id}
+                onRemove={handleRemoveFavorite}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+    </main>
+  );
+}
+
+function FavoriteCafeCard({
+  cafe,
+  onRemove,
+}: {
+  cafe: Cafe;
+  onRemove: (cafeId: number) => void;
+}) {
+  const imageUrl = cafe.coverImageUrl || FALLBACK_IMAGE;
+
+  const cafeTags =
+    cafe.cafeTags
+      ?.map((cafeTag) => cafeTag.tag?.name)
+      .filter((tag): tag is string => Boolean(tag)) ?? [];
+
+  const tags =
+    cafeTags.length > 0
+      ? cafeTags.slice(0, 6)
+      : cafe.category?.name
+      ? [cafe.category.name]
+      : ["Cafe"];
+
+  const priceText =
+    cafe.priceMin || cafe.priceMax
+      ? `${cafe.priceMin ?? 0}฿ ~ ${cafe.priceMax ?? 0}฿`
+      : "ไม่ระบุราคา";
+
+  const rating = Number(cafe.averageRating ?? 0);
+
+  return (
+    <article className="favorite-cafe-card">
+      <Link to={`/cafes/${cafe.id}`} className="favorite-cafe-image">
+        <img src={imageUrl} alt={cafe.name} />
+      </Link>
+
+      <div className="favorite-cafe-content">
+        <Link to={`/cafes/${cafe.id}`} className="favorite-cafe-title">
+          {cafe.name}
+        </Link>
+
+        <p className="favorite-cafe-location">
+          <FaLocationDot />
+          {cafe.district?.name ?? "อุบลราชธานี"}
+        </p>
+
+        <div className="favorite-cafe-tags">
+          {tags.map((tag) => (
+            <span key={`${cafe.id}-${tag}`}>{tag}</span>
           ))}
         </div>
-      )}
-    </main>
+
+        <div className="favorite-cafe-bottom">
+          <strong>{priceText}</strong>
+
+          <span>
+            {rating.toFixed(1)}
+            <FaStar />
+          </span>
+        </div>
+
+        <button
+          className="favorite-remove-btn"
+          type="button"
+          onClick={() => onRemove(cafe.id)}
+        >
+          ลบออกจากรายการโปรด
+        </button>
+      </div>
+    </article>
   );
 }
 

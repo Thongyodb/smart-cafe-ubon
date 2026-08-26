@@ -7,6 +7,10 @@ const router = Router();
 router.get("/", cafeController.getCafes);
 
 router.post("/", requireAdmin, cafeController.createCafe);
+router.patch(
+  "/:id/cover-focus",
+  requireAdmin,
+  cafeController.updateCafeCoverFocus);
 router.put("/:id", requireAdmin, cafeController.updateCafe);
 router.delete("/:id", requireAdmin, cafeController.deactivateCafe);
 

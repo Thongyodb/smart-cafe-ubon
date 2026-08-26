@@ -1,5 +1,17 @@
 import { prisma } from "../config/prisma";
 
+const activeCafeWhere = {
+  isActive: true,
+};
+
+const activeCafeRelationWhere = {
+  cafe: {
+    is: {
+      isActive: true,
+    },
+  },
+};
+
 export const adminDashboardRepository = {
   getStats: async () => {
     const [
@@ -15,19 +27,22 @@ export const adminDashboardRepository = {
       popularCafes,
     ] = await Promise.all([
       prisma.cafe.count({
-        where: {
-          isActive: true,
-        },
+        where: activeCafeWhere,
       }),
 
       prisma.user.count(),
 
-      prisma.photoSpot.count(),
+      prisma.photoSpot.count({
+        where: activeCafeRelationWhere,
+      }),
 
-      prisma.review.count(),
+      prisma.review.count({
+        where: activeCafeRelationWhere,
+      }),
 
       prisma.review.count({
         where: {
+          ...activeCafeRelationWhere,
           images: {
             some: {},
           },
@@ -35,12 +50,14 @@ export const adminDashboardRepository = {
       }),
 
       prisma.review.aggregate({
+        where: activeCafeRelationWhere,
         _avg: {
           rating: true,
         },
       }),
 
       prisma.cafe.aggregate({
+        where: activeCafeWhere,
         _sum: {
           totalViews: true,
         },
@@ -48,6 +65,7 @@ export const adminDashboardRepository = {
 
       prisma.review.findMany({
         take: 5,
+        where: activeCafeRelationWhere,
         orderBy: {
           createdAt: "desc",
         },
@@ -73,9 +91,7 @@ export const adminDashboardRepository = {
 
       prisma.cafe.findMany({
         take: 5,
-        where: {
-          isActive: true,
-        },
+        where: activeCafeWhere,
         orderBy: {
           createdAt: "desc",
         },
@@ -87,9 +103,7 @@ export const adminDashboardRepository = {
 
       prisma.cafe.findMany({
         take: 5,
-        where: {
-          isActive: true,
-        },
+        where: activeCafeWhere,
         orderBy: {
           totalViews: "desc",
         },

@@ -23,6 +23,9 @@ export type AdminReviewItem = {
     fullName: string;
     email?: string | null;
     avatarUrl?: string | null;
+    avatarFocusX?: number;
+    avatarFocusY?: number;
+    avatarZoom?: number;
   };
   cafe: {
     id: number;

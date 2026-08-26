@@ -1,5 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { FaArrowLeft, FaStar, FaTrash, FaUpload } from "react-icons/fa";
+import {
+  FaArrowLeft,
+  FaRedo,
+  FaSave,
+  FaStar,
+  FaTrash,
+  FaUpload,
+} from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
 import { cafeService } from "../../services/cafeService";
 import {
@@ -10,25 +17,52 @@ import type { Cafe } from "../../types/cafe";
 
 const MAX_UPLOAD_FILES = 10;
 
+type CafeWithCoverFocus = Cafe & {
+  coverFocusX?: number | string | null;
+  coverFocusY?: number | string | null;
+  coverZoom?: number | string | null;
+};
+
+const toNumber = (value: unknown, fallback: number) => {
+  const numberValue = Number(value);
+
+  if (!Number.isFinite(numberValue)) {
+    return fallback;
+  }
+
+  return numberValue;
+};
+
 function AdminCafeImagesPage() {
   const { id } = useParams();
   const cafeId = Number(id);
 
-  const [cafe, setCafe] = useState<Cafe | null>(null);
+  const [cafe, setCafe] = useState<CafeWithCoverFocus | null>(null);
   const [images, setImages] = useState<CafeImageItem[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [savingFocus, setSavingFocus] = useState(false);
+
+  const [coverFocusX, setCoverFocusX] = useState(50);
+  const [coverFocusY, setCoverFocusY] = useState(50);
+  const [coverZoom, setCoverZoom] = useState(1);
 
   const coverImageUrl = cafe?.coverImageUrl ?? "";
 
-const previewUrls = useMemo(() => {
-  return selectedFiles.map((file) => URL.createObjectURL(file));
-}, [selectedFiles]);
+  const previewUrls = useMemo(() => {
+    return selectedFiles.map((file) => URL.createObjectURL(file));
+  }, [selectedFiles]);
 
-const canUpload = useMemo(() => {
-  return selectedFiles.length > 0 && selectedFiles.length <= MAX_UPLOAD_FILES;
-}, [selectedFiles]);
+  const canUpload = useMemo(() => {
+    return selectedFiles.length > 0 && selectedFiles.length <= MAX_UPLOAD_FILES;
+  }, [selectedFiles]);
+
+  const applyCoverFocusFromCafe = (cafeData: CafeWithCoverFocus) => {
+    setCoverFocusX(toNumber(cafeData.coverFocusX, 50));
+    setCoverFocusY(toNumber(cafeData.coverFocusY, 50));
+    setCoverZoom(toNumber(cafeData.coverZoom, 1));
+  };
 
   const fetchCafeAndImages = async () => {
     const [cafeResult, imageResult] = await Promise.all([
@@ -36,8 +70,11 @@ const canUpload = useMemo(() => {
       cafeImageService.getCafeImages(cafeId),
     ]);
 
-    setCafe(cafeResult.data);
+    const cafeData = cafeResult.data as CafeWithCoverFocus;
+
+    setCafe(cafeData);
     setImages(imageResult.data);
+    applyCoverFocusFromCafe(cafeData);
   };
 
   useEffect(() => {
@@ -51,8 +88,11 @@ const canUpload = useMemo(() => {
         ]);
 
         if (isMounted) {
-          setCafe(cafeResult.data);
+          const cafeData = cafeResult.data as CafeWithCoverFocus;
+
+          setCafe(cafeData);
           setImages(imageResult.data);
+          applyCoverFocusFromCafe(cafeData);
         }
       } catch {
         if (isMounted) {
@@ -75,10 +115,10 @@ const canUpload = useMemo(() => {
   }, [cafeId]);
 
   useEffect(() => {
-  return () => {
-    previewUrls.forEach((url) => URL.revokeObjectURL(url));
-  };
-}, [previewUrls]);
+    return () => {
+      previewUrls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [previewUrls]);
 
   const handleSelectFiles = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files ?? []);
@@ -90,8 +130,8 @@ const canUpload = useMemo(() => {
   };
 
   const clearSelectedFiles = () => {
-  setSelectedFiles([]);
-};
+    setSelectedFiles([]);
+  };
 
   const handleUploadImages = async () => {
     if (!canUpload) {
@@ -105,11 +145,7 @@ const canUpload = useMemo(() => {
       await cafeImageService.uploadCafeImages(cafeId, selectedFiles);
       clearSelectedFiles();
 
-      const imageResult = await cafeImageService.getCafeImages(cafeId);
-      const cafeResult = await cafeService.getById(cafeId);
-
-      setImages(imageResult.data);
-      setCafe(cafeResult.data);
+      await fetchCafeAndImages();
 
       alert("อัปโหลดรูปภาพสำเร็จ");
     } catch {
@@ -139,12 +175,63 @@ const canUpload = useMemo(() => {
   const handleSetCoverImage = async (image: CafeImageItem) => {
     try {
       await cafeImageService.setCoverImage(image.id);
+
+      await cafeService.updateCoverFocus(cafeId, {
+        coverFocusX: 50,
+        coverFocusY: 50,
+        coverZoom: 1,
+      });
+
       await fetchCafeAndImages();
 
       alert("ตั้งเป็นรูปหน้าปกสำเร็จ");
     } catch {
       alert("ตั้งรูปหน้าปกไม่สำเร็จ");
     }
+  };
+
+  const handleSaveCoverFocus = async () => {
+    if (!coverImageUrl) {
+      alert("กรุณาตั้งรูปหน้าปกก่อน");
+      return;
+    }
+
+    try {
+      setSavingFocus(true);
+
+      const result = await cafeService.updateCoverFocus(cafeId, {
+        coverFocusX,
+        coverFocusY,
+        coverZoom,
+      });
+
+      const cafeData = result.data as CafeWithCoverFocus;
+
+      setCafe(cafeData);
+      applyCoverFocusFromCafe(cafeData);
+
+      alert("บันทึกตำแหน่งรูปหน้าปกสำเร็จ");
+    } catch {
+      alert("บันทึกตำแหน่งรูปหน้าปกไม่สำเร็จ");
+    } finally {
+      setSavingFocus(false);
+    }
+  };
+
+  const handleResetCoverFocus = () => {
+    setCoverFocusX(50);
+    setCoverFocusY(50);
+    setCoverZoom(1);
+  };
+
+  const handleClickPreview = (event: React.MouseEvent<HTMLDivElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
+
+    setCoverFocusX(Number(x.toFixed(1)));
+    setCoverFocusY(Number(y.toFixed(1)));
   };
 
   if (Number.isNaN(cafeId)) {
@@ -285,6 +372,173 @@ const canUpload = useMemo(() => {
       <section className="admin-section-card">
         <div className="admin-section-title-row">
           <div>
+            <span className="admin-eyebrow">Cover Focus</span>
+            <h2>จัดมุมรูปหน้าปก</h2>
+            <p>
+              คลิกบนรูปเพื่อเลือกจุดโฟกัส หรือเลื่อนค่า X/Y/Zoom เองได้
+            </p>
+          </div>
+        </div>
+
+        {coverImageUrl ? (
+          <div className="admin-cover-focus-editor">
+            <div
+              className="admin-cover-focus-preview"
+              role="button"
+              tabIndex={0}
+              onClick={handleClickPreview}
+              style={{
+                position: "relative",
+                width: "100%",
+                height: 360,
+                overflow: "hidden",
+                borderRadius: 22,
+                background: "#111",
+                cursor: "crosshair",
+              }}
+            >
+              <img
+                src={coverImageUrl}
+                alt="cover preview"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  objectPosition: `${coverFocusX}% ${coverFocusY}%`,
+                  transform: `scale(${coverZoom})`,
+                  transformOrigin: `${coverFocusX}% ${coverFocusY}%`,
+                  transition: "transform 0.2s ease, object-position 0.2s ease",
+                  display: "block",
+                }}
+              />
+
+              <span
+                title="จุดโฟกัส"
+                style={{
+                  position: "absolute",
+                  left: `${coverFocusX}%`,
+                  top: `${coverFocusY}%`,
+                  transform: "translate(-50%, -50%)",
+                  width: 24,
+                  height: 24,
+                  borderRadius: "50%",
+                  border: "3px solid white",
+                  boxShadow: "0 0 0 3px rgba(13, 118, 117, 0.75)",
+                  pointerEvents: "none",
+                }}
+              />
+
+              <div
+                style={{
+                  position: "absolute",
+                  left: 16,
+                  bottom: 16,
+                  padding: "8px 12px",
+                  borderRadius: 999,
+                  background: "rgba(0, 0, 0, 0.6)",
+                  color: "white",
+                  fontSize: 13,
+                  pointerEvents: "none",
+                }}
+              >
+                คลิกตรงจุดที่อยากให้รูปโฟกัส
+              </div>
+            </div>
+
+            <div
+              className="admin-cover-focus-controls"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+                gap: 16,
+                marginTop: 20,
+              }}
+            >
+              <label>
+                <strong>ซ้าย / ขวา: {coverFocusX}%</strong>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  step="1"
+                  value={coverFocusX}
+                  onChange={(event) =>
+                    setCoverFocusX(Number(event.target.value))
+                  }
+                  style={{ width: "100%" }}
+                />
+              </label>
+
+              <label>
+                <strong>บน / ล่าง: {coverFocusY}%</strong>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  step="1"
+                  value={coverFocusY}
+                  onChange={(event) =>
+                    setCoverFocusY(Number(event.target.value))
+                  }
+                  style={{ width: "100%" }}
+                />
+              </label>
+
+              <label>
+                <strong>ซูม: {coverZoom.toFixed(2)}x</strong>
+                <input
+                  type="range"
+                  min="1"
+                  max="3"
+                  step="0.05"
+                  value={coverZoom}
+                  onChange={(event) =>
+                    setCoverZoom(Number(event.target.value))
+                  }
+                  style={{ width: "100%" }}
+                />
+              </label>
+            </div>
+
+            <div
+              className="admin-cafe-image-actions"
+              style={{ marginTop: 20, justifyContent: "flex-end" }}
+            >
+              <button
+                className="admin-secondary-btn"
+                type="button"
+                onClick={handleResetCoverFocus}
+              >
+                <FaRedo />
+                รีเซ็ตกลางรูป
+              </button>
+
+              <button
+                className="admin-primary-btn"
+                type="button"
+                disabled={savingFocus}
+                onClick={() => void handleSaveCoverFocus()}
+              >
+                <FaSave />
+                {savingFocus ? "กำลังบันทึก..." : "บันทึกตำแหน่งรูปปก"}
+              </button>
+            </div>
+
+            <p style={{ marginTop: 12, color: "var(--app-muted)" }}>
+              ค่าปัจจุบัน: X {coverFocusX}% / Y {coverFocusY}% / Zoom{" "}
+              {coverZoom.toFixed(2)}x
+            </p>
+          </div>
+        ) : (
+          <div className="admin-empty-row">
+            ยังไม่ได้ตั้งรูปหน้าปก ระบบจะใช้รูปแรกที่อัปโหลดเป็นหน้าปกอัตโนมัติ
+          </div>
+        )}
+      </section>
+
+      <section className="admin-section-card">
+        <div className="admin-section-title-row">
+          <div>
             <span className="admin-eyebrow">Current Cover</span>
             <h2>รูปหน้าปกปัจจุบัน</h2>
           </div>
@@ -292,7 +546,15 @@ const canUpload = useMemo(() => {
 
         {coverImageUrl ? (
           <div className="admin-current-cover">
-            <img src={coverImageUrl} alt="cover" />
+            <img
+              src={coverImageUrl}
+              alt="cover"
+              style={{
+                objectPosition: `${coverFocusX}% ${coverFocusY}%`,
+                transform: `scale(${coverZoom})`,
+                transformOrigin: `${coverFocusX}% ${coverFocusY}%`,
+              }}
+            />
           </div>
         ) : (
           <div className="admin-empty-row">

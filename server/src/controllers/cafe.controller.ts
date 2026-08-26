@@ -60,6 +60,9 @@ export const cafeController = {
         instagramUrl,
         websiteUrl,
         coverImageUrl,
+        coverFocusX,
+        coverFocusY,
+        coverZoom,
         priceMin,
         priceMax,
         categoryId,
@@ -104,6 +107,9 @@ export const cafeController = {
         instagramUrl,
         websiteUrl,
         coverImageUrl,
+        coverFocusX,
+        coverFocusY,
+        coverZoom,
         priceMin:
           priceMin !== undefined && priceMin !== null && priceMin !== ""
             ? Number(priceMin)
@@ -133,6 +139,52 @@ export const cafeController = {
     }
   },
 
+  updateCafeCoverFocus: async (req: Request, res: Response) => {
+    try {
+      const id = Number(req.params.id);
+
+      if (Number.isNaN(id)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid cafe id",
+        });
+      }
+
+      const { coverFocusX, coverFocusY, coverZoom } = req.body;
+
+      if (
+        coverFocusX === undefined &&
+        coverFocusY === undefined &&
+        coverZoom === undefined
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "Cover focus values are missing",
+        });
+      }
+
+      const cafe = await cafeService.updateCafe(id, {
+        coverFocusX,
+        coverFocusY,
+        coverZoom,
+      });
+
+      res.json({
+        success: true,
+        message: "Cafe cover focus updated successfully",
+        data: cafe,
+      });
+    } catch (error) {
+      console.error("UPDATE CAFE COVER FOCUS ERROR:", error);
+
+      res.status(500).json({
+        success: false,
+        message: "Failed to update cafe cover focus",
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  },
+
   updateCafe: async (req: Request, res: Response) => {
     try {
       const id = Number(req.params.id);
@@ -157,6 +209,9 @@ export const cafeController = {
         instagramUrl,
         websiteUrl,
         coverImageUrl,
+        coverFocusX,
+        coverFocusY,
+        coverZoom,
         priceMin,
         priceMax,
         categoryId,
@@ -201,6 +256,9 @@ export const cafeController = {
         instagramUrl,
         websiteUrl,
         coverImageUrl,
+        coverFocusX,
+        coverFocusY,
+        coverZoom,
         priceMin:
           priceMin !== undefined && priceMin !== null && priceMin !== ""
             ? Number(priceMin)
@@ -211,7 +269,9 @@ export const cafeController = {
             : null,
         categoryId: Number(categoryId),
         districtId: Number(districtId),
-        tagIds: Array.isArray(tagIds) ? tagIds.map((tagId) => Number(tagId)) : [],
+        tagIds: Array.isArray(tagIds)
+          ? tagIds.map((tagId) => Number(tagId))
+          : [],
       });
 
       res.json({

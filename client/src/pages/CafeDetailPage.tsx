@@ -5,16 +5,22 @@ import {
   FaCamera,
   FaClock,
   FaEdit,
+  FaFacebookF,
+  FaGlobe,
+  FaHeart,
   FaImage,
   FaImages,
+  FaInstagram,
   FaMapMarkerAlt,
   FaPhoneAlt,
+  FaRegHeart,
   FaSave,
   FaStar,
   FaTimes,
   FaTrash,
 } from "react-icons/fa";
 import { cafeService } from "../services/cafeService";
+import { favoriteService } from "../services/favoriteService";
 import { reviewService, type ReviewItem } from "../services/reviewService";
 import type { Cafe } from "../types/cafe";
 import { authStorage } from "../utils/authStorage";
@@ -25,6 +31,21 @@ type CafeGalleryImage = {
   id?: number;
   imageUrl?: string | null;
 };
+
+type FavoriteListItem = {
+  id?: number;
+  cafeId?: number;
+  cafe?: {
+    id?: number;
+  };
+};
+
+type PreviewImage = {
+  url: string;
+  title: string;
+};
+
+
 
 const getCafeGalleryImageUrls = (cafe: Cafe | null) => {
   if (!cafe) {
@@ -44,6 +65,38 @@ const getCafeGalleryImageUrls = (cafe: Cafe | null) => {
 
   return Array.from(new Set(galleryUrls));
 };
+const normalizeExternalUrl = (url?: string | null) => {
+  const trimmedUrl = url?.trim();
+
+  if (!trimmedUrl) {
+    return "";
+  }
+
+  if (trimmedUrl.startsWith("http://") || trimmedUrl.startsWith("https://")) {
+    return trimmedUrl;
+  }
+
+  return `https://${trimmedUrl}`;
+};
+
+const API_BASE_URL = "http://localhost:5000";
+
+const getImageUrl = (imageUrl?: string | null) => {
+  if (!imageUrl) {
+    return "";
+  }
+
+  if (
+    imageUrl.startsWith("http://") ||
+    imageUrl.startsWith("https://") ||
+    imageUrl.startsWith("data:") ||
+    imageUrl.startsWith("blob:")
+  ) {
+    return imageUrl;
+  }
+
+  return `${API_BASE_URL}${imageUrl}`;
+};
 
 const getGoogleMapUrl = (cafe: Cafe) => {
   const hasLatLng =
@@ -56,6 +109,40 @@ const getGoogleMapUrl = (cafe: Cafe) => {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
     query
   )}`;
+};
+
+const isCafeInFavorites = (
+  favoriteItems: FavoriteListItem[],
+  cafeId: number
+) => {
+  return favoriteItems.some((item) => {
+    return (
+      item.id === cafeId || item.cafeId === cafeId || item.cafe?.id === cafeId
+    );
+  });
+};
+type CafeWithCoverFocus = Cafe & {
+  coverFocusX?: number | string | null;
+  coverFocusY?: number | string | null;
+  coverZoom?: number | string | null;
+};
+
+const toNumber = (value: unknown, fallback: number) => {
+  const numberValue = Number(value);
+
+  if (!Number.isFinite(numberValue)) {
+    return fallback;
+  }
+
+  return numberValue;
+};
+
+const getCoverFocus = (cafe: CafeWithCoverFocus | null) => {
+  return {
+    x: toNumber(cafe?.coverFocusX, 50),
+    y: toNumber(cafe?.coverFocusY, 50),
+    zoom: toNumber(cafe?.coverZoom, 1),
+  };
 };
 
 function CafeDetailPage() {
@@ -73,6 +160,10 @@ function CafeDetailPage() {
   const [savingReview, setSavingReview] = useState(false);
 
   const [activeCafeImageIndex, setActiveCafeImageIndex] = useState(0);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [togglingFavorite, setTogglingFavorite] = useState(false);
+
+  const [previewImage, setPreviewImage] = useState<PreviewImage | null>(null);
 
   const currentUser = authStorage.getUser();
   const displayName = currentUser?.fullName || currentUser?.username || "User";
@@ -97,9 +188,26 @@ function CafeDetailPage() {
           reviewService.getCafeReviews(cafeId),
         ]);
 
+        let matchedFavorite = false;
+
+        if (authStorage.isLoggedIn()) {
+          try {
+            const favoriteResult = await favoriteService.getFavorites();
+
+            const favoriteItems = Array.isArray(favoriteResult.data)
+              ? (favoriteResult.data as FavoriteListItem[])
+              : [];
+
+            matchedFavorite = isCafeInFavorites(favoriteItems, cafeId);
+          } catch {
+            matchedFavorite = false;
+          }
+        }
+
         if (isMounted) {
           setCafe(cafeResult.data);
           setReviews(reviewResult.data);
+          setIsFavorite(matchedFavorite);
           setActiveCafeImageIndex(0);
         }
       } catch {
@@ -136,6 +244,43 @@ function CafeDetailPage() {
     };
   }, [cafe]);
 
+  useEffect(() => {
+    if (!previewImage) {
+      return;
+    }
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setPreviewImage(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [previewImage]);
+
+    const openImagePreview = (imageUrl?: string | null, title = "รูปภาพ") => {
+    if (!imageUrl) {
+      return;
+    }
+
+    setPreviewImage({
+      url: getImageUrl(imageUrl),
+      title,
+    });
+  };
+
+  const closeImagePreview = () => {
+    setPreviewImage(null);
+  };
+
   const clearReviewImages = () => {
     reviewImagePreviews.forEach((previewUrl) => {
       URL.revokeObjectURL(previewUrl);
@@ -144,7 +289,7 @@ function CafeDetailPage() {
     setReviewImages([]);
     setReviewImagePreviews([]);
   };
-
+  
   const resetReviewForm = () => {
     setEditingReviewId(null);
     setReviewRating(5);
@@ -179,6 +324,43 @@ function CafeDetailPage() {
   const remainingReviewImageSlots = editingReviewId
     ? Math.max(MAX_REVIEW_IMAGES - existingReviewImages.length, 0)
     : MAX_REVIEW_IMAGES;
+
+  const handleToggleFavorite = async () => {
+    if (!cafe) {
+      return;
+    }
+
+    if (!authStorage.isLoggedIn()) {
+      alert("กรุณาเข้าสู่ระบบก่อนบันทึกรายการโปรด");
+      return;
+    }
+
+    const nextFavoriteState = !isFavorite;
+
+    try {
+      setTogglingFavorite(true);
+      setIsFavorite(nextFavoriteState);
+
+      const result = await favoriteService.toggleFavorite(cafe.id);
+      const resultData = result as {
+        isFavorite?: boolean;
+        data?: {
+          isFavorite?: boolean;
+        };
+      };
+
+      if (typeof resultData.isFavorite === "boolean") {
+        setIsFavorite(resultData.isFavorite);
+      } else if (typeof resultData.data?.isFavorite === "boolean") {
+        setIsFavorite(resultData.data.isFavorite);
+      }
+    } catch {
+      setIsFavorite(!nextFavoriteState);
+      alert("บันทึกรายการโปรดไม่สำเร็จ");
+    } finally {
+      setTogglingFavorite(false);
+    }
+  };
 
   const handleReviewImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(event.target.files ?? []);
@@ -364,8 +546,11 @@ function CafeDetailPage() {
 
   const tags = cafe.cafeTags?.map((item) => item.tag.name) ?? [];
   const photoSpots = (cafe.photoSpots ?? []).slice(0, 9);
-  const coverImageUrl = cafe.coverImageUrl ?? "";
-  const galleryImageUrls = getCafeGalleryImageUrls(cafe);
+  const coverImageUrl = getImageUrl(cafe.coverImageUrl);
+  const coverFocus = getCoverFocus(cafe as CafeWithCoverFocus);
+  const galleryImageUrls = getCafeGalleryImageUrls(cafe).map((imageUrl) =>
+    getImageUrl(imageUrl)
+  );
   const normalizedGalleryIndex =
     galleryImageUrls.length > 0
       ? activeCafeImageIndex % galleryImageUrls.length
@@ -373,8 +558,33 @@ function CafeDetailPage() {
   const activeGalleryImageUrl =
     galleryImageUrls[normalizedGalleryIndex] || coverImageUrl;
   const mapUrl = getGoogleMapUrl(cafe);
-  const showReviewForm = Boolean(currentUser && (!myReview || editingReviewId));
 
+const facebookUrl = normalizeExternalUrl(cafe.facebookUrl);
+const instagramUrl = normalizeExternalUrl(cafe.instagramUrl);
+const websiteUrl = normalizeExternalUrl(cafe.websiteUrl);
+
+const socialLinks = [
+  {
+    label: "Facebook",
+    url: facebookUrl,
+    icon: <FaFacebookF />,
+    className: "facebook",
+  },
+  {
+    label: "Instagram",
+    url: instagramUrl,
+    icon: <FaInstagram />,
+    className: "instagram",
+  },
+  {
+    label: "Website",
+    url: websiteUrl,
+    icon: <FaGlobe />,
+    className: "website",
+  },
+].filter((item) => Boolean(item.url));
+
+const showReviewForm = Boolean(currentUser && (!myReview || editingReviewId));
   return (
     <main className="detail-page cafe-detail-redesign">
       <header className="cafe-detail-topbar">
@@ -384,24 +594,87 @@ function CafeDetailPage() {
         </Link>
 
         {currentUser && (
-          <div className="cafe-detail-user-pill">
-            {currentUser.avatarUrl ? (
-              <img src={currentUser.avatarUrl} alt={displayName} />
-            ) : (
-              <span>{avatarLetter}</span>
-            )}
+  <div className="cafe-detail-user-pill">
+    <div className="cafe-detail-user-avatar">
+      {currentUser.avatarUrl ? (
+        <img
+          src={getImageUrl(currentUser.avatarUrl)}
+          alt={displayName}
+          style={{
+            objectPosition: `${currentUser.avatarFocusX ?? 50}% ${
+              currentUser.avatarFocusY ?? 50
+            }%`,
+            transform: `scale(${currentUser.avatarZoom ?? 1})`,
+            transformOrigin: `${currentUser.avatarFocusX ?? 50}% ${
+              currentUser.avatarFocusY ?? 50
+            }%`,
+          }}
+        />
+      ) : (
+        <span>{avatarLetter}</span>
+      )}
+    </div>
 
-            <strong>{displayName}</strong>
-          </div>
-        )}
+    <strong>{displayName}</strong>
+  </div>
+)}
       </header>
 
-      <section
-        className="cafe-detail-cover"
-        style={{
-          backgroundImage: `linear-gradient(180deg, rgba(244, 250, 253, 0.08), rgba(244, 250, 253, 0.86)), url(${coverImageUrl})`,
-        }}
-      />
+<section
+  className="cafe-detail-cover"
+  role={coverImageUrl ? "button" : undefined}
+  tabIndex={coverImageUrl ? 0 : undefined}
+  onClick={() => openImagePreview(coverImageUrl, cafe.name)}
+  onKeyDown={(event) => {
+    if (
+      coverImageUrl &&
+      (event.key === "Enter" || event.key === " ")
+    ) {
+      event.preventDefault();
+      openImagePreview(coverImageUrl, cafe.name);
+    }
+  }}
+  style={{
+    position: "relative",
+    overflow: "hidden",
+    backgroundImage: "none",
+    backgroundColor: "#f4fafd",
+    cursor: coverImageUrl ? "zoom-in" : "default",
+  }}
+>
+  {coverImageUrl && (
+    <img
+      src={coverImageUrl}
+      alt={cafe.name}
+      onClick={() => openImagePreview(coverImageUrl, cafe.name)}
+      style={{
+        position: "absolute",
+        inset: 0,
+        zIndex: 0,
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+        objectPosition: `${coverFocus.x}% ${coverFocus.y}%`,
+        transform: `scale(${coverFocus.zoom})`,
+        transformOrigin: `${coverFocus.x}% ${coverFocus.y}%`,
+        transition: "transform 0.25s ease, object-position 0.25s ease",
+        cursor: "zoom-in",
+        pointerEvents: "none",
+      }}
+    />
+  )}
+
+  <div
+    style={{
+      position: "absolute",
+      inset: 0,
+      zIndex: 1,
+      background:
+        "linear-gradient(180deg, rgba(244, 250, 253, 0.08), rgba(244, 250, 253, 0.86))",
+      pointerEvents: "none",
+    }}
+  />
+</section>
 
       <section className="detail-content-section cafe-detail-content-section">
         <div className="container detail-grid cafe-detail-layout">
@@ -420,8 +693,23 @@ function CafeDetailPage() {
                 </p>
               </div>
 
-              <button className="cafe-detail-heart-btn" type="button">
-                ♡
+              <button
+                className={
+                  isFavorite
+                    ? "cafe-detail-heart-btn active"
+                    : "cafe-detail-heart-btn"
+                }
+                type="button"
+                disabled={togglingFavorite}
+                onClick={() => void handleToggleFavorite()}
+                aria-label={
+                  isFavorite ? "ลบออกจากรายการโปรด" : "บันทึกรายการโปรด"
+                }
+                title={
+                  isFavorite ? "ลบออกจากรายการโปรด" : "บันทึกรายการโปรด"
+                }
+              >
+                {isFavorite ? <FaHeart /> : <FaRegHeart />}
               </button>
             </div>
 
@@ -447,8 +735,8 @@ function CafeDetailPage() {
                 </div>
 
                 <section>
-                  <span>Location</span>
-                  <strong>{cafe.district.name}</strong>
+                  <span>Address</span>
+                  <strong className="cafe-detail-address">{cafe.address}</strong>
                 </section>
               </div>
 
@@ -477,14 +765,40 @@ function CafeDetailPage() {
               </div>
             </div>
 
-            <div className="tag-list detail-tags cafe-detail-tags">
+                        <div className="tag-list detail-tags cafe-detail-tags">
               {tags.map((tag) => (
                 <span className="tag" key={tag}>
                   {tag}
                 </span>
               ))}
             </div>
+
+            {socialLinks.length > 0 && (
+              <div className="cafe-detail-social-box">
+                <span className="cafe-detail-social-label">
+                </span>
+
+                <div className="cafe-detail-social-links">
+                  {socialLinks.map((link) => (
+                    <a
+                      className={`cafe-detail-social-link ${link.className}`}
+                      href={link.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      key={link.label}
+                    >
+                      {link.icon}
+                      <span>{link.label}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
+
+          
+          
+          
 
           <aside className="detail-sidebar cafe-detail-sidebar">
             <a
@@ -503,6 +817,10 @@ function CafeDetailPage() {
                   src={activeGalleryImageUrl}
                   alt={`${cafe.name} gallery`}
                   key={activeGalleryImageUrl}
+                  className="clickable-detail-image"
+                  onClick={() =>
+                    openImagePreview(activeGalleryImageUrl, `${cafe.name} gallery`)
+                  }
                 />
 
                 {galleryImageUrls.length > 1 && (
@@ -547,31 +865,43 @@ function CafeDetailPage() {
           </aside>
         </div>
 
-        <div className="container">
+        <div className="detail-wide-section photo-spot-wide-wrap">
           <div className="photo-spot-section">
-            <div className="section-header">
-              <div>
-                <span className="section-subtitle">Photo Spots</span>
-                <h2>มุมถ่ายรูปแนะนำ</h2>
-                <p className="section-description">
-                  รวมมุมถ่ายรูป เวลาแนะนำ และมุมกล้องที่เหมาะกับร้านนี้
-                </p>
-              </div>
+            <div className="section-header photo-spot-header">
+              <h2 className="photo-spot-heading">
+                <FaCamera />
+                จุดถ่ายรูปแนะนำ
+              </h2>
             </div>
 
             {photoSpots.length > 0 ? (
               <div className="spot-grid">
                 {photoSpots.map((spot, index) => (
-                  <article className="spot-card" key={spot.id}>
+                  <article
+                    className="spot-card"
+                    key={spot.id}
+                    role={spot.imageUrl ? "button" : undefined}
+                    tabIndex={spot.imageUrl ? 0 : undefined}
+                    onClick={() => openImagePreview(getImageUrl(spot.imageUrl), spot.name)}
+                    onKeyDown={(event) => {
+                      if (
+                        (event.key === "Enter" || event.key === " ") &&
+                        spot.imageUrl
+                      ) {
+                        event.preventDefault();
+                        openImagePreview(getImageUrl(spot.imageUrl), spot.name);
+                      }
+                    }}
+                  >
                     <div className="spot-image">
-                      {spot.imageUrl ? (
-                        <img src={spot.imageUrl} alt={spot.name} />
-                      ) : (
-                        <div className="spot-image-placeholder">
-                          <FaImage />
-                          <span>ไม่มีรูปภาพ</span>
-                        </div>
-                      )}
+                     {spot.imageUrl ? (
+  <img src={getImageUrl(spot.imageUrl)} alt={spot.name} />
+) : (
+  <div className="spot-image-placeholder">
+    <FaImage />
+    <span>ไม่มีรูปภาพ</span>
+  </div>
+)}
                     </div>
 
                     <div className="spot-content">
@@ -605,7 +935,7 @@ function CafeDetailPage() {
           </div>
         </div>
 
-        <div className="container">
+        <div className="detail-wide-section review-wide-wrap">
           <section className="review-section">
             <div className="section-header">
               <div>
@@ -726,7 +1056,12 @@ function CafeDetailPage() {
                           className="existing-review-image-item"
                           key={image.id}
                         >
-                          <img src={image.imageUrl} alt="review" />
+                          <img
+                            src={getImageUrl(image.imageUrl)}
+                            alt="review"
+                            className="clickable-detail-image"
+                            onClick={() => openImagePreview(image.imageUrl, "รูปรีวิว")}
+                          />
 
                           <button
                             type="button"
@@ -778,7 +1113,12 @@ function CafeDetailPage() {
                   <div className="review-preview-grid">
                     {reviewImagePreviews.map((previewUrl) => (
                       <div className="review-preview-item" key={previewUrl}>
-                        <img src={previewUrl} alt="preview" />
+                        <img
+                          src={previewUrl}
+                          alt="preview"
+                          className="clickable-detail-image"
+                          onClick={() => openImagePreview(previewUrl, "รูปที่เลือก")}
+                        />
                       </div>
                     ))}
 
@@ -825,7 +1165,7 @@ function CafeDetailPage() {
                     <div className="review-user-avatar">
                       {review.user.avatarUrl ? (
                         <img
-                          src={review.user.avatarUrl}
+                          src={getImageUrl(review.user.avatarUrl)}
                           alt={review.user.fullName}
                         />
                       ) : (
@@ -859,7 +1199,13 @@ function CafeDetailPage() {
                       {reviewImageUrls.length > 0 && (
                         <div className="review-photo-grid">
                           {reviewImageUrls.map((imageUrl) => (
-                            <img src={imageUrl} alt="review" key={imageUrl} />
+                            <img
+                              src={getImageUrl(imageUrl)}
+                              alt="review"
+                              key={imageUrl}
+                              className="clickable-detail-image"
+                              onClick={() => openImagePreview(imageUrl, "รูปรีวิว")}
+                            />
                           ))}
                         </div>
                       )}
@@ -871,6 +1217,32 @@ function CafeDetailPage() {
           </section>
         </div>
       </section>
+
+            {previewImage && (
+        <div
+          className="image-lightbox-backdrop"
+          role="dialog"
+          aria-modal="true"
+          onClick={closeImagePreview}
+        >
+          <button
+            className="image-lightbox-close"
+            type="button"
+            onClick={closeImagePreview}
+            aria-label="ปิดรูปภาพ"
+          >
+            <FaTimes />
+          </button>
+
+          <div
+            className="image-lightbox-panel"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <img src={previewImage.url} alt={previewImage.title} />
+            <p>{previewImage.title}</p>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

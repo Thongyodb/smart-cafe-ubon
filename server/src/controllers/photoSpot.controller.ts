@@ -1,6 +1,16 @@
 import type { Request, Response } from "express";
 import { photoSpotService } from "../services/photoSpot.service";
 
+const getUploadedImageUrl = (req: Request) => {
+  const file = req.file;
+
+  if (!file) {
+    return "";
+  }
+
+  return `/uploads/photo-spots/${file.filename}`;
+};
+
 export const photoSpotController = {
   getPhotoSpots: async (_req: Request, res: Response) => {
     try {
@@ -46,14 +56,8 @@ export const photoSpotController = {
 
   createPhotoSpot: async (req: Request, res: Response) => {
     try {
-      const {
-        cafeId,
-        name,
-        description,
-        imageUrl,
-        bestTime,
-        cameraAngle,
-      } = req.body;
+      const { cafeId, name, description, imageUrl, bestTime, cameraAngle } =
+        req.body;
 
       if (!cafeId || !name) {
         return res.status(400).json({
@@ -62,11 +66,13 @@ export const photoSpotController = {
         });
       }
 
+      const uploadedImageUrl = getUploadedImageUrl(req);
+
       const photoSpot = await photoSpotService.createPhotoSpot({
         cafeId: Number(cafeId),
         name,
         description,
-        imageUrl,
+        imageUrl: uploadedImageUrl || imageUrl || "",
         bestTime,
         cameraAngle,
       });
@@ -98,14 +104,8 @@ export const photoSpotController = {
         });
       }
 
-      const {
-        cafeId,
-        name,
-        description,
-        imageUrl,
-        bestTime,
-        cameraAngle,
-      } = req.body;
+      const { cafeId, name, description, imageUrl, bestTime, cameraAngle } =
+        req.body;
 
       if (!cafeId || !name) {
         return res.status(400).json({
@@ -114,11 +114,13 @@ export const photoSpotController = {
         });
       }
 
+      const uploadedImageUrl = getUploadedImageUrl(req);
+
       const photoSpot = await photoSpotService.updatePhotoSpot(id, {
         cafeId: Number(cafeId),
         name,
         description,
-        imageUrl,
+        imageUrl: uploadedImageUrl || imageUrl || "",
         bestTime,
         cameraAngle,
       });
