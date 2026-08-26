@@ -2,14 +2,6 @@ import { axiosClient } from "../api/axiosClient";
 import { authStorage } from "../utils/authStorage";
 import type { AuthUser } from "../utils/authStorage";
 
-type RegisterPayload = {
-  username: string;
-  email: string;
-  phone: string;
-  password: string;
-  confirmPassword: string;
-};
-
 type AuthResponse = {
   success: boolean;
   message: string;
@@ -17,6 +9,15 @@ type AuthResponse = {
     token: string;
     user: AuthUser;
   };
+};
+
+type RegisterPayload = {
+  username: string;
+  email: string;
+  phone: string;
+  password: string;
+  confirmPassword: string;
+  recaptchaToken: string;
 };
 
 export const authService = {
@@ -31,10 +32,15 @@ export const authService = {
     return response.data;
   },
 
-  login: async (identifier: string, password: string) => {
+  login: async (
+    identifier: string,
+    password: string,
+    recaptchaToken = ""
+  ) => {
     const response = await axiosClient.post<AuthResponse>("/auth/login", {
       identifier,
       password,
+      recaptchaToken,
     });
 
     authStorage.setAuth(response.data.data.token, response.data.data.user);

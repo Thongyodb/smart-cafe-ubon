@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { cafeService } from "../../services/cafeService";
 import { metaService } from "../../services/metaService";
 import type { Category, District, Tag } from "../../types/cafe";
+import { getImageUrl } from "../../utils/imageUrl";
 
 function AdminCafeFormPage() {
   const navigate = useNavigate();
@@ -82,7 +83,7 @@ function AdminCafeFormPage() {
             districtId: cafe.district?.id ? String(cafe.district.id) : "",
           });
 
-          setCoverImagePreview(cafe.coverImageUrl ?? "");
+          setCoverImagePreview(getImageUrl(cafe.coverImageUrl));
 
           setSelectedTagIds(
             cafe.cafeTags?.map((cafeTag) => cafeTag.tag.id) ?? []
@@ -145,7 +146,7 @@ function AdminCafeFormPage() {
 
   const handleRemoveSelectedCover = () => {
     setCoverImageFile(null);
-    setCoverImagePreview(form.coverImageUrl);
+    setCoverImagePreview(getImageUrl(form.coverImageUrl));
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -174,14 +175,17 @@ function AdminCafeFormPage() {
     formData.append("facebookUrl", form.facebookUrl);
     formData.append("instagramUrl", form.instagramUrl);
     formData.append("coverImageUrl", form.coverImageUrl);
-    formData.append("priceMin", form.priceMin ? String(Number(form.priceMin)) : "");
-    formData.append("priceMax", form.priceMax ? String(Number(form.priceMax)) : "");
+    formData.append(
+      "priceMin",
+      form.priceMin ? String(Number(form.priceMin)) : ""
+    );
+    formData.append(
+      "priceMax",
+      form.priceMax ? String(Number(form.priceMax)) : ""
+    );
     formData.append("categoryId", String(Number(form.categoryId)));
     formData.append("districtId", String(Number(form.districtId)));
-
-    selectedTagIds.forEach((tagId) => {
-      formData.append("tagIds", String(tagId));
-    });
+    formData.append("tagIds", JSON.stringify(selectedTagIds));
 
     if (coverImageFile) {
       formData.append("coverImage", coverImageFile);
@@ -191,10 +195,10 @@ function AdminCafeFormPage() {
 
     try {
       if (isEditMode && editCafeId) {
-        await cafeService.updateCafe(editCafeId, formData as never);
+        await cafeService.updateCafe(editCafeId, formData);
         alert("แก้ไขคาเฟ่สำเร็จ");
       } else {
-        await cafeService.createCafe(formData as never);
+        await cafeService.createCafe(formData);
         alert("เพิ่มคาเฟ่สำเร็จ");
       }
 

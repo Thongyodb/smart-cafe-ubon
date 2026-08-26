@@ -40,6 +40,24 @@ export type CreateCafePayload = {
   tagIds: number[];
 };
 
+type CafeRequestData = CreateCafePayload | FormData;
+
+const isFormData = (data: CafeRequestData): data is FormData => {
+  return data instanceof FormData;
+};
+
+const getRequestConfig = (data: CafeRequestData) => {
+  if (!isFormData(data)) {
+    return undefined;
+  }
+
+  return {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  };
+};
+
 export const cafeService = {
   getCafes: async (params?: CafeQueryParams) => {
     const response = await axiosClient.get<CafeListResponse>("/cafes", {
@@ -59,15 +77,21 @@ export const cafeService = {
     return response.data;
   },
 
-  createCafe: async (data: CreateCafePayload) => {
-    const response = await axiosClient.post<CafeDetailResponse>("/cafes", data);
+  createCafe: async (data: CafeRequestData) => {
+    const response = await axiosClient.post<CafeDetailResponse>(
+      "/cafes",
+      data,
+      getRequestConfig(data)
+    );
+
     return response.data;
   },
 
-  updateCafe: async (id: number, data: CreateCafePayload) => {
+  updateCafe: async (id: number, data: CafeRequestData) => {
     const response = await axiosClient.put<CafeDetailResponse>(
       `/cafes/${id}`,
-      data
+      data,
+      getRequestConfig(data)
     );
 
     return response.data;

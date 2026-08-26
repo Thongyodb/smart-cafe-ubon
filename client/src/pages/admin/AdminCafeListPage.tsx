@@ -10,6 +10,7 @@ import {
 import { Link } from "react-router-dom";
 import { cafeService } from "../../services/cafeService";
 import type { Cafe } from "../../types/cafe";
+import { getCafeImageUrl } from "../../utils/imageUrl";
 
 function AdminCafeListPage() {
   const [cafes, setCafes] = useState<Cafe[]>([]);
@@ -37,9 +38,20 @@ function AdminCafeListPage() {
   }, []);
 
   const filteredCafes = useMemo(() => {
-    return cafes.filter((cafe) =>
-      cafe.name.toLowerCase().includes(search.toLowerCase())
-    );
+    const keyword = search.trim().toLowerCase();
+
+    if (!keyword) {
+      return cafes;
+    }
+
+    return cafes.filter((cafe) => {
+      return (
+        cafe.name.toLowerCase().includes(keyword) ||
+        cafe.address.toLowerCase().includes(keyword) ||
+        cafe.category.name.toLowerCase().includes(keyword) ||
+        cafe.district.name.toLowerCase().includes(keyword)
+      );
+    });
   }, [cafes, search]);
 
   const handleDeleteCafe = async (cafe: Cafe) => {
@@ -53,7 +65,9 @@ function AdminCafeListPage() {
 
     try {
       await cafeService.deleteCafe(cafe.id);
+
       setCafes((current) => current.filter((item) => item.id !== cafe.id));
+
       alert("ปิดใช้งานคาเฟ่สำเร็จ");
     } catch {
       alert("ปิดใช้งานคาเฟ่ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
@@ -79,6 +93,7 @@ function AdminCafeListPage() {
         <div className="admin-table-toolbar">
           <div className="admin-search-box">
             <FaSearch />
+
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
@@ -108,10 +123,7 @@ function AdminCafeListPage() {
                   <td>
                     <div className="admin-cafe-cell">
                       <img
-                        src={
-                          cafe.coverImageUrl ||
-                          "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb"
-                        }
+                        src={getCafeImageUrl(cafe.coverImageUrl)}
                         alt={cafe.name}
                       />
 

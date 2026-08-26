@@ -1,13 +1,17 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { FormEvent } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
 import { FaSignInAlt, FaUserPlus } from "react-icons/fa";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { authService } from "../services/authService";
 import { authStorage } from "../utils/authStorage";
 
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY ?? "";
+
 function AuthPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const recaptchaRef = useRef<ReCAPTCHA | null>(null);
 
   const initialMode =
     searchParams.get("mode") === "register" ? "register" : "login";
@@ -21,7 +25,13 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const [recaptchaToken, setRecaptchaToken] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const resetRecaptcha = () => {
+    setRecaptchaToken("");
+    recaptchaRef.current?.reset();
+  };
 
   const goAfterLogin = () => {
     window.dispatchEvent(new Event("smart-cafe-auth-change"));
@@ -41,6 +51,7 @@ function AuthPage() {
     setPhone("");
     setPassword("");
     setConfirmPassword("");
+    resetRecaptcha();
   };
 
   const switchToLogin = () => {
@@ -58,6 +69,16 @@ function AuthPage() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    if (!RECAPTCHA_SITE_KEY) {
+      alert("ยังไม่ได้ตั้งค่า VITE_RECAPTCHA_SITE_KEY ใน client/.env");
+      return;
+    }
+
+    if (!recaptchaToken) {
+      alert("กรุณายืนยัน reCAPTCHA ก่อนดำเนินการ");
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -67,7 +88,11 @@ function AuthPage() {
           return;
         }
 
-        await authService.login(loginIdentifier.trim(), password);
+        await authService.login(
+          loginIdentifier.trim(),
+          password,
+          recaptchaToken
+        );
       } else {
         if (
           !username.trim() ||
@@ -91,16 +116,19 @@ function AuthPage() {
           phone: phone.trim(),
           password,
           confirmPassword,
+          recaptchaToken,
         });
       }
 
       clearForm();
       goAfterLogin();
     } catch {
+      resetRecaptcha();
+
       alert(
         mode === "login"
-          ? "เข้าสู่ระบบไม่สำเร็จ กรุณาตรวจสอบ Username / Email / Phone หรือ Password"
-          : "สมัครสมาชิกไม่สำเร็จ กรุณาตรวจสอบข้อมูลอีกครั้ง"
+          ? "เข้าสู่ระบบไม่สำเร็จ กรุณาตรวจสอบข้อมูล หรือยืนยัน reCAPTCHA ใหม่"
+          : "สมัครสมาชิกไม่สำเร็จ กรุณาตรวจสอบข้อมูล หรือยืนยัน reCAPTCHA ใหม่"
       );
     } finally {
       setLoading(false);
@@ -214,6 +242,21 @@ function AuthPage() {
               />
             </label>
           )}
+
+          <div className="auth-recaptcha-wrap">
+            {RECAPTCHA_SITE_KEY ? (
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey={RECAPTCHA_SITE_KEY}
+                onChange={(token) => setRecaptchaToken(token ?? "")}
+                onExpired={resetRecaptcha}
+              />
+            ) : (
+              <div className="auth-recaptcha-missing">
+                ยังไม่ได้ตั้งค่า reCAPTCHA Site Key
+              </div>
+            )}
+          </div>
 
           <button className="admin-primary-btn" type="submit" disabled={loading}>
             {loading ? (

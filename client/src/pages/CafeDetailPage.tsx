@@ -3,6 +3,8 @@ import { Link, useParams } from "react-router-dom";
 import {
   FaArrowLeft,
   FaCamera,
+  FaChevronLeft,
+  FaChevronRight,
   FaClock,
   FaEdit,
   FaFacebookF,
@@ -40,9 +42,18 @@ type FavoriteListItem = {
   };
 };
 
-type PreviewImage = {
+type PreviewImageItem = {
   url: string;
   title: string;
+  description?: string | null;
+  bestTime?: string | null;
+  cameraAngle?: string | null;
+  type?: "gallery" | "photoSpot" | "review";
+};
+
+type PreviewImage = PreviewImageItem & {
+  images: PreviewImageItem[];
+  index: number;
 };
 
 
@@ -266,16 +277,106 @@ function CafeDetailPage() {
     };
   }, [previewImage]);
 
-    const openImagePreview = (imageUrl?: string | null, title = "รูปภาพ") => {
-    if (!imageUrl) {
-      return;
+ const openImagePreview = (
+  imageUrl?: string | null,
+  title = "รูปภาพ",
+  imageList: Array<string | PreviewImageItem> = [],
+  details?: {
+    description?: string | null;
+    bestTime?: string | null;
+    cameraAngle?: string | null;
+    type?: "gallery" | "photoSpot" | "review";
+  }
+) => {
+  if (!imageUrl) {
+    return;
+  }
+
+  const normalizedUrl = getImageUrl(imageUrl);
+
+  const normalizedImages: PreviewImageItem[] =
+    imageList.length > 0
+      ? imageList.map((item) => {
+          if (typeof item === "string") {
+            return {
+              url: getImageUrl(item),
+              title,
+              type: details?.type ?? "gallery",
+            };
+          }
+
+          return {
+            ...item,
+            url: getImageUrl(item.url),
+          };
+        })
+      : [
+          {
+            url: normalizedUrl,
+            title,
+            description: details?.description ?? null,
+            bestTime: details?.bestTime ?? null,
+            cameraAngle: details?.cameraAngle ?? null,
+            type: details?.type ?? "gallery",
+          },
+        ];
+
+  const imageIndex = Math.max(
+    normalizedImages.findIndex((item) => item.url === normalizedUrl),
+    0
+  );
+
+  const activeImage = normalizedImages[imageIndex];
+
+  setPreviewImage({
+    ...activeImage,
+    title: activeImage.title || title,
+    description: activeImage.description ?? details?.description ?? null,
+    bestTime: activeImage.bestTime ?? details?.bestTime ?? null,
+    cameraAngle: activeImage.cameraAngle ?? details?.cameraAngle ?? null,
+    type: activeImage.type ?? details?.type ?? "gallery",
+    images: normalizedImages,
+    index: imageIndex,
+  });
+};
+
+const goToPreviousPreviewImage = () => {
+  setPreviewImage((current) => {
+    if (!current || current.images.length <= 1) {
+      return current;
     }
 
-    setPreviewImage({
-      url: getImageUrl(imageUrl),
-      title,
-    });
-  };
+    const nextIndex =
+      current.index === 0 ? current.images.length - 1 : current.index - 1;
+
+    const nextImage = current.images[nextIndex];
+
+    return {
+      ...nextImage,
+      images: current.images,
+      index: nextIndex,
+    };
+  });
+};
+
+const goToNextPreviewImage = () => {
+  setPreviewImage((current) => {
+    if (!current || current.images.length <= 1) {
+      return current;
+    }
+
+    const nextIndex =
+      current.index === current.images.length - 1 ? 0 : current.index + 1;
+
+    const nextImage = current.images[nextIndex];
+
+    return {
+      ...nextImage,
+      images: current.images,
+      index: nextIndex,
+    };
+  });
+};
 
   const closeImagePreview = () => {
     setPreviewImage(null);
@@ -543,9 +644,54 @@ function CafeDetailPage() {
       </div>
     );
   }
+  const renderPhotoSpotDescription = (description?: string | null) => {
+  if (!description?.trim()) {
+    return null;
+  }
 
+  const text = description.trim();
+  const highlightLabel = "จุดเด่น:";
+  const ideaLabel = "ไอเดียการโพสต์:";
+
+  const highlightIndex = text.indexOf(highlightLabel);
+  const ideaIndex = text.indexOf(ideaLabel);
+
+  if (highlightIndex !== -1 && ideaIndex !== -1) {
+    const highlightText = text
+      .slice(highlightIndex + highlightLabel.length, ideaIndex)
+      .trim();
+
+    const ideaText = text.slice(ideaIndex + ideaLabel.length).trim();
+
+    return (
+      <div className="image-lightbox-description-lines">
+        <p>
+          <strong>{highlightLabel}</strong>
+          <span>{highlightText}</span>
+        </p>
+
+        <p>
+          <strong>{ideaLabel}</strong>
+          <span>{ideaText}</span>
+        </p>
+      </div>
+    );
+  }
+
+  return <p>{text}</p>;
+};
   const tags = cafe.cafeTags?.map((item) => item.tag.name) ?? [];
   const photoSpots = (cafe.photoSpots ?? []).slice(0, 9);
+  const photoSpotPreviewItems: PreviewImageItem[] = photoSpots
+  .filter((spot) => Boolean(spot.imageUrl))
+  .map((spot) => ({
+    url: spot.imageUrl ?? "",
+    title: spot.name,
+    description: spot.description ?? null,
+    bestTime: spot.bestTime ?? null,
+    cameraAngle: spot.cameraAngle ?? null,
+    type: "photoSpot",
+  }));
   const coverImageUrl = getImageUrl(cafe.coverImageUrl);
   const coverFocus = getCoverFocus(cafe as CafeWithCoverFocus);
   const galleryImageUrls = getCafeGalleryImageUrls(cafe).map((imageUrl) =>
@@ -819,8 +965,12 @@ const showReviewForm = Boolean(currentUser && (!myReview || editingReviewId));
                   key={activeGalleryImageUrl}
                   className="clickable-detail-image"
                   onClick={() =>
-                    openImagePreview(activeGalleryImageUrl, `${cafe.name} gallery`)
-                  }
+  openImagePreview(
+    activeGalleryImageUrl,
+    `${cafe.name} gallery`,
+    galleryImageUrls
+  )
+}
                 />
 
                 {galleryImageUrls.length > 1 && (
@@ -882,14 +1032,26 @@ const showReviewForm = Boolean(currentUser && (!myReview || editingReviewId));
                     key={spot.id}
                     role={spot.imageUrl ? "button" : undefined}
                     tabIndex={spot.imageUrl ? 0 : undefined}
-                    onClick={() => openImagePreview(getImageUrl(spot.imageUrl), spot.name)}
+                    onClick={() =>
+  openImagePreview(spot.imageUrl, spot.name, photoSpotPreviewItems, {
+    description: spot.description,
+    bestTime: spot.bestTime,
+    cameraAngle: spot.cameraAngle,
+    type: "photoSpot",
+  })
+}
                     onKeyDown={(event) => {
                       if (
                         (event.key === "Enter" || event.key === " ") &&
                         spot.imageUrl
                       ) {
                         event.preventDefault();
-                        openImagePreview(getImageUrl(spot.imageUrl), spot.name);
+                        openImagePreview(spot.imageUrl, spot.name, photoSpotPreviewItems, {
+  description: spot.description,
+  bestTime: spot.bestTime,
+  cameraAngle: spot.cameraAngle,
+  type: "photoSpot",
+});
                       }
                     }}
                   >
@@ -1060,7 +1222,16 @@ const showReviewForm = Boolean(currentUser && (!myReview || editingReviewId));
                             src={getImageUrl(image.imageUrl)}
                             alt="review"
                             className="clickable-detail-image"
-                            onClick={() => openImagePreview(image.imageUrl, "รูปรีวิว")}
+                            onClick={() =>
+ openImagePreview(
+  image.imageUrl,
+  "รูปรีวิว",
+  existingReviewImages.map((item) => item.imageUrl),
+  {
+    type: "review",
+  }
+)
+}
                           />
 
                           <button
@@ -1117,7 +1288,11 @@ const showReviewForm = Boolean(currentUser && (!myReview || editingReviewId));
                           src={previewUrl}
                           alt="preview"
                           className="clickable-detail-image"
-                          onClick={() => openImagePreview(previewUrl, "รูปที่เลือก")}
+                          onClick={() =>
+  openImagePreview(previewUrl, "รูปที่เลือก", reviewImagePreviews, {
+  type: "review",
+})
+}
                         />
                       </div>
                     ))}
@@ -1199,14 +1374,18 @@ const showReviewForm = Boolean(currentUser && (!myReview || editingReviewId));
                       {reviewImageUrls.length > 0 && (
                         <div className="review-photo-grid">
                           {reviewImageUrls.map((imageUrl) => (
-                            <img
-                              src={getImageUrl(imageUrl)}
-                              alt="review"
-                              key={imageUrl}
-                              className="clickable-detail-image"
-                              onClick={() => openImagePreview(imageUrl, "รูปรีวิว")}
-                            />
-                          ))}
+  <img
+    src={getImageUrl(imageUrl)}
+    alt="review"
+    key={imageUrl}
+    className="clickable-detail-image"
+    onClick={() =>
+      openImagePreview(imageUrl, "รูปรีวิว", reviewImageUrls, {
+  type: "review",
+})
+    }
+  />
+))}
                         </div>
                       )}
                     </div>
@@ -1235,12 +1414,71 @@ const showReviewForm = Boolean(currentUser && (!myReview || editingReviewId));
           </button>
 
           <div
-            className="image-lightbox-panel"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <img src={previewImage.url} alt={previewImage.title} />
-            <p>{previewImage.title}</p>
-          </div>
+  className="image-lightbox-panel"
+  onClick={(event) => event.stopPropagation()}
+>
+  {previewImage.images.length > 1 && (
+    <button
+      className="image-lightbox-arrow image-lightbox-arrow-left"
+      type="button"
+      onClick={goToPreviousPreviewImage}
+      aria-label="รูปก่อนหน้า"
+    >
+      <FaChevronLeft />
+    </button>
+  )}
+
+  <img src={previewImage.url} alt={previewImage.title} />
+
+  {previewImage.images.length > 1 && (
+    <button
+      className="image-lightbox-arrow image-lightbox-arrow-right"
+      type="button"
+      onClick={goToNextPreviewImage}
+      aria-label="รูปถัดไป"
+    >
+      <FaChevronRight />
+    </button>
+  )}
+
+  <div className="image-lightbox-info">
+  <span className="image-lightbox-eyebrow">
+    {previewImage.type === "photoSpot"
+      ? "Photo Spot"
+      : previewImage.type === "review"
+      ? "Review Image"
+      : "Cafe Image"}
+  </span>
+
+  <h3>{previewImage.title}</h3>
+
+  {renderPhotoSpotDescription(previewImage.description)}
+
+  {(previewImage.bestTime || previewImage.cameraAngle) && (
+    <div className="image-lightbox-meta">
+      {previewImage.bestTime && (
+        <span>
+          <FaClock />
+          เวลาแนะนำ: {previewImage.bestTime}
+        </span>
+      )}
+
+      {previewImage.cameraAngle && (
+        <span>
+          <FaCamera />
+          มุมกล้อง: {previewImage.cameraAngle}
+        </span>
+      )}
+    </div>
+  )}
+
+  {previewImage.images.length > 1 && (
+    <small>
+      รูปที่ {previewImage.index + 1} / {previewImage.images.length}
+    </small>
+  )}
+</div>
+</div>
         </div>
       )}
     </main>

@@ -3,9 +3,7 @@ import { Link } from "react-router-dom";
 import { FaLocationDot, FaStar } from "react-icons/fa6";
 import { favoriteService } from "../services/favoriteService";
 import type { Cafe } from "../types/cafe";
-
-const FALLBACK_IMAGE =
-  "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=900&q=80";
+import { getCafeImageUrl } from "../utils/imageUrl";
 
 function FavoritesPage() {
   const [cafes, setCafes] = useState<Cafe[]>([]);
@@ -100,7 +98,7 @@ function FavoriteCafeCard({
   cafe: Cafe;
   onRemove: (cafeId: number) => void;
 }) {
-  const imageUrl = cafe.coverImageUrl || FALLBACK_IMAGE;
+  const imageUrl = getCafeImageUrl(cafe.coverImageUrl);
 
   const cafeTags =
     cafe.cafeTags

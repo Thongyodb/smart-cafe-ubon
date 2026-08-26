@@ -14,27 +14,13 @@ import {
   type AdminDashboardStats,
   type DashboardReview,
 } from "../../services/adminDashboardService";
+import { getCafeImageUrl, getImageUrl } from "../../utils/imageUrl";
 
-const API_BASE_URL = "http://localhost:5000";
-
-const FALLBACK_CAFE_IMAGE =
-  "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb";
-
-const getImageUrl = (imageUrl?: string | null) => {
-  if (!imageUrl) {
-    return "";
-  }
-
-  if (
-    imageUrl.startsWith("http://") ||
-    imageUrl.startsWith("https://") ||
-    imageUrl.startsWith("data:") ||
-    imageUrl.startsWith("blob:")
-  ) {
-    return imageUrl;
-  }
-
-  return `${API_BASE_URL}${imageUrl}`;
+type UserAvatarFocus = {
+  avatarUrl?: string | null;
+  avatarFocusX?: number | null;
+  avatarFocusY?: number | null;
+  avatarZoom?: number | null;
 };
 
 function AdminDashboardPage() {
@@ -96,6 +82,7 @@ function AdminDashboardPage() {
     }
 
     const latestReviews = stats.latestReviews ?? [];
+
     const latestAverage =
       latestReviews.length > 0
         ? latestReviews.reduce((sum, review) => sum + review.rating, 0) /
@@ -237,7 +224,11 @@ function AdminDashboardPage() {
 
             {stats.latestReviews.map((review) => {
               const imageUrls = getReviewImageUrls(review);
-              const userAvatarUrl = getImageUrl(review.user.avatarUrl);
+
+              const reviewUser = review.user as typeof review.user &
+                UserAvatarFocus;
+
+              const userAvatarUrl = getImageUrl(reviewUser.avatarUrl);
 
               return (
                 <article className="admin-dashboard-review-item" key={review.id}>
@@ -247,15 +238,15 @@ function AdminDashboardPage() {
                         {userAvatarUrl ? (
                           <img
                             src={userAvatarUrl}
-                            alt={review.user.fullName}
+                            alt={reviewUser.fullName}
                             style={{
-                              objectPosition: `${review.user.avatarFocusX ?? 50}% ${
-                                review.user.avatarFocusY ?? 50
+                              objectPosition: `${reviewUser.avatarFocusX ?? 50}% ${
+                                reviewUser.avatarFocusY ?? 50
                               }%`,
-                              transform: `scale(${review.user.avatarZoom ?? 1})`,
+                              transform: `scale(${reviewUser.avatarZoom ?? 1})`,
                               transformOrigin: `${
-                                review.user.avatarFocusX ?? 50
-                              }% ${review.user.avatarFocusY ?? 50}%`,
+                                reviewUser.avatarFocusX ?? 50
+                              }% ${reviewUser.avatarFocusY ?? 50}%`,
                             }}
                           />
                         ) : (
@@ -264,7 +255,8 @@ function AdminDashboardPage() {
                       </div>
 
                       <div>
-                        <h3>{review.user.fullName}</h3>
+                        <h3>{reviewUser.fullName}</h3>
+
                         <p>
                           {review.cafe.name} · {formatDate(review.createdAt)}
                         </p>
@@ -287,17 +279,13 @@ function AdminDashboardPage() {
 
                   {imageUrls.length > 0 && (
                     <div className="admin-dashboard-review-images">
-                      {imageUrls.slice(0, 5).map((imageUrl) => {
-                        const reviewImageUrl = getImageUrl(imageUrl);
-
-                        return (
-                          <img
-                            src={reviewImageUrl}
-                            alt="review"
-                            key={imageUrl}
-                          />
-                        );
-                      })}
+                      {imageUrls.slice(0, 5).map((imageUrl) => (
+                        <img
+                          src={getImageUrl(imageUrl)}
+                          alt="review"
+                          key={imageUrl}
+                        />
+                      ))}
                     </div>
                   )}
                 </article>
@@ -320,28 +308,27 @@ function AdminDashboardPage() {
               <div className="admin-empty-row">ยังไม่มีข้อมูลคาเฟ่</div>
             )}
 
-            {stats.popularCafes.map((cafe) => {
-              const cafeImageUrl =
-                getImageUrl(cafe.coverImageUrl) || FALLBACK_CAFE_IMAGE;
+            {stats.popularCafes.map((cafe) => (
+              <article className="admin-dashboard-cafe-item" key={cafe.id}>
+                <img
+                  src={getCafeImageUrl(cafe.coverImageUrl)}
+                  alt={cafe.name}
+                />
 
-              return (
-                <article className="admin-dashboard-cafe-item" key={cafe.id}>
-                  <img src={cafeImageUrl} alt={cafe.name} />
+                <div>
+                  <h3>{cafe.name}</h3>
 
-                  <div>
-                    <h3>{cafe.name}</h3>
-                    <p>
-                      {cafe.district.name} · {cafe.category.name}
-                    </p>
-                  </div>
+                  <p>
+                    {cafe.district.name} · {cafe.category.name}
+                  </p>
+                </div>
 
-                  <strong>
-                    <FaEye />
-                    {cafe.totalViews}
-                  </strong>
-                </article>
-              );
-            })}
+                <strong>
+                  <FaEye />
+                  {cafe.totalViews}
+                </strong>
+              </article>
+            ))}
           </div>
         </section>
       </div>
@@ -360,32 +347,28 @@ function AdminDashboardPage() {
             <div className="admin-empty-row">ยังไม่มีข้อมูลคาเฟ่</div>
           )}
 
-          {stats.latestCafes.map((cafe) => {
-            const cafeImageUrl =
-              getImageUrl(cafe.coverImageUrl) || FALLBACK_CAFE_IMAGE;
+          {stats.latestCafes.map((cafe) => (
+            <article className="admin-dashboard-latest-cafe" key={cafe.id}>
+              <img src={getCafeImageUrl(cafe.coverImageUrl)} alt={cafe.name} />
 
-            return (
-              <article className="admin-dashboard-latest-cafe" key={cafe.id}>
-                <img src={cafeImageUrl} alt={cafe.name} />
+              <div>
+                <h3>{cafe.name}</h3>
 
-                <div>
-                  <h3>{cafe.name}</h3>
-                  <p>
-                    {cafe.district.name} · {cafe.category.name}
-                  </p>
-                </div>
+                <p>
+                  {cafe.district.name} · {cafe.category.name}
+                </p>
+              </div>
 
-                <div className="admin-dashboard-stars">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <FaStar
-                      key={star}
-                      className={cafe.averageRating >= star ? "active" : ""}
-                    />
-                  ))}
-                </div>
-              </article>
-            );
-          })}
+              <div className="admin-dashboard-stars">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <FaStar
+                    key={star}
+                    className={cafe.averageRating >= star ? "active" : ""}
+                  />
+                ))}
+              </div>
+            </article>
+          ))}
         </div>
       </section>
     </div>

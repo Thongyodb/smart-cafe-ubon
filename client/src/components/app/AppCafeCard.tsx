@@ -5,6 +5,7 @@ import { FaHeart, FaMapMarkerAlt, FaRegHeart, FaStar } from "react-icons/fa";
 import type { Cafe } from "../../types/cafe";
 import { favoriteService } from "../../services/favoriteService";
 import { authStorage } from "../../utils/authStorage";
+import { getCafeImageUrl } from "../../utils/imageUrl";
 
 type Props = {
   cafe: Cafe;
@@ -12,16 +13,13 @@ type Props = {
   onSelect?: (cafe: Cafe) => void;
 };
 
-const FALLBACK_IMAGE =
-  "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=900&q=80";
-
 function AppCafeCard({ cafe, compact = false, onSelect }: Props) {
   const isLoggedIn = authStorage.isLoggedIn();
 
   const [isFavorite, setIsFavorite] = useState(false);
   const [loadingFavorite, setLoadingFavorite] = useState(false);
 
-  const imageUrl = cafe.coverImageUrl || FALLBACK_IMAGE;
+  const imageUrl = getCafeImageUrl(cafe.coverImageUrl);
 
   const tags = useMemo(() => {
     return (

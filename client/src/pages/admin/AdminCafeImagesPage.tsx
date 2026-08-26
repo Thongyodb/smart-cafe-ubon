@@ -14,6 +14,7 @@ import {
   type CafeImageItem,
 } from "../../services/cafeImageService";
 import type { Cafe } from "../../types/cafe";
+import { getImageUrl } from "../../utils/imageUrl";
 
 const MAX_UPLOAD_FILES = 10;
 
@@ -48,7 +49,8 @@ function AdminCafeImagesPage() {
   const [coverFocusY, setCoverFocusY] = useState(50);
   const [coverZoom, setCoverZoom] = useState(1);
 
-  const coverImageUrl = cafe?.coverImageUrl ?? "";
+  const rawCoverImageUrl = cafe?.coverImageUrl ?? "";
+  const coverImageUrl = getImageUrl(rawCoverImageUrl);
 
   const previewUrls = useMemo(() => {
     return selectedFiles.map((file) => URL.createObjectURL(file));
@@ -127,6 +129,7 @@ function AdminCafeImagesPage() {
     const limitedFiles = imageFiles.slice(0, MAX_UPLOAD_FILES);
 
     setSelectedFiles(limitedFiles);
+    event.target.value = "";
   };
 
   const clearSelectedFiles = () => {
@@ -191,7 +194,7 @@ function AdminCafeImagesPage() {
   };
 
   const handleSaveCoverFocus = async () => {
-    if (!coverImageUrl) {
+    if (!rawCoverImageUrl) {
       alert("กรุณาตั้งรูปหน้าปกก่อน");
       return;
     }
@@ -280,6 +283,7 @@ function AdminCafeImagesPage() {
           <label className="admin-cafe-image-file-label">
             <FaUpload />
             <span>เลือกรูปภาพ</span>
+
             <input
               type="file"
               accept="image/*"
@@ -327,12 +331,15 @@ function AdminCafeImagesPage() {
         ) : (
           <div className="admin-cafe-image-grid">
             {images.map((image) => {
-              const isCover = image.imageUrl === coverImageUrl;
+              const imageUrl = getImageUrl(image.imageUrl);
+              const isCover =
+                image.imageUrl === rawCoverImageUrl ||
+                imageUrl === coverImageUrl;
 
               return (
                 <article className="admin-cafe-image-card" key={image.id}>
                   <div className="admin-cafe-image-frame">
-                    <img src={image.imageUrl} alt="cafe" />
+                    <img src={imageUrl} alt="cafe" />
 
                     {isCover && (
                       <span className="admin-cafe-cover-badge">
@@ -380,7 +387,7 @@ function AdminCafeImagesPage() {
           </div>
         </div>
 
-        {coverImageUrl ? (
+        {rawCoverImageUrl ? (
           <div className="admin-cover-focus-editor">
             <div
               className="admin-cover-focus-preview"
@@ -492,9 +499,7 @@ function AdminCafeImagesPage() {
                   max="3"
                   step="0.05"
                   value={coverZoom}
-                  onChange={(event) =>
-                    setCoverZoom(Number(event.target.value))
-                  }
+                  onChange={(event) => setCoverZoom(Number(event.target.value))}
                   style={{ width: "100%" }}
                 />
               </label>
@@ -544,7 +549,7 @@ function AdminCafeImagesPage() {
           </div>
         </div>
 
-        {coverImageUrl ? (
+        {rawCoverImageUrl ? (
           <div className="admin-current-cover">
             <img
               src={coverImageUrl}

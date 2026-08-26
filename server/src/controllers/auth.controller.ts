@@ -1,10 +1,37 @@
 import type { Request, Response } from "express";
 import { authService } from "../services/auth.service";
+import { recaptchaService } from "../services/recaptcha.service";
 
 export const authController = {
   register: async (req: Request, res: Response) => {
     try {
-      const { username, email, phone, password, confirmPassword } = req.body;
+      const {
+        username,
+        email,
+        phone,
+        password,
+        confirmPassword,
+        recaptchaToken,
+      } = req.body;
+
+      if (!recaptchaToken) {
+        return res.status(400).json({
+          success: false,
+          message: "Please verify reCAPTCHA",
+        });
+      }
+
+      const isRecaptchaValid = await recaptchaService.verify(
+        recaptchaToken,
+        req.ip
+      );
+
+      if (!isRecaptchaValid) {
+        return res.status(400).json({
+          success: false,
+          message: "reCAPTCHA verification failed",
+        });
+      }
 
       if (!username || !email || !phone || !password || !confirmPassword) {
         return res.status(400).json({
@@ -37,7 +64,26 @@ export const authController = {
 
   login: async (req: Request, res: Response) => {
     try {
-      const { identifier, password } = req.body;
+      const { identifier, password, recaptchaToken } = req.body;
+
+      if (!recaptchaToken) {
+        return res.status(400).json({
+          success: false,
+          message: "Please verify reCAPTCHA",
+        });
+      }
+
+      const isRecaptchaValid = await recaptchaService.verify(
+        recaptchaToken,
+        req.ip
+      );
+
+      if (!isRecaptchaValid) {
+        return res.status(400).json({
+          success: false,
+          message: "reCAPTCHA verification failed",
+        });
+      }
 
       if (!identifier || !password) {
         return res.status(400).json({

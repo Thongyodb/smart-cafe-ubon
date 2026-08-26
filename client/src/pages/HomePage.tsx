@@ -15,6 +15,7 @@ import LeafletMapView from "../components/app/LeafletMapView";
 import { cafeService } from "../services/cafeService";
 import type { Cafe } from "../types/cafe";
 import { authStorage } from "../utils/authStorage";
+import { getCafeImageUrl } from "../utils/imageUrl";
 
 const HERO_FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1600&q=80";
@@ -71,27 +72,30 @@ function HomePage() {
     return cafesWithCover.length > 0 ? cafesWithCover : allCafes;
   }, [allCafes]);
 
+  const activeSlideIndex =
+    heroCafes.length > 0 ? currentSlide % heroCafes.length : 0;
+
   const heroCafe = useMemo(() => {
     if (heroCafes.length === 0) {
       return null;
     }
 
-    return heroCafes[currentSlide % heroCafes.length];
-  }, [heroCafes, currentSlide]);
+    return heroCafes[activeSlideIndex];
+  }, [heroCafes, activeSlideIndex]);
 
   const heroTitle = heroCafe?.name || "Cafe Ubon Ratchathani";
 
   const mapCafes = cafes.length > 0 ? cafes : allCafes;
 
   const recommendedCafes = useMemo(() => {
-  return [...cafes]
-    .sort((firstCafe, secondCafe) => {
-      const firstRating = Number(firstCafe.averageRating ?? 0);
-      const secondRating = Number(secondCafe.averageRating ?? 0);
+    return [...cafes]
+      .sort((firstCafe, secondCafe) => {
+        const firstRating = Number(firstCafe.averageRating ?? 0);
+        const secondRating = Number(secondCafe.averageRating ?? 0);
 
-      return secondRating - firstRating;
-    })
-    .slice(0, 4);
+        return secondRating - firstRating;
+      })
+      .slice(0, 4);
   }, [cafes]);
 
   const availableTags = useMemo(() => {
@@ -285,17 +289,20 @@ function HomePage() {
             width: "100%",
             height: "100%",
             display: "flex",
-            transform: `translateX(-${currentSlide * 100}%)`,
+            transform: `translateX(-${activeSlideIndex * 100}%)`,
             transition: "transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
             willChange: "transform",
           }}
         >
           {(heroCafes.length > 0 ? heroCafes : [null]).map(
             (slideCafe, index) => {
-              const slideImageUrl =
-                slideCafe?.coverImageUrl || HERO_FALLBACK_IMAGE;
+              const slideImageUrl = slideCafe?.coverImageUrl
+                ? getCafeImageUrl(slideCafe.coverImageUrl)
+                : HERO_FALLBACK_IMAGE;
+
               const slideTitle =
                 slideCafe?.name || "Cafe Ubon Ratchathani";
+
               const slideFocus = getCoverFocus(
                 slideCafe as CafeWithCoverFocus | null
               );
@@ -369,9 +376,7 @@ function HomePage() {
             {heroCafes.map((cafe, index) => (
               <button
                 key={cafe.id}
-                className={
-                  index === currentSlide % heroCafes.length ? "active" : ""
-                }
+                className={index === activeSlideIndex ? "active" : ""}
                 type="button"
                 aria-label={`slide ${index + 1}`}
                 onClick={() => setCurrentSlide(index)}

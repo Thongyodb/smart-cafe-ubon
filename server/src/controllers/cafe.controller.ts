@@ -2,6 +2,67 @@ import type { Request, Response } from "express";
 import type { AuthRequest } from "../middleware/auth.middleware";
 import { cafeService } from "../services/cafe.service";
 
+const getUploadedCoverImageUrl = (req: Request) => {
+  const file = (req as Request & { file?: Express.Multer.File }).file;
+
+  if (!file) {
+    return "";
+  }
+
+  return `/uploads/cafes/${file.filename}`;
+};
+
+const parseTagIds = (tagIds: unknown) => {
+  if (Array.isArray(tagIds)) {
+    return tagIds
+      .map((tagId) => Number(tagId))
+      .filter((tagId) => !Number.isNaN(tagId));
+  }
+
+  if (typeof tagIds === "string") {
+    if (!tagIds.trim()) {
+      return [];
+    }
+
+    try {
+      const parsedTagIds = JSON.parse(tagIds);
+
+      if (Array.isArray(parsedTagIds)) {
+        return parsedTagIds
+          .map((tagId) => Number(tagId))
+          .filter((tagId) => !Number.isNaN(tagId));
+      }
+    } catch {
+      return tagIds
+        .split(",")
+        .map((tagId) => Number(tagId))
+        .filter((tagId) => !Number.isNaN(tagId));
+    }
+  }
+
+  return [];
+};
+
+const toOptionalNumber = (value: unknown, fallback?: number) => {
+  if (value === undefined || value === null || value === "") {
+    return fallback;
+  }
+
+  const numberValue = Number(value);
+
+  return Number.isNaN(numberValue) ? fallback : numberValue;
+};
+
+const toNullableNumber = (value: unknown) => {
+  if (value === undefined || value === null || value === "") {
+    return null;
+  }
+
+  const numberValue = Number(value);
+
+  return Number.isNaN(numberValue) ? null : numberValue;
+};
+
 export const cafeController = {
   getCafes: async (req: Request, res: Response) => {
     try {
@@ -94,6 +155,8 @@ export const cafeController = {
         });
       }
 
+      const uploadedCoverImageUrl = getUploadedCoverImageUrl(req);
+
       const cafe = await cafeService.createCafe({
         name,
         description,
@@ -106,21 +169,15 @@ export const cafeController = {
         facebookUrl,
         instagramUrl,
         websiteUrl,
-        coverImageUrl,
-        coverFocusX,
-        coverFocusY,
-        coverZoom,
-        priceMin:
-          priceMin !== undefined && priceMin !== null && priceMin !== ""
-            ? Number(priceMin)
-            : null,
-        priceMax:
-          priceMax !== undefined && priceMax !== null && priceMax !== ""
-            ? Number(priceMax)
-            : null,
+        coverImageUrl: uploadedCoverImageUrl || coverImageUrl || "",
+        coverFocusX: toOptionalNumber(coverFocusX, 50),
+        coverFocusY: toOptionalNumber(coverFocusY, 50),
+        coverZoom: toOptionalNumber(coverZoom, 1),
+        priceMin: toNullableNumber(priceMin),
+        priceMax: toNullableNumber(priceMax),
         categoryId: Number(categoryId),
         districtId: Number(districtId),
-        tagIds: Array.isArray(tagIds) ? tagIds.map((id) => Number(id)) : [],
+        tagIds: parseTagIds(tagIds),
       });
 
       res.status(201).json({
@@ -164,9 +221,9 @@ export const cafeController = {
       }
 
       const cafe = await cafeService.updateCafe(id, {
-        coverFocusX,
-        coverFocusY,
-        coverZoom,
+        coverFocusX: toOptionalNumber(coverFocusX, 50),
+        coverFocusY: toOptionalNumber(coverFocusY, 50),
+        coverZoom: toOptionalNumber(coverZoom, 1),
       });
 
       res.json({
@@ -243,6 +300,8 @@ export const cafeController = {
         });
       }
 
+      const uploadedCoverImageUrl = getUploadedCoverImageUrl(req);
+
       const cafe = await cafeService.updateCafe(id, {
         name,
         description,
@@ -255,23 +314,15 @@ export const cafeController = {
         facebookUrl,
         instagramUrl,
         websiteUrl,
-        coverImageUrl,
-        coverFocusX,
-        coverFocusY,
-        coverZoom,
-        priceMin:
-          priceMin !== undefined && priceMin !== null && priceMin !== ""
-            ? Number(priceMin)
-            : null,
-        priceMax:
-          priceMax !== undefined && priceMax !== null && priceMax !== ""
-            ? Number(priceMax)
-            : null,
+        coverImageUrl: uploadedCoverImageUrl || coverImageUrl || "",
+        coverFocusX: toOptionalNumber(coverFocusX, 50),
+        coverFocusY: toOptionalNumber(coverFocusY, 50),
+        coverZoom: toOptionalNumber(coverZoom, 1),
+        priceMin: toNullableNumber(priceMin),
+        priceMax: toNullableNumber(priceMax),
         categoryId: Number(categoryId),
         districtId: Number(districtId),
-        tagIds: Array.isArray(tagIds)
-          ? tagIds.map((tagId) => Number(tagId))
-          : [],
+        tagIds: parseTagIds(tagIds),
       });
 
       res.json({

@@ -11,24 +11,13 @@ import {
   adminReviewService,
   type AdminReviewItem,
 } from "../../services/adminReviewService";
+import { getImageUrl } from "../../utils/imageUrl";
 
-const API_BASE_URL = "http://localhost:5000";
-
-const getImageUrl = (imageUrl?: string | null) => {
-  if (!imageUrl) {
-    return "";
-  }
-
-  if (
-    imageUrl.startsWith("http://") ||
-    imageUrl.startsWith("https://") ||
-    imageUrl.startsWith("data:") ||
-    imageUrl.startsWith("blob:")
-  ) {
-    return imageUrl;
-  }
-
-  return `${API_BASE_URL}${imageUrl}`;
+type UserAvatarFocus = {
+  avatarUrl?: string | null;
+  avatarFocusX?: number | null;
+  avatarFocusY?: number | null;
+  avatarZoom?: number | null;
 };
 
 function AdminReviewsPage() {
@@ -39,13 +28,19 @@ function AdminReviewsPage() {
   const [deletingReviewId, setDeletingReviewId] = useState<number | null>(null);
   const [deletingImageId, setDeletingImageId] = useState<number | null>(null);
 
-  const loadReviews = async () => {
+  const loadReviews = async (options?: {
+    searchText?: string;
+    ratingValue?: string;
+  }) => {
     try {
       setLoading(true);
 
+      const searchText = options?.searchText ?? search;
+      const ratingValue = options?.ratingValue ?? rating;
+
       const result = await adminReviewService.getReviews({
-        search: search.trim() || undefined,
-        rating: rating ? Number(rating) : undefined,
+        search: searchText.trim() || undefined,
+        rating: ratingValue ? Number(ratingValue) : undefined,
       });
 
       setReviews(result.data);
@@ -86,6 +81,7 @@ function AdminReviewsPage() {
 
   const reviewStats = useMemo(() => {
     const total = reviews.length;
+
     const withImages = reviews.filter(
       (review) => (review.images?.length ?? 0) > 0 || review.imageUrl
     ).length;
@@ -211,6 +207,7 @@ function AdminReviewsPage() {
       <div className="admin-section-card admin-review-filter-card">
         <div className="admin-search-box">
           <FaSearch />
+
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
@@ -231,7 +228,11 @@ function AdminReviewsPage() {
           <option value="1">1 ดาว</option>
         </select>
 
-        <button className="admin-primary-btn" type="button" onClick={loadReviews}>
+        <button
+          className="admin-primary-btn"
+          type="button"
+          onClick={() => void loadReviews()}
+        >
           <FaSearch />
           ค้นหา
         </button>
@@ -242,7 +243,10 @@ function AdminReviewsPage() {
           onClick={() => {
             setSearch("");
             setRating("");
-            void loadReviews();
+            void loadReviews({
+              searchText: "",
+              ratingValue: "",
+            });
           }}
         >
           <FaSyncAlt />
@@ -262,7 +266,11 @@ function AdminReviewsPage() {
         <div className="admin-review-list">
           {reviews.map((review) => {
             const imageUrls = getReviewImageUrls(review);
-            const userAvatarUrl = getImageUrl(review.user.avatarUrl);
+
+            const reviewUser = review.user as typeof review.user &
+              UserAvatarFocus;
+
+            const userAvatarUrl = getImageUrl(reviewUser.avatarUrl);
 
             return (
               <article className="admin-review-card" key={review.id}>
@@ -272,15 +280,15 @@ function AdminReviewsPage() {
                       {userAvatarUrl ? (
                         <img
                           src={userAvatarUrl}
-                          alt={review.user.fullName}
+                          alt={reviewUser.fullName}
                           style={{
-                            objectPosition: `${review.user.avatarFocusX ?? 50}% ${
-                              review.user.avatarFocusY ?? 50
+                            objectPosition: `${reviewUser.avatarFocusX ?? 50}% ${
+                              reviewUser.avatarFocusY ?? 50
                             }%`,
-                            transform: `scale(${review.user.avatarZoom ?? 1})`,
+                            transform: `scale(${reviewUser.avatarZoom ?? 1})`,
                             transformOrigin: `${
-                              review.user.avatarFocusX ?? 50
-                            }% ${review.user.avatarFocusY ?? 50}%`,
+                              reviewUser.avatarFocusX ?? 50
+                            }% ${reviewUser.avatarFocusY ?? 50}%`,
                           }}
                         />
                       ) : (
@@ -289,10 +297,11 @@ function AdminReviewsPage() {
                     </div>
 
                     <div>
-                      <h3>{review.user.fullName}</h3>
+                      <h3>{reviewUser.fullName}</h3>
+
                       <p>
-                        @{review.user.username ?? "-"} ·{" "}
-                        {review.user.email ?? "ไม่มีอีเมล"}
+                        @{reviewUser.username ?? "-"} ·{" "}
+                        {reviewUser.email ?? "ไม่มีอีเมล"}
                       </p>
                     </div>
                   </div>
